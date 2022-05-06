@@ -6033,7 +6033,7 @@ def mgui_edit_object_assets(cfg, object_ID, edict):
     while execute_menu:
         # --- Build kodi.SelectDialog() list ---
         obj_info = assets.OBJECT_INFO_DICT[object_ID]
-        asset_odict = assets.Factory.get_assets_odict(object_ID, edict)
+        asset_odict = assets.get_assets_odict(object_ID, edict)
         list_items = []
         asset_info_list = [] # List to easily pick the selected AssetInfo() object
         for asset_info_obj, asset_fname_str in asset_odict.items():
@@ -6086,97 +6086,24 @@ def mgui_edit_object_assets(cfg, object_ID, edict):
 def mgui_edit_asset(cfg, object_ID, edict, AInfo):
     log.debug('mgui_edit_asset() BEGIN...')
 
-    # --- Get asset object information ---
-    # After this point we need:
-    # -> object_name = 'Category'
-    # -> asset_dir_FN
-    # -> asset_path_noext_FN
+    # Get asset object information.
+    afn = assets.get_asset_info(cfg, object_ID, edict, AInfo)
+    log.debug('mgui_edit_asset() name "{}"'.format(afn['name']))
+    log.debug('mgui_edit_asset() asset_dir "{}"'.format(afn['asset_dir']))
+    log.debug('mgui_edit_asset() asset_path_noext "{}"'.format(afn['asset_path_noext']))
 
-    # [TODO] This code must be in module assets.
-    # Get inspiration from db.get_launcher_info()
-    if object_ID == const.OBJECT_CATEGORY_ID:
-        # --- Grab asset information for editing ---
-        object_name = 'Category'
-        asset_dir_FN = utils.FileName(cfg.settings['categories_asset_dir'])
-        asset_path_noext_FN = assets.get_path_noext_SUFIX(AInfo, asset_dir_FN, edict['m_name'], edict['id'])
-        log.info('mgui_edit_asset() Editing Category "{}"'.format(AInfo.name))
-        log.info('mgui_edit_asset() Category ID {}'.format(edict['id']))
-        if not asset_dir_FN.isdir():
-            kodi.dialog_OK('Directory to store Category artwork not configured or not found. '
-                'Configure it before you can edit artwork.')
-            return False
+    # --- Do not edit asset if asset directory not configured ---
+    # if not asset_dir_FN.isdir():
+    #     kodi.dialog_OK('Artwork directory not configured or not found. ' +
+    #         'Configure it before you can edit artwork.')
+    #     return False
 
-    elif object_ID == const.OBJECT_COLLECTION_ID:
-        # --- Grab asset information for editing ---
-        object_name = 'Collection'
-        asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
-        asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
-            object_dic['m_name'], object_dic['id'])
-        log.info('_gui_edit_asset() Editing Collection "{}"'.format(AInfo.name))
-        log.info('_gui_edit_asset() ID {}'.format(object_dic['id']))
-        if not asset_dir_FN.isdir():
-            kodi.dialog_OK('Directory to store Collection artwork not configured or not found. '
-                'Configure it before you can edit artwork.')
-            return False
-
-    elif object_ID == const.OBJECT_LAUNCHER_ID:
-        # --- Grab asset information for editing ---
-        object_name = 'Launcher'
-        asset_dir_FN = utils.FileName(self.settings['launchers_asset_dir'])
-        asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
-            object_dic['m_name'], object_dic['id'])
-        log.info('_gui_edit_asset() Editing Launcher "{}"'.format(AInfo.name))
-        log.info('_gui_edit_asset() ID {}'.format(object_dic['id']))
-        if not asset_dir_FN.isdir():
-            kodi.dialog_OK('Directory to store Launcher artwork not configured or not found. '
-                'Configure it before you can edit artwork.')
-            return False
-
-    elif object_ID == const.OBJECT_ROM_ID:
-        # --- Grab asset information for editing ---
-        object_name = 'ROM'
-        ROM_FN = utils.FileName(object_dic['filename'])
-        if object_dic['disks']:
-            ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(object_dic['disks'][0])
+    # Needed for scraping ROM artwork.
+    if object_ID == const.OBJECT_ROM_ID:
+        if edict['disks']:
+            ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(edict['disks'][0])
         else:
             ROM_hash_FN = ROM_FN
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            log.info('_gui_edit_asset() ROM is in Favourites')
-            platform = object_dic['platform']
-            asset_dir_FN = utils.FileName(self.settings['favourites_asset_dir'])
-            asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
-                ROM_FN.getBaseNoExt(), object_dic['id'])
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log.info('_gui_edit_asset() ROM is in Collection')
-            platform = object_dic['platform']
-            asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
-            new_asset_basename = assets_get_collection_asset_basename(AInfo,
-                ROM_FN.getBaseNoExt(), platform, '.png')
-            new_asset_basename_FN = utils.FileName(new_asset_basename)
-            asset_path_noext_FN = asset_dir_FN.pjoin(new_asset_basename_FN.getBaseNoExt())
-        else:
-            log.info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
-            launcher = self.launchers[launcherID]
-            platform = launcher['platform']
-            asset_dir_FN = utils.FileName(launcher[AInfo.path_key])
-            asset_path_noext_FN = assets_get_path_noext_DIR(AInfo, asset_dir_FN, ROM_FN)
-        log.info('_gui_edit_asset() Editing ROM {}'.format(AInfo.name))
-        log.info('_gui_edit_asset() ROM ID {}'.format(object_dic['id']))
-        log.debug('_gui_edit_asset() platform "{}"'.format(platform))
-
-        # --- Do not edit asset if asset directory not configured ---
-        if not asset_dir_FN.isdir():
-            kodi.dialog_OK('Directory to store {} not configured or not found. '.format(AInfo.name) + \
-                'Configure it before you can edit artwork.')
-            return False
-
-    else:
-        log.error('_gui_edit_asset() Unknown object_kind = {}'.format(object_kind))
-        kodi_notify_warn("Unknown object_kind '{}'".format(object_kind))
-        return False
-    # Debug info
-    log.debug('_gui_edit_asset() asset_dir_FN "{}"'.format(asset_dir_FN.getOriginalPath()))
-    log.debug('_gui_edit_asset() asset_path_noext_FN "{}"'.format(asset_path_noext_FN.getOriginalPath()))
 
     # --- Only enable scraper if support the asset ---
     # Scrapers only loaded if editing a ROM.
@@ -6192,95 +6119,94 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         'Import local {} (copy and rename)'.format(AInfo.kind_str),
         'Unset artwork/asset',
     ]
-    sDialog = kodi.SelectDialog('Change {} {}'.format(AInfo.name, AInfo.kind_str))
-    sDialog.setRows(common_menu_list + scraper_menu_list)
+    ml = common_menu_list + scraper_menu_list
+    sDialog = kodi.SelectDialog('Change {} {}'.format(AInfo.name, AInfo.kind_str), ml)
     mindex = sDialog.executeDialog()
     if mindex is None: return False
 
     # --- Link to a local image ---
     if mindex == 0:
         log.debug('mgui_edit_asset() Linking local image...')
-        image_dir = utils.FileName(edict[AInfo.key]).getDir() if edict[AInfo.key] else ''
-        log.debug('mgui_edit_asset() Initial path "{}"'.format(image_dir))
+        img_current_dir = utils.FileName(edict[AInfo.key]).getDir() if edict[AInfo.key] else ''
+        log.debug('mgui_edit_asset() Initial path "{}"'.format(img_current_dir))
         message = 'Select {} {}'.format(AInfo.name, AInfo.kind_str)
         if AInfo.id == const.ASSET_MANUAL_ID or AInfo.id == const.ASSET_TRAILER_ID:
-            image_file = kodi.dialog_get_file(message, AInfo.exts_dialog, image_dir)
+            img_fname_str = kodi.dialog_get_file(message, AInfo.exts_dialog, img_current_dir)
         else:
-            image_file = kodi.dialog_get_image(message, AInfo.exts_dialog, image_dir)
-        if not image_file: return False
-        image_file_path = utils.FileName(image_file)
-        if not image_file or not image_file_path.exists(): return False
+            img_fname_str = kodi.dialog_get_image(message, AInfo.exts_dialog, img_current_dir)
+        if not img_fname_str: return False
+        image_FN = utils.FileName(img_fname_str)
+        if not image_FN.exists(): return False
 
-        # --- Update object by assigment. XML/JSON will be save by parent ---
+        # Update object by assigment. XML/JSON will be saved by caller.
         log.debug('mgui_edit_asset() AInfo.key "{}"'.format(AInfo.key))
-        edict[AInfo.key] = image_file_path.getOriginalPath()
-        kodi.notify('{} {} has been updated'.format(object_name, AInfo.name))
-        log.info('mgui_edit_asset() Linked {} {} "{}"'.format(object_name,
-            AInfo.name, image_file_path.getOriginalPath()))
-        # Update Kodi image cache.
+        edict[AInfo.key] = image_FN.getOriginalPath()
+        kodi.notify('{} {} has been updated'.format(afn['name'], AInfo.name))
+        log.info('mgui_edit_asset() Linked {} {} "{}"'.format(afn['name'],
+            AInfo.name, image_FN.getOriginalPath()))
         # [TODO] Only update mtime for local files and not for Kodi VFS files.
-        utils.update_file_mtime(image_file_path.getPath())
+        utils.update_file_mtime(image_FN.getPath())
 
     # --- Import an image ---
     # Copy and rename a local image into asset directory.
     elif mindex == 1:
-        log.debug('_gui_edit_asset() Importing image...')
+        log.debug('mgui_edit_asset() Importing image...')
         # If assets exists start file dialog from current asset directory
-        image_dir = ''
-        if edict[AInfo.key]: image_dir = utils.FileName(edict[AInfo.key]).getDir()
-        log.debug('_gui_edit_asset() Initial path "{}"'.format(image_dir))
-        t = 'Select {} image'.format(AInfo.name)
-        image_path_str = kodi_dialog_get_image(t, AInfo.exts_dialog, image_dir)
-        image_FN = utils.FileName(image_path_str)
+        img_current_dir = utils.FileName(edict[AInfo.key]).getDir() if edict[AInfo.key] else ''
+        log.debug('mgui_edit_asset() Initial path "{}"'.format(img_current_dir))
+        message = 'Select {} {}'.format(AInfo.name, AInfo.kind_str)
+        if AInfo.id == const.ASSET_MANUAL_ID or AInfo.id == const.ASSET_TRAILER_ID:
+            img_fname_str = kodi.dialog_get_file(message, AInfo.exts_dialog, img_current_dir)
+        else:
+            img_fname_str = kodi.dialog_get_image(message, AInfo.exts_dialog, img_current_dir)
+        if not img_fname_str: return False
+        image_FN = utils.FileName(img_fname_str)
         if not image_FN.exists(): return False
 
         # Determine image extension and dest filename. Check for errors.
-        dest_image_FN = asset_path_noext_FN.pappend(image_FN.getExt())
-        log.debug('_gui_edit_asset() image_FN      "{}"'.format(image_FN.getOriginalPath()))
-        log.debug('_gui_edit_asset() img_ext       "{}"'.format(image_FN.getExt()))
-        log.debug('_gui_edit_asset() dest_image_FN "{}"'.format(dest_image_FN.getOriginalPath()))
-        if image_FN.getPath() == dest_image_FN.getPath():
-            log.info('_gui_edit_asset() image_FN and dest_image_FN are the same. Returning.')
-            kodi_notify_warn('image_FN and dest_image_FN are the same. Returning')
+        dest_img_FN = afn['asset_path_noext'].pappend(image_FN.getExt())
+        log.debug('mgui_edit_asset() image_FN    "{}"'.format(image_FN.getOriginalPath()))
+        log.debug('mgui_edit_asset() img_ext     "{}"'.format(image_FN.getExt()))
+        log.debug('mgui_edit_asset() dest_img_FN "{}"'.format(dest_img_FN.getOriginalPath()))
+        if image_FN.getPath() == dest_img_FN.getPath():
+            log.info('mgui_edit_asset() image_FN and dest_img_FN are the same. Returning.')
+            kodi.notify_warn('image_FN and dest_img_FN are the same. Returning')
             return False
-
         try:
-            utils_copy_file(image_FN.getPath(), dest_image_FN.getPath())
+            utils.copy_file(image_FN.getPath(), dest_img_FN.getPath())
         except OSError:
-            log.error('_gui_edit_asset() OSError exception copying image')
-            kodi_notify_warn('OSError exception copying image')
+            log.error('mgui_edit_asset() OSError exception copying image')
+            kodi.notify_warn('OSError exception copying image')
             return False
         except IOError:
-            log.error('_gui_edit_asset() IOError exception copying image')
-            kodi_notify_warn('IOError exception copying image')
+            log.error('mgui_edit_asset() IOError exception copying image')
+            kodi.notify_warn('IOError exception copying image')
             return False
 
         # Update object by assigment. XML will be save by parent.
         # Always store original/raw paths in database.
-        edict[AInfo.key] = dest_image_FN.getOriginalPath()
-        kodi_notify('{} {} has been updated'.format(object_name, AInfo.name))
-        log.info('_gui_edit_asset() Copied file  "{}"'.format(image_FN.getOriginalPath()))
-        log.info('_gui_edit_asset() Into         "{}"'.format(dest_image_FN.getOriginalPath()))
-        log.info('_gui_edit_asset() Selected {} {} "{}"'.format(object_name,
-            AInfo.name, dest_image_FN.getOriginalPath()))
-
-        # Update Kodi image cache.
-        utils_update_file_mtime(dest_image_FN.getPath())
+        edict[AInfo.key] = dest_img_FN.getOriginalPath()
+        kodi.notify('{} {} has been updated'.format(afn['name'], AInfo.name))
+        log.info('mgui_edit_asset() Copied file  "{}"'.format(image_FN.getOriginalPath()))
+        log.info('mgui_edit_asset() Into         "{}"'.format(dest_img_FN.getOriginalPath()))
+        log.info('mgui_edit_asset() Selected {} {} "{}"'.format(afn['name'],
+            AInfo.name, dest_img_FN.getOriginalPath()))
+        utils_update_file_mtime(dest_img_FN.getPath())
 
     # --- Unset asset ---
     elif mindex == 2:
-        log.debug('_gui_edit_asset() Unsetting asset...')
+        log.debug('mgui_edit_asset() Unsetting asset...')
         edict[AInfo.key] = ''
-        kodi_notify('{} {} has been unset'.format(object_name, AInfo.name))
-        log.info('_gui_edit_asset() Unset {} {}'.format(object_name, AInfo.name))
+        kodi.notify('{} {} has been unset'.format(afn['name'], AInfo.name))
+        log.info('mgui_edit_asset() Unset {} {}'.format(afn['name'], AInfo.name))
 
     # --- Manual scrape and choose from a list of images ---
     elif mindex >= 3:
-        log.debug('_gui_edit_asset() Scraping image...')
+        log.debug('mgui_edit_asset() Scraping image...')
 
         # Create ScrapeFactory object.
         scraper_index = mindex - len(common_menu_list)
-        log.debug('_gui_edit_asset() Scraper index {}'.format(scraper_index))
+        log.debug('mgui_edit_asset() Scraper index {}'.format(scraper_index))
         scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
 
         # Scrape!
@@ -6300,16 +6226,16 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         # to be printed here. A message here could be that no images were found, network
         # error when downloading image, etc., however the caches (internal, etc.) may have
         # valid data that needs to be saved.
-        st_dic = utils.new_status_dic()
+        st = utils.new_status_dic()
         scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
-        scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st_dic)
+        scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st)
         # Flush caches
         pDialog = KodiProgressDialog()
         pDialog.startProgress('Flushing scraper disk caches...')
         g_scrap_factory.destroy_CM()
         pDialog.endProgress()
         # Display notification or error. If error return and do not save ROMs database.
-        if kodi_display_status_message(st_dic): return False
+        if utils.display_status_message(st): return False
 
     # If we reach this point, changes were made.
     # Categories/Launchers/ROMs must be saved, container must be refreshed.
@@ -6319,8 +6245,8 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
 # icon/fanart/banner/poster/clearlogo context submenu.
 # Argument obj is an object instance of class Category, CollectionLauncher, etc.
 def mgui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
-    log_debug('m_gui_edit_object_default_assets() obj {0}'.format(obj_instance.__class__.__name__))
-    log_debug('m_gui_edit_object_default_assets() pre_select_idx {0}'.format(pre_select_idx))
+    log_debug('mgui_edit_object_default_assets() obj {}'.format(obj_instance.__class__.__name__))
+    log_debug('mgui_edit_object_default_assets() pre_select_idx {}'.format(pre_select_idx))
 
     # --- Customize function for each object type ---
     if obj_instance.get_assets_kind() == KIND_ASSET_CATEGORY:

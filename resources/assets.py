@@ -746,54 +746,107 @@ ASSET_INFO_KEY_DICT = {
     's_manual'     : a_manual,
 }
 
-# ------------------------------------------------------------------------------------------------
-# Class to interact with the asset engine.
-# Only static methods.
-# Put all the small functions in this file here.
-# ------------------------------------------------------------------------------------------------
-class Factory(object):
-    # List with all asset object, in random order.
-    @staticmethod
-    def get_all(): return list(ASSET_INFO_DICT.values())
+# List of object assets.
+def get_object_asset_list(object_ID):
+    try:
+        return const.OBJECT_ASSETS[object_ID]
+    except:
+        raise TypeError
 
-    # @staticmethod
-    # def get_asset_info(self, asset_kind):
-    #     asset_info = asset_infos.get(asset_kind, None)
-    #     if asset_info is None:
-    #         log_error('get_asset_info() Wrong asset_kind = {}'.format(asset_kind))
-    #         return AssetInfo()
-    #     return asset_info
+# IDs is a list of asset IDs (or an iterable that returns an asset ID).
+# Returns a list of AssetInfo objects.
+def get_asset_list_by_IDs(IDs): return [ASSET_INFO_DICT[asset_ID] for asset_ID in IDs]
 
-    # todo: use 1 type of identifier not number constants and name strings ('s_icon')
-    # @staticmethod
-    # def get_asset_info_by_namekey(self, name_key):
-    #     if name_key == '': return None
-    #     kind = ASSET_KEYS_TO_CONSTANTS[name_key]
-    #     return self.get_asset_info(kind)
+# Returns an ordered dictionary with all the object assets, ready to be edited.
+# This is used in the "Edit xxxxxx" context menus.
+# Keys are AssetInfo objects.
+# Values are the current file for the asset as Unicode string or '' if the asset is not set.
+def get_assets_odict(object_ID, edict):
+    asset_list = get_object_asset_list(object_ID)
+    asset_odict = collections.OrderedDict()
+    for asset_ID in asset_list:
+        asset_info = ASSET_INFO_DICT[asset_ID]
+        asset_fname_str = edict[asset_info.key] if edict[asset_info.key] else ''
+        asset_odict[asset_info] = asset_fname_str
+    return asset_odict
 
-    # List of object assets.
-    @staticmethod
-    def get_object_asset_list(object_ID):
-        try:
-            return const.OBJECT_ASSETS[object_ID]
-        except:
-            raise TypeError
+# Given an object dict, object database dictionary and AssetInfo object, obtain the asset
+# data like name and filename. Used in mgui_edit_asset() and ...
+# --- Parameters ---
+# Write me.
+# --- Return ---
+# Returns a dictionary afn (Asset FileName) with the following fields:
+# afn['name'] = 'Category'
+# afn['asset_dir'] = FileName object.
+# afn['asset_path_noext'] = FileName object.
+def get_asset_info(cfg, object_ID, edict, AInfo):
+    afn = {
+        'name' : '',
+        'asset_dir' : '',
+        'asset_path_noext' : '',
+    }
 
-    # IDs is a list of asset IDs (or an iterable that returns an asset ID).
-    # Returns a list of AssetInfo objects.
-    @staticmethod
-    def get_asset_list_by_IDs(IDs): return [ASSET_INFO_DICT[asset_ID] for asset_ID in IDs]
+    if object_ID == const.OBJECT_CATEGORY_ID:
+        afn['name'] = 'Category'
+        afn['asset_dir'] = utils.FileName(cfg.settings['categories_asset_dir'])
+        afn['asset_path_noext'] = get_path_noext_SUFIX(AInfo, afn['asset_dir'], edict['m_name'], edict['id'])
+        log.info('get_asset_info() Category "{}"'.format(AInfo.name))
+        log.info('get_asset_info() Category ID {}'.format(edict['id']))
 
-    # Returns an ordered dictionary with all the object assets, ready to be edited.
-    # This is used in the "Edit xxxxxx" context menus.
-    # Keys are AssetInfo objects.
-    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
-    @staticmethod
-    def get_assets_odict(object_ID, edict):
-        asset_list = Factory.get_object_asset_list(object_ID)
-        asset_odict = collections.OrderedDict()
-        for asset_ID in asset_list:
-            asset_info = ASSET_INFO_DICT[asset_ID]
-            asset_fname_str = edict[asset_info.key] if edict[asset_info.key] else ''
-            asset_odict[asset_info] = asset_fname_str
-        return asset_odict
+    elif object_ID == const.OBJECT_COLLECTION_ID:
+        afn['name'] = 'Collection'
+        afn['asset_dir'] = utils.FileName(self.settings['collections_asset_dir'])
+        afn['asset_path_noext'] = get_path_noext_SUFIX(AInfo, afn['asset_dir'], edict['m_name'], edict['id'])
+        log.info('get_asset_info() Collection "{}"'.format(AInfo.name))
+        log.info('get_asset_info() Collection ID {}'.format(edict['id']))
+
+    elif object_ID == const.OBJECT_LAUNCHER_ID:
+        afn['name'] = 'Launcher'
+        afn['asset_dir'] = utils.FileName(self.settings['launchers_asset_dir'])
+        afn['asset_path_noext'] = get_path_noext_SUFIX(AInfo, afn['asset_dir'], edict['m_name'], edict['id'])
+        log.info('get_asset_info() Launcher "{}"'.format(AInfo.name))
+        log.info('get_asset_info() Launcher ID {}'.format(edict['id']))
+
+    # [TODO] How to handle this for ROMs? Do we need categoryID/launcherID or can we create more object_IDs?
+    elif object_ID == const.OBJECT_ROM_ID and categoryID == VCATEGORY_FAVOURITES_ID:
+        log.info('get_asset_info() ROM is in Favourites')
+        afn['name'] = 'ROM'
+        ROM_FN = utils.FileName(edict['filename'])
+        platform = object_dic['platform']
+        asset_dir_FN = utils.FileName(self.settings['favourites_asset_dir'])
+        asset_path_noext_FN = get_path_noext_SUFIX(AInfo, asset_dir_FN, ROM_FN.getBaseNoExt(), object_dic['id'])
+        log.info('get_asset_info() ROM "{}"'.format(AInfo.name))
+        log.info('get_asset_info() ROM ID {}'.format(object_dic['id']))
+        log.debug('get_asset_info() platform "{}"'.format(platform))
+
+    elif object_ID == const.OBJECT_ROM_ID and categoryID == VCATEGORY_COLLECTIONS_ID:
+        log.info('get_asset_info() ROM is in Collection')
+        afn['name'] = 'ROM'
+        ROM_FN = utils.FileName(edict['filename'])
+        platform = object_dic['platform']
+        asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
+        new_asset_basename = get_collection_asset_basename(AInfo, ROM_FN.getBaseNoExt(), platform, '.png')
+        new_asset_basename_FN = utils.FileName(new_asset_basename)
+        asset_path_noext_FN = asset_dir_FN.pjoin(new_asset_basename_FN.getBaseNoExt())
+        log.info('get_asset_info() ROM "{}"'.format(AInfo.name))
+        log.info('get_asset_info() ROM ID {}'.format(object_dic['id']))
+        log.debug('get_asset_info() platform "{}"'.format(platform))
+
+    elif object_ID == const.OBJECT_ROM_ID:
+        log.info('get_asset_info() ROM is in Launcher id {}'.format(launcherID))
+        afn['name'] = 'ROM'
+        ROM_FN = utils.FileName(edict['filename'])
+        launcher = self.launchers[launcherID]
+        platform = launcher['platform']
+        asset_dir_FN = utils.FileName(launcher[AInfo.path_key])
+        asset_path_noext_FN = get_path_noext_DIR(AInfo, asset_dir_FN, ROM_FN)
+        log.info('get_asset_info() ROM "{}"'.format(AInfo.name))
+        log.info('get_asset_info() ROM ID {}'.format(object_dic['id']))
+        log.debug('get_asset_info() platform "{}"'.format(platform))
+
+    else:
+        log.error('get_asset_info() Unknown object_ID = {}'.format(object_ID))
+        kodi.notify_warn("Unknown object_ID '{}'".format(object_ID))
+        raise TypeError
+
+    return afn
