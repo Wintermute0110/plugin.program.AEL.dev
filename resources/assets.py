@@ -134,14 +134,12 @@ def parse_asset_dir(launcher, assets_path_FName, key, pathName):
 # Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
 def get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
-    asset_path = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
-    return asset_path
+    return object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
 
 # Same for ROMs
 def get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
     conf_asset_key = launcher[object_key]
-    asset_path = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
-    return asset_path
+    return rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
 # Gets a human readable name string for the asset field name.
 def get_asset_name_str(default_asset):
@@ -746,13 +744,6 @@ ASSET_INFO_KEY_DICT = {
     's_manual'     : a_manual,
 }
 
-# List of assets IDs for an object.
-def get_object_asset_list(object_ID):
-    try:
-        return const.OBJECT_ASSETS[object_ID]
-    except:
-        raise TypeError
-
 # IDs is a list of asset IDs (or an iterable that returns an asset ID).
 # Returns a list of AssetInfo objects.
 def get_asset_info_list_from_IDs(IDs):
@@ -766,9 +757,8 @@ def get_asset_info_list_from_IDs(IDs):
 # Dictionary keys are AssetInfo objects.
 # Dictionary values are the current file for the asset as string or '' if the asset is not set.
 def get_assets_odict(object_ID, edict):
-    asset_list = get_object_asset_list(object_ID)
     asset_odict = collections.OrderedDict()
-    for asset_ID in asset_list:
+    for asset_ID in const.OBJECT_ASSETS[object_ID]:
         asset_info = ASSET_INFO_DICT[asset_ID]
         asset_fname_str = edict[asset_info.key] if edict[asset_info.key] else ''
         asset_odict[asset_info] = asset_fname_str
@@ -854,3 +844,28 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         raise TypeError
 
     return afn
+
+# Given an object ID return a list of AssetInfo objects that can be mapped.
+def get_mappable_asset_list(object_ID):
+    try:
+        mappable_list = const.MAPPABLE_ASSETS[object_ID]
+    except:
+        log.error('get_mappable_asset_list() Unknown object_ID = {}'.format(object_ID))
+        kodi.notify_warn("Unknown object_ID '{}'".format(object_ID))
+        raise TypeError
+    return [ASSET_INFO_DICT[asset_ID] for asset_ID in mappable_list]
+
+# Given an asset filename string get the asset filename.
+# This function is used in "Edit Category/Launcher/ROM" context menus, ...
+def get_listitem_asset_filename(asset_filename_str):
+    if asset_filename_str:
+        item_path = utils.FileName(asset_filename_str)
+        if item_path.isVideoFile():
+            item_img = 'DefaultAddonVideo.png'
+        elif item_path.isManual():
+            item_img = 'DefaultAddonInfoProvider.png'
+        else:
+            item_img = asset_filename_str
+    else:
+        item_img = 'DefaultAddonNone.png'
+    return item_img

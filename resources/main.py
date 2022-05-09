@@ -44,6 +44,7 @@ import datetime
 import fnmatch
 import hashlib
 import os
+import pprint
 import re
 import shlex
 import shutil
@@ -5878,14 +5879,14 @@ def mgui_render_menu(mdic):
     mpos_list = mdic['mpos']
 
     # --- Execute menu logic ---
-    log.dump_variable('mpos', mpos_list)
+    log.debug('mpos_list = {}'.format(pprint.pformat(mpos_list)))
     flag_root_menu = len(mpos_list) == 1
     m_iterable = menu_list if flag_root_menu else menu_list[mpos_list[-2]][2]
     mlist = [mtuple[1] for mtuple in m_iterable]
     pre_select_idx = mpos_list[-1]
     sDialog = kodi.SelectDialog(mdic['diag_title'], mlist, pre_select_idx)
     mindex = sDialog.executeDialog()
-    log.dump_variable('mindex', mindex)
+    log.debug('mindex = {}'.format(pprint.pformat(mindex)))
     # Exit context menu or move one step down in the menu chain.
     if mindex is None and flag_root_menu:
         # Leave function and close context menu completely.
@@ -6042,13 +6043,7 @@ def mgui_edit_object_assets(cfg, object_ID, edict):
             label1_str = 'Edit {} ...'.format(asset_info_obj.name)
             label2_str = asset_fname_str if asset_fname_str else 'Not set'
             list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
-            if asset_fname_str:
-                item_path = utils.FileName(asset_fname_str)
-                if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
-                elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
-                else:                       item_img = asset_fname_str
-            else:
-                item_img = 'DefaultAddonNone.png'
+            item_img = assets.get_listitem_asset_filename(asset_fname_str)
             list_item.setArt({'icon' : item_img})
             list_items.append(list_item)
             asset_info_list.append(asset_info_obj)
@@ -6239,49 +6234,41 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
     # Categories/Launchers/ROMs must be saved, container must be refreshed.
     return True
 
-# Generic function to edit the Object default assets for  icon/fanart/banner/poster/clearlogo context submenu.
+# Generic function to edit the Object default assets for icon/fanart/banner/poster/clearlogo context submenu.
+# The first select dialog chooses the Kodi default asset to be remapped.
+# The second dialog chooses the remapped asset.
 # --- Return value ---
 # Returns True if assets were modified and DB must be saved.
 # Returns False otherwise.
 def mgui_edit_object_default_assets(cfg, object_ID, edict):
     log.debug('mgui_edit_object_default_assets() BEGIN...')
+    obj_info = assets.OBJECT_INFO_DICT[object_ID]
     execute_menu, save_DB_flag, pre_select_idx = True, False, 0
     while execute_menu:
         # --- Build kodi.SelectDialog() list ---
-        obj_info = assets.OBJECT_INFO_DICT[object_ID]
         default_assets_odict = assets.get_asset_info_list_from_IDs(const.DEFAULTABLE_ASSET_ID_LIST)
         list_items = []
         asset_info_list = [] # List to easily pick the selected AssetInfo() object
         for ainfo_t in default_assets_odict:
-            # Get mapped asset for asset_ID
+            # Get mapped asset for asset_ID, AssetInfo Object and filename.
             mapped_asset_key = edict[ainfo_t.default_key]
-            # For the mapped asset get data (name and filename)
-            mapped_asset_info = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
-            mapped_asset_str = edict[mapped_asset_info.key] if edict[mapped_asset_info.key] else ''
-
+            mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
+            mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
             # Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
             # Label 2 is the fname string of the current mapped asset or 'Not set'
-            # icon is the fname string of the current mapped asset.
-            label1_str = 'Choose asset for {} (currently {})'.format(ainfo_t.name, mapped_asset_info.name)
+            label1_str = 'Map asset for {} (currently {})'.format(ainfo_t.name, mapped_ainfo.name)
             label2_str = mapped_asset_str
-            list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
-            if mapped_asset_str:
-                item_path = utils.FileName(mapped_asset_str)
-                if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
-                elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
-                else:                       item_img = mapped_asset_str
-            else:
-                item_img = 'DefaultAddonNone.png'
+            list_item = xbmcgui.ListItem(label1_str, label2_str)
+            item_img = assets.get_listitem_asset_filename(mapped_asset_str)
             list_item.setArt({'icon' : item_img})
             list_items.append(list_item)
-            asset_info_list.append(mapped_asset_info)
+            asset_info_list.append(ainfo_t)
 
         # --- Execute select dialog menu logic ---
-        dialog_title = 'Edit {} default Assets/Artwork'.format(obj_info.name)
+        dialog_title = 'Edit [COLOR orange]{}[/COLOR] default Assets/Artwork'.format(obj_info.name)
         sDialog = kodi.SelectDialog(dialog_title, list_items, pre_select_idx, useDetails = True)
-        # selected_option = xbmcgui.Dialog().select()
         mindex = sDialog.executeDialog()
-        log.debug('mgui_edit_object_default_assets() Main select() returned {}'.format(mindex))
+        log.debug('mgui_edit_object_default_assets() mindex = {}'.format(pprint.pformat(mindex)))
         if mindex is None:
             # Return to parent menu.
             log.debug('mgui_edit_object_default_assets() Main selected NONE. Returning to parent menu.')
@@ -6294,42 +6281,41 @@ def mgui_edit_object_default_assets(cfg, object_ID, edict):
     log.debug('mgui_edit_object_default_assets() Returning {}'.format(save_DB_flag))
     return save_DB_flag
 
-def mgui_edit_default_asset(cfg, object_ID, edict, ainfo):
+# mapped_ainfo is the AssetInfo object being mapped (Icon/Fanart/etc.).
+def mgui_edit_default_asset(cfg, object_ID, edict, edit_ainfo):
     # The menu dialog is instantiated again so it reflects the changes just edited.
-    selected_asset_info = ainfo
-    log.debug('mgui_edit_default_asset() Editing "{}"'.format(selected_asset_info.name))
+    log.debug('mgui_edit_default_asset() Editing "{}"'.format(edit_ainfo.name))
+    obj_info = assets.OBJECT_INFO_DICT[object_ID]
+    # Get mapped asset for asset_ID, AssetInfo Object and filename.
+    mapped_asset_key = edict[edit_ainfo.default_key]
+    mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
+    mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
+    # Execute select menu logic.
     execute_menu, save_DB_flag, pre_select_idx = True, False, 0
     while execute_menu:
-        mappable_asset_list = obj_instance.get_mappable_asset_list()
+        mappable_ainfo_list = assets.get_mappable_asset_list(object_ID)
         list_items = []
         asset_info_list = []
-        secondary_pre_select_idx = 0
-        counter = 0
-        for mappable_asset_info in mappable_asset_list:
+        for ainfo_t in mappable_ainfo_list:
+            mapped_asset_str = edict[ainfo_t.key] if ainfo_t.key in edict else ''
             # Label1 is the asset name (Icon, Fanart, etc.)
             # Label2 is the asset filename str as in the database or 'Not set'
-            # setArt('icon') is the asset picture.
-            mapped_asset_str = obj_instance.get_asset_str(mappable_asset_info)
-            label1_str = '{}'.format(mappable_asset_info.name)
-            label2_stt = mapped_asset_str if mapped_asset_str else 'Not set'
-            list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
-            if mapped_asset_str:
-                item_path = FileName(mapped_asset_str)
-                if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
-                elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
-                else:                       item_img = mapped_asset_str
+            if mapped_ainfo == ainfo_t:
+                label1_str = 'Map {} to {} (Current)'.format(edit_ainfo.name, ainfo_t.name)
             else:
-                item_img = 'DefaultAddonNone.png'
+                label1_str = 'Map {} to {}'.format(edit_ainfo.name, ainfo_t.name)
+            label2_stt = mapped_asset_str if mapped_asset_str else 'Not set'
+            list_item = xbmcgui.ListItem(label1_str, label2_stt)
+            item_img = assets.get_listitem_asset_filename(mapped_asset_str)
             list_item.setArt({'icon' : item_img})
-            # --- Append to list of ListItems ---
             list_items.append(list_item)
-            asset_info_list.append(mappable_asset_info)
-            if mappable_asset_info == selected_asset_info:
-                secondary_pre_select_idx = counter
-            counter += 1
+            asset_info_list.append(ainfo_t)
+            # Preselect the current mapped asset.
+            if mapped_ainfo == ainfo_t: pre_select_idx = len(asset_info_list) - 1
 
         # --- Execute select dialog menu logic ---
-        dialog_title = 'Edit {} {} mapped asset'.format(obj_instance.get_object_name(), selected_asset_info.name)
+        dialog_title = 'Edit [COLOR orange]{}[/COLOR] mapped asset '.format(obj_info.name) + \
+            'for [COLOR orange]{}[/COLOR]'.format(edit_ainfo.name)
         sDialog = kodi.SelectDialog(dialog_title, list_items, pre_select_idx, useDetails = True)
         mindex = sDialog.executeDialog()
         log.debug('mgui_edit_default_asset() select() returned {}'.format(mindex))
@@ -6338,14 +6324,19 @@ def mgui_edit_default_asset(cfg, object_ID, edict, ainfo):
             log.debug('mgui_edit_object_assets() Selected None. Exiting select menu.')
             execute_menu = False
             continue
-        # Execute subcommand.
-        new_selected_ainfo = asset_info_list[mindex]
-        log.debug('m_gui_edit_object_default_assets() Mapable selected {}.'.format(new_selected_ainfo.name))
-        obj_instance.set_mapped_asset_key(selected_asset_info, new_selected_ainfo)
-        kodi.notify('{} {} mapped to {}'.format(obj_instance.get_object_name(),
-            selected_asset_info.name, new_selected_ainfo.name))
+        selected_ainfo = asset_info_list[mindex]
+        if mapped_ainfo == selected_ainfo:
+            # Return to parent menu.
+            log.debug('mgui_edit_object_assets() Selected same asset. Exiting select menu.')
+            execute_menu = False
+            continue
+        log.debug('m_gui_edit_object_default_assets() Mapping {} (key {}) to {}.'.format(
+            edit_ainfo.name, edit_ainfo.default_key, selected_ainfo.name))
+        edict[edit_ainfo.default_key] = selected_ainfo.key
+        # Example: "Category Icon mapped to Fanart"
+        kodi.notify('{} {} mapped to {}'.format(obj_info.name, edit_ainfo.name, selected_ainfo.name))
         save_DB_flag = True
-        pre_select_idx = mindex
+        execute_menu = False
     log.debug('mgui_edit_default_asset() Returning {}'.format(save_DB_flag))
     return save_DB_flag
 

@@ -449,7 +449,8 @@ OBJECT_ASSETS = {
     OBJECT_ROM_ID : ROM_ASSET_ID_LIST,
 }
 
-# List of assets that can be mapped to other assets.
+# List of assets that can be mapped to another assets.
+# These are the Kodi default assets.
 DEFAULTABLE_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
@@ -458,7 +459,7 @@ DEFAULTABLE_ASSET_ID_LIST = [
     ASSET_CLEARLOGO_ID,
 ]
 
-# List of assets that can be mapped to a defaultable asset for Categories.
+# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
 MAPPABLE_CATEGORY_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
@@ -467,7 +468,7 @@ MAPPABLE_CATEGORY_ASSET_ID_LIST = [
     ASSET_CLEARLOGO_ID,
 ]
 
-# List of assets that can be mapped to a defaultable asset for Launchers.
+# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
 MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
@@ -477,7 +478,7 @@ MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
     ASSET_CONTROLLER_ID,
 ]
 
-# List of assets that can be mapped to a defaultable asset for ROMs.
+# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
 MAPPABLE_ROMS_ASSET_ID_LIST = [
     ASSET_TITLE_ID,
     ASSET_SNAP_ID,
@@ -490,6 +491,12 @@ MAPPABLE_ROMS_ASSET_ID_LIST = [
     ASSET_FLYER_ID,
     ASSET_MAP_ID,
 ]
+
+MAPPABLE_ASSETS = {
+    OBJECT_CATEGORY_ID : MAPPABLE_CATEGORY_ASSET_ID_LIST,
+    OBJECT_LAUNCHER_ID : MAPPABLE_LAUNCHER_ASSET_ID_LIST,
+    OBJECT_ROM_ID : MAPPABLE_ROMS_ASSET_ID_LIST,
+}
 
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
