@@ -440,7 +440,7 @@ def run_protected(cfg, command, args):
 
     # ROM management
     elif command == 'SCAN_ROMS': roms_import_roms(launID)
-    elif command == 'EDIT_ROM': command_edit_rom(catID, launID, romID)
+    elif command == 'EDIT_ROM': command_edit_rom(cfg, catID, launID, romID)
 
     # Launch ROM or standalone launcher
     elif command == 'LAUNCH_ROM': command_run_rom(catID, launID, romID)
@@ -2910,12 +2910,12 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 # Editing commands
 # ------------------------------------------------------------------------------------------------
 # New generation context menu implementation. Avoid recursive implementation.
-# Tuple content standard: (menu_ID, menu message)
-# Tuple content submenu: (menu_ID, menu message, sub_menu_list)
 def command_edit_category(cfg, categoryID):
-    # Current position in menu. First element of the list is the menu root.
-    # Second, third, etc., is for nested menus.
     mdic = {
+        # Current position in menu. First element of the list is the menu root.
+        # Second, third, etc., is for nested menus.
+        # mpos tuple content standard: (menu_ID, menu message)
+        # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
         'mpos' : [0],
         'execute_menu' : True,
     }
@@ -2989,6 +2989,7 @@ def command_edit_category(cfg, categoryID):
             if mgui_delete_category(cfg, category):
                 save_DB_flag = True
                 mdic['execute_menu'] = False
+
         else:
             log.error('command_edit_category() Unsupported command "{}"'.format(mdic['command']))
             kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(mdic['command']) +
@@ -4388,10 +4389,62 @@ def command_edit_launcher(self, categoryID, launcherID):
     fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
     kodi_refresh_container()
 
-# Former _edit_rom()
+# New generation context menu implementation. Avoid recursive implementation.
+# mpos tuple content standard: (menu_ID, menu message)
+# mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
+def command_edit_rom(cfg, categoryID, launcherID, romID):
+    # Load ROMs.
+    
+    # Edit ROM context menu menu logic.
+    mdic = {
+        # Current position in menu. First element of the list is the menu root.
+        # Second, third, etc., is for nested menus.
+        # mpos tuple content standard: (menu_ID, menu message)
+        # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
+        'mpos' : [0],
+        'execute_menu' : True,
+    }
+    while mdic['execute_menu']:
+        # category = cfg.categories[categoryID]
+        # mdic['diag_title'] = 'Select action for ROM [COLOR orange]{}[/COLOR]'.format(category['m_name'])
+        mdic['diag_title'] = 'Select action for ROM'
+
+        log.debug('Building menu...')
+        mdic['menu'] = command_edit_rom_build_menu(cfg, categoryID)
+        log.debug('Rendering menu...')
+        mgui_render_menu(mdic)
+        if mdic['continue_flag']: continue
+
+        # Execute command.
+        log.debug('Executing command "{}"'.format(mdic['command']))
+        save_DB_flag = False # By default do not save the database unless told to do so.
+
+        if mdic['command'] == 'EDIT_METADATA_TITLE':
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'Category Title')
+
+        else:
+            log.error('command_edit_rom() Unsupported command "{}"'.format(mdic['command']))
+            kodi.dialog_OK('command_edit_rom() Unknown command {}. '.format(mdic['command']) +
+                'Please report this bug.')
+            continue
+
+        # Save the database if requested.
+        if save_DB_flag:
+            log.debug('command_edit_rom() Saving launchers.xml database...')
+            db.write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
+        log.debug('command_edit_rom() End of loop...')
+    kodi.notify('Finish Edit ROM')
+    utils.refresh_container()
+
+def command_edit_rom_build_menu(cfg, categoryID):
+    # cat = cfg.categories[categoryID]
+    return [
+        ('EDIT_METADATA', 'Edit Metadata...'),
+    ]
+
 # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID
 # if we are editing a ROM in Favourites.
-def command_edit_rom(self, categoryID, launcherID, romID):
+def command_edit_rom_OLD(self, categoryID, launcherID, romID):
     if romID == UNKNOWN_ROMS_PARENT_ID:
         kodi.dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
         return

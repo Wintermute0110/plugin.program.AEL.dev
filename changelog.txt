@@ -95,9 +95,12 @@ DONE     [CORE] New ROM rendering engine. Copy feature from AML.
          Functions render_ROMs(), render_ROMs_filter(), render_ROMs_process(), render_ROMs_commit().
 
 WIP NOW  [CORE] Improved context menu handling.
-         -> [WIP] Start with the Edit Category context menu (easiest).
-         -> Then Edit ROM.
+         -> [DONE] Start with the Edit Category context menu (easiest).
+            This is a fixed menu (never changes).
+         -> [WIP] Then Edit ROM.
+            This is a dynamic menu (changes for standard ROMs, Favourite ROMs, etc.)
          -> Finally Edit Launcher (most complicated).
+            This is a dynamic menu?
          Copy feature from branch `old-master-chrisism-python2` or create a new non-recursive implementation.
 
 WIP      [CORE] Improved FileName class. All IO must be done using the FileName class.
