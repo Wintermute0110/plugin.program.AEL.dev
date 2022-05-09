@@ -102,7 +102,6 @@ def dialog_get_directory(d_heading, d_dir = ''):
         ret = xbmcgui.Dialog().browse(0, d_heading, '', defaultt = d_dir)
     else:
         ret =  xbmcgui.Dialog().browse(0, d_heading, '')
-
     return ret
 
 # Mask is supported only for files.
@@ -119,7 +118,6 @@ def dialog_get_file(d_heading, mask = '', default_file = ''):
         ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask)
     else:
         ret = xbmcgui.Dialog().browse(1, d_heading, '')
-
     return ret
 
 def dialog_get_image(d_heading, mask = '', default_file = ''):
@@ -131,7 +129,6 @@ def dialog_get_image(d_heading, mask = '', default_file = ''):
         ret = xbmcgui.Dialog().browse(2, d_heading, '', mask = mask)
     else:
         ret = xbmcgui.Dialog().browse(2, d_heading, '')
-
     return ret
 
 def dialog_get_wdirectory(d_heading):
@@ -147,7 +144,6 @@ def dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
         ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, enableMultiple = True)
     else:
         ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
-
     return ret
 
 # Displays a small box in the bottom right corner

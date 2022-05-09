@@ -265,11 +265,11 @@ def get_fs_encoding():
     return fs_encoding
 
 def copy_file(source_str, dest_str):
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         source_bytes = source_str.decode(utils_get_fs_encoding(), 'ignore')
         dest_bytes = dest_str.decode(utils_get_fs_encoding(), 'ignore')
         shutil.copy(source_bytes, dest_bytes)
-    elif ADDON_RUNNING_PYTHON_3:
+    elif const.ADDON_RUNNING_PYTHON_3:
         shutil.copy(source_str, dest_str)
     else:
         raise TypeError('Undefined Python runtime version.')

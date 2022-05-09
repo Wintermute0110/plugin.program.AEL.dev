@@ -2981,17 +2981,14 @@ def command_edit_category(cfg, categoryID):
             kodi.dialog_OK('Category "{}" status is now {}'.format(category['m_name'], finished_str))
 
         elif mdic['command'] == 'EXPORT_CATEGORY_XML':
-            data_dic = {
-                '' : '',
-            }
-            mgui_export_object_XML(cfg, category, data_dic)
+            mgui_export_object_XML(cfg, const.OBJECT_CATEGORY_ID, category)
 
         # Deleting a Category must exit the context menu!
         # If the deletion was sucessful the Category does not exit any more.
         elif mdic['command'] == 'DELETE_CATEGORY':
             if mgui_delete_category(cfg, category):
                 save_DB_flag = True
-                execute_menu = False
+                mdic['execute_menu'] = False
         else:
             log.error('command_edit_category() Unsupported command "{}"'.format(mdic['command']))
             kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(mdic['command']) +
@@ -3032,339 +3029,6 @@ def command_edit_category_build_menu(cfg, categoryID):
         ('EXPORT_CATEGORY_XML', 'Export Category XML configuration...'),
         ('DELETE_CATEGORY', 'Delete Category'),
     ]
-
-def command_edit_category_OLD(self, categoryID):
-    # --- Shows a select box with the options to edit ---
-    finished_str = 'Finished' if self.categories[categoryID]['finished'] == True else 'Unfinished'
-    sDialog = kodi.SelectDialog('Select action for Category {}'.format(self.categories[categoryID]['m_name']))
-    sDialog.setRows([
-        'Edit Metadata...',
-        'Edit Assets/Artwork...',
-        'Choose default Assets/Artwork...',
-        'Category status: {}'.format(finished_str),
-        'Export Category XML configuration...',
-        'Delete Category',
-    ])
-    mindex = sDialog.executeDialog()
-    if mindex is None: return
-
-    # --- Edit category metadata ---
-    if mindex == 0:
-        NFO_FN = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-        NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
-        plot_str = text_limit_string(self.categories[categoryID]['m_plot'], PLOT_STR_MAXSIZE)
-        sDialog = KodiSelectDialog('Edit Category Metadata')
-        sDialog.setRows([
-            'Edit Title: "{}"'.format(self.categories[categoryID]['m_name']),
-            'Edit Release Year: "{}"'.format(self.categories[categoryID]['m_year']),
-            'Edit Genre: "{}"'.format(self.categories[categoryID]['m_genre']),
-            'Edit Developer: "{}"'.format(self.categories[categoryID]['m_developer']),
-            'Edit Rating: "{}"'.format(self.categories[categoryID]['m_rating']),
-            'Edit Plot: "{}"'.format(plot_str),
-            'Import NFO file (default location, {})'.format(NFO_str),
-            'Import NFO file (browse NFO file)...',
-            'Save NFO file (default location)',
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        if mindex2 == 0:
-            save_DB = aux_edit_str(self.categories[categoryID], 'm_name', 'Category Title')
-            if not save_DB: return
-
-        elif mindex2 == 1:
-            save_DB = aux_edit_str(self.categories[categoryID], 'm_year', 'Category Release Year')
-            if not save_DB: return
-
-        # --- Edition of the category genre ---
-        elif mindex2 == 2:
-            save_DB = aux_edit_str(self.categories[categoryID], 'm_genre', 'Category Genre')
-            if not save_DB: return
-
-        # --- Edition of the category developer ---
-        elif mindex2 == 3:
-            save_DB = aux_edit_str(self.categories[categoryID], 'm_developer', 'Category Developer')
-            if not save_DB: return
-
-        # --- Edition of the category rating ---
-        elif mindex2 == 4:
-            sDialog = KodiSelectDialog('Edit Category Rating')
-            sDialog.setRows([
-                'Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
-                'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10',
-            ])
-            rating = sDialog.executeDialog()
-            if rating is None:
-                kodi_notify('Category rating not changed')
-                return
-            elif rating == 0:
-                self.categories[categoryID]['m_rating'] = ''
-                kodi_notify('Category Rating changed to Not Set')
-            elif rating >= 1 and rating <= 11:
-                self.categories[categoryID]['m_rating'] = '{}'.format(rating - 1)
-                kodi_notify('Category Rating is now {}'.format(self.categories[categoryID]['m_rating']))
-
-        # --- Edition of the plot (description) ---
-        elif mindex2 == 5:
-            save_DB = aux_edit_str(self.categories[categoryID], 'm_plot', 'Category Plot')
-            if not save_DB: return
-
-        # --- Import category metadata from NFO file (automatic) ---
-        elif mindex2 == 6:
-            NFO_FN = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-            save_DB = fs_import_category_NFO(NFO_FN, self.categories, categoryID)
-            if not save_DB: return
-            kodi_notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
-
-        # --- Browse for category NFO file ---
-        elif mindex2 == 7:
-            NFO_file_str = kodi_dialog_get_file('Select Category NFO file', '.nfo')
-            log.debug('_command_edit_category() kodi_dialog_get_file() -> "{}"'.format(NFO_file_str))
-            if not NFO_file_str: return
-            NFO_FN = utils.FileName(NFO_file_str)
-            if not NFO_FN.exists(): return
-            save_DB = fs_import_category_NFO(NFO_FN, self.categories, categoryID)
-            if not save_DB: return
-            kodi_notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
-
-        # --- Export category metadata to NFO file ---
-        elif mindex2 == 8:
-            NFO_FN = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-            # Returns False if exception happened. If an Exception happened function notifies
-            # user, so display nothing to not overwrite error notification.
-            success = fs_export_category_NFO(NFO_FN, self.categories[categoryID])
-            if not success: return
-            kodi_notify('Exported Category NFO file {}'.format(NFO_FN.getPath()))
-            return # No need to save categories/launchers
-
-    # --- Edit Category Assets/Artwork ---
-    elif mindex == 1:
-        category = self.categories[categoryID]
-
-        # Lisitem elements and label2. These are rendered as text.
-        label2_icon      = category['s_icon']      if category['s_icon']      else 'Not set'
-        label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
-        label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
-        label2_clearlogo = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'
-        label2_poster    = category['s_poster']    if category['s_poster']    else 'Not set'
-        label2_trailer   = category['s_trailer']   if category['s_trailer']   else 'Not set'
-
-        icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon...',      label2 = label2_icon)
-        fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart...',    label2 = label2_fanart)
-        banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner...',    label2 = label2_banner)
-        clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo...', label2 = label2_clearlogo)
-        poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster...',    label2 = label2_poster)
-        trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer...',   label2 = label2_trailer)
-
-        # Set listitem artwork with setArt.
-        img_icon         = category['s_icon']      if category['s_icon']      else 'DefaultAddonNone.png'
-        img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
-        img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
-        img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
-        img_poster       = category['s_poster']    if category['s_poster']    else 'DefaultAddonNone.png'
-        img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
-        icon_listitem.setArt({'icon' : img_icon})
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-        poster_listitem.setArt({'icon' : img_poster})
-        trailer_listitem.setArt({'icon' : img_trailer})
-
-        # Execute select dialog
-        sDialog = KodiSelectDialog('Edit Category Assets/Artwork', useDetails = True)
-        sDialog.setRows([
-            icon_listitem,
-            fanart_listitem,
-            banner_listitem,
-            clearlogo_listitem,
-            poster_listitem,
-            trailer_listitem,
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # --- Edit Assets ---
-        # If this function returns False no changes were made. No need to save categories XML
-        # and update container.
-        asset_kind = CATEGORY_ASSET_ID_LIST[mindex2]
-        if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
-
-    # --- Choose Category default icon/fanart/banner/poster/clearlogo ---
-    elif mindex == 2:
-        category = self.categories[categoryID]
-        # Label1 and label2
-        asset_icon_str      = assets_get_asset_name_str(category['default_icon'])
-        asset_fanart_str    = assets_get_asset_name_str(category['default_fanart'])
-        asset_banner_str    = assets_get_asset_name_str(category['default_banner'])
-        asset_clearlogo_str = assets_get_asset_name_str(category['default_clearlogo'])
-        asset_poster_str    = assets_get_asset_name_str(category['default_poster'])
-        label2_icon         = category[category['default_icon']]      if category[category['default_icon']]      else 'Not set'
-        label2_fanart       = category[category['default_fanart']]    if category[category['default_fanart']]    else 'Not set'
-        label2_banner       = category[category['default_banner']]    if category[category['default_banner']]    else 'Not set'
-        label2_clearlogo    = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'Not set'
-        label2_poster       = category[category['default_poster']]    if category[category['default_poster']]    else 'Not set'
-
-        icon_listitem = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {})'.format(asset_icon_str),
-            label2 = label2_icon)
-        fanart_listitem = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {})'.format(asset_fanart_str),
-            label2 = label2_fanart)
-        banner_listitem = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {})'.format(asset_banner_str),
-            label2 = label2_banner)
-        clearlogo_listitem = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {})'.format(asset_clearlogo_str),
-            label2 = label2_clearlogo)
-        poster_listitem = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {})'.format(asset_poster_str),
-            label2 = label2_poster)
-
-        # Asset image
-        img_icon      = category[category['default_icon']]      if category[category['default_icon']]      else 'DefaultAddonNone.png'
-        img_fanart    = category[category['default_fanart']]    if category[category['default_fanart']]    else 'DefaultAddonNone.png'
-        img_banner    = category[category['default_banner']]    if category[category['default_banner']]    else 'DefaultAddonNone.png'
-        img_clearlogo = category[category['default_clearlogo']] if category[category['default_clearlogo']] else 'DefaultAddonNone.png'
-        img_poster    = category[category['default_poster']]    if category[category['default_poster']]    else 'DefaultAddonNone.png'
-        icon_listitem.setArt({'icon' : img_icon})
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-        poster_listitem.setArt({'icon' : img_poster})
-
-        # Execute select dialog
-        sDialog = KodiSelectDialog('Edit Category default Assets/Artwork', useDetails = True)
-        sDialog.setRows([icon_listitem, fanart_listitem, banner_listitem, clearlogo_listitem, poster_listitem])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # Build ListItem of assets that can be mapped.
-        LI_list = [
-            xbmcgui.ListItem(label = 'Icon', label2 = category['s_icon'] if category['s_icon'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Fanart', label2 = category['s_fanart'] if category['s_fanart'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Banner', label2 = category['s_banner'] if category['s_banner'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Clearlogo', label2 = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Poster', label2 = category['s_poster'] if category['s_poster'] else 'Not set'),
-        ]
-        LI_list[0].setArt({'icon' : category['s_icon'] if category['s_icon'] else 'DefaultAddonNone.png'})
-        LI_list[1].setArt({'icon' : category['s_fanart'] if category['s_fanart'] else 'DefaultAddonNone.png'})
-        LI_list[2].setArt({'icon' : category['s_banner'] if category['s_banner'] else 'DefaultAddonNone.png'})
-        LI_list[3].setArt({'icon' : category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'})
-        LI_list[4].setArt({'icon' : category['s_poster'] if category['s_poster'] else 'DefaultAddonNone.png'})
-
-        # Krypton feature: User preselected item in select() dialog.
-        if mindex2 == 0:
-            p_idx = assets_get_Category_mapped_asset_idx(category, 'default_icon')
-            sDialog = KodiSelectDialog('Choose Category default asset for Icon', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(category, 'default_icon', type_s)
-            asset_name = assets_get_asset_name_str(category['default_icon'])
-            kodi_notify('Category Icon mapped to {}'.format(asset_name))
-        elif mindex2 == 1:
-            p_idx = assets_get_Category_mapped_asset_idx(category, 'default_fanart')
-            sDialog = KodiSelectDialog('Choose Category default asset for Fanart', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(category, 'default_fanart', type_s)
-            asset_name = assets_get_asset_name_str(category['default_fanart'])
-            kodi_notify('Category Fanart mapped to {}'.format(asset_name))
-        elif mindex2 == 2:
-            p_idx = assets_get_Category_mapped_asset_idx(category, 'default_banner')
-            sDialog = KodiSelectDialog('Choose Category default asset for Banner', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(category, 'default_banner', type_s)
-            asset_name = assets_get_asset_name_str(category['default_banner'])
-            kodi_notify('Category Banner mapped to {}'.format(asset_name))
-        elif mindex2 == 3:
-            p_idx = assets_get_Category_mapped_asset_idx(category, 'default_clearlogo')
-            sDialog = KodiSelectDialog('Choose Category default asset for Clearlogo', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(category, 'default_clearlogo', type_s)
-            asset_name = assets_get_asset_name_str(category['default_clearlogo'])
-            kodi_notify('Category Clearlogo mapped to {}'.format(asset_name))
-        elif mindex2 == 4:
-            p_idx = assets_get_Category_mapped_asset_idx(category, 'default_poster')
-            sDialog = KodiSelectDialog('Choose Category default asset for Poster', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(category, 'default_poster', type_s)
-            asset_name = assets_get_asset_name_str(category['default_poster'])
-            kodi_notify('Category Poster mapped to {}'.format(asset_name))
-
-    # --- Category Status (Finished or unfinished) ---
-    elif mindex == 3:
-        finished = self.categories[categoryID]['finished']
-        finished = False if finished else True
-        finished_display = 'Finished' if finished == True else 'Unfinished'
-        self.categories[categoryID]['finished'] = finished
-        kodi.dialog_OK('Category "{}" status is now {}'.format(self.categories[categoryID]['m_name'], finished_display))
-
-    # --- Export Launcher XML configuration ---
-    elif mindex == 4:
-        category = self.categories[categoryID]
-        category_fn_str = 'Category_' + text_title_to_filename_str(category['m_name']) + '.xml'
-        log.debug('_command_edit_category() Exporting Category configuration')
-        log.debug('_command_edit_category() Name     "{}"'.format(category['m_name']))
-        log.debug('_command_edit_category() ID       {}'.format(category['id']))
-        log.debug('_command_edit_category() l_fn_str "{}"'.format(category_fn_str))
-
-        # Ask user for a path to export the launcher configuration.
-        dir_path = kodi_dialog_get_directory('Select directory to export XML')
-        if not dir_path: return
-
-        # --- If XML exists then warn user about overwriting it ---
-        export_FN = utils.FileName(dir_path).pjoin(category_fn_str)
-        if export_FN.exists():
-            ret = kodi_dialog_yesno('Overwrite file {}?'.format(export_FN.getPath()))
-            if not ret:
-                kodi_notify_warn('Export of Category XML cancelled')
-                return
-
-        # If everything goes all right when exporting then the else clause is executed.
-        # If there is an error/exception then the exception handler prints a warning message
-        # inside the function autoconfig_export_category() and the sucess message is never
-        # printed. This is the standard way of handling error messages in AEL code.
-        try:
-            autoconfig_export_category(category, export_FN)
-        except KodiAddonError as ex:
-            kodi_notify_warn('{}'.format(ex))
-        else:
-            kodi_notify('Exported Category "{}" XML config'.format(category['m_name']))
-        # No need to update categories.xml and timestamps so return now.
-        return
-
-    # --- Remove category. Also removes launchers in that category ---
-    elif mindex == 5:
-        launcherID_list = []
-        category_name = self.categories[categoryID]['m_name']
-        for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
-            if self.launchers[launcherID]['categoryID'] != categoryID: continue
-            launcherID_list.append(launcherID)
-
-        if len(launcherID_list) > 0:
-            ret = kodi_dialog_yesno('Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
-                'Deleting it will also delete related launchers. ' +
-                'Are you sure you want to delete "{}"?'.format(category_name))
-            if not ret: return
-            log.info('Deleting category "{}" id {}'.format(category_name, categoryID))
-            # Delete launchers and ROM JSON/XML files associated with them
-            for launcherID in launcherID_list:
-                log.info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['m_name'], launcherID))
-                fs_unlink_ROMs_database(g_PATHS.ROMS_DIR, self.launchers[launcherID])
-                self.launchers.pop(launcherID)
-            # Delete category from database.
-            self.categories.pop(categoryID)
-        else:
-            ret = kodi_dialog_yesno('Category "{}" contains no launchers. '.format(category_name) +
-                'Are you sure you want to delete "{}"?'.format(category_name))
-            if not ret: return
-            log.info('Deleting category "{}" id {}'.format(category_name, categoryID))
-            log.info('Category has no launchers, so no launchers to delete.')
-            self.categories.pop(categoryID)
-        kodi_notify('Deleted category {}'.format(category_name))
-
-    # If this point is reached then changes to metadata/images were made.
-    # Save categories and update container contents so user sees those changes immediately.
-    fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
-    kodi_refresh_container()
 
 def command_edit_launcher(self, categoryID, launcherID):
     # Shows a select box with the options to edit
@@ -5991,25 +5655,29 @@ def mgui_edit_rating(edict, dic_field, prop_name):
     kodi_notify('{} is now {}'.format(prop_name, current_rating_str))
     return True
 
-def mgui_export_object_XML(cfg, data_dic):
-    category_data = category.get_data_dic()
-    category_fn_str = 'Category_' + text_title_to_filename_str(category.get_name()) + '.xml'
-    log_debug('m_subcommand_export_category_xml() Exporting Category configuration')
-    log_debug('m_subcommand_export_category_xml() Name     "{}"'.format(category.get_name()))
-    log_debug('m_subcommand_export_category_xml() ID       {}'.format(category.get_id()))
-    log_debug('m_subcommand_export_category_xml() l_fn_str "{}"'.format(category_fn_str))
+# This code is based on AEL old master branch.
+def mgui_export_object_XML(cfg, object_ID, edict):
+    if object_ID == const.OBJECT_CATEGORY_ID:
+        object_name = 'Category'
+        category_fn_str = 'Category_' + misc.title_to_filename_str(edict['m_name']) + '.xml'
+        export_fname = xmlconf.export_category
+    else:
+        raise TypeError
+    log.debug('mgui_export_object_XML() Exporting {} configuration'.format(object_name))
+    log.debug('mgui_export_object_XML() Name     "{}"'.format(edict['m_name']))
+    log.debug('mgui_export_object_XML() ID       "{}"'.format(edict['id']))
+    log.debug('mgui_export_object_XML() l_fn_str "{}"'.format(category_fn_str))
 
     # --- Ask user for a path to export the launcher configuration ---
-    dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files', 
-        '', False, False).decode('utf-8')
+    dir_path = kodi.dialog_get_directory('Select directory to export XML')
     if not dir_path: return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = FileNameFactory.create(dir_path).pjoin(category_fn_str)
+    export_FN = utils.FileName(dir_path).pjoin(category_fn_str)
     if export_FN.exists():
-        ret = kodi_dialog_yesno('Overwrite file {}?'.format(export_FN.getPath()))
+        ret = kodi.dialog_yesno('Overwrite file {}?'.format(export_FN.getPath()))
         if not ret:
-            kodi_notify_warn('Export of Category XML cancelled')
+            kodi.notify_warn('Export of Category XML cancelled')
             return
 
     # If everything goes all right when exporting then the else clause is executed.
@@ -6017,11 +5685,12 @@ def mgui_export_object_XML(cfg, data_dic):
     # inside the function autoconfig_export_category() and the sucess message is never
     # printed. This is the standard way of handling error messages in AEL code.
     try:
-        autoconfig_export_category(category_data, export_FN)
-    except AddonError as E:
-        kodi_notify_warn('{}'.format(E))
+        export_fname(edict, export_FN)
+    except Exception as ex:
+        log.error('Exception in export_fname() "{}"'.format(ex))
+        kodi.notify_warn('{}'.format(ex))
     else:
-        kodi_notify('Exported Category "{}" XML config'.format(category.get_name()))
+        kodi.notify('Exported {} "{}" XML config'.format(object_name, edict['m_name']))
 
 # Open the subcontextmenu "Edit Assets/Artwork" 
 # --- Return value ---
@@ -6108,12 +5777,12 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
     # --- Show image editing options ---
     # Scrapers only supported for ROMs (for the moment)
     common_menu_list = [
-        'Select local {}'.format(AInfo.kind_str),
-        'Import local {} (copy and rename)'.format(AInfo.kind_str),
+        'Select local {}'.format(AInfo.type_str),
+        'Import local {} (copy and rename)'.format(AInfo.type_str),
         'Unset artwork/asset',
     ]
     ml = common_menu_list + scraper_menu_list
-    sDialog = kodi.SelectDialog('Change {} {}'.format(AInfo.name, AInfo.kind_str), ml)
+    sDialog = kodi.SelectDialog('Change {} {}'.format(AInfo.name, AInfo.type_str), ml)
     mindex = sDialog.executeDialog()
     if mindex is None: return False
 
@@ -6122,7 +5791,7 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         log.debug('mgui_edit_asset() Linking local image...')
         img_current_dir = utils.FileName(edict[AInfo.key]).getDir() if edict[AInfo.key] else ''
         log.debug('mgui_edit_asset() Initial path "{}"'.format(img_current_dir))
-        message = 'Select {} {}'.format(AInfo.name, AInfo.kind_str)
+        message = 'Select {} {}'.format(AInfo.name, AInfo.type_str)
         if AInfo.id == const.ASSET_MANUAL_ID or AInfo.id == const.ASSET_TRAILER_ID:
             img_fname_str = kodi.dialog_get_file(message, AInfo.exts_dialog, img_current_dir)
         else:
@@ -6147,7 +5816,7 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         # If assets exists start file dialog from current asset directory
         img_current_dir = utils.FileName(edict[AInfo.key]).getDir() if edict[AInfo.key] else ''
         log.debug('mgui_edit_asset() Initial path "{}"'.format(img_current_dir))
-        message = 'Select {} {}'.format(AInfo.name, AInfo.kind_str)
+        message = 'Select {} {}'.format(AInfo.name, AInfo.type_str)
         if AInfo.id == const.ASSET_MANUAL_ID or AInfo.id == const.ASSET_TRAILER_ID:
             img_fname_str = kodi.dialog_get_file(message, AInfo.exts_dialog, img_current_dir)
         else:
@@ -6184,7 +5853,7 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         log.info('mgui_edit_asset() Into         "{}"'.format(dest_img_FN.getOriginalPath()))
         log.info('mgui_edit_asset() Selected {} {} "{}"'.format(afn['name'],
             AInfo.name, dest_img_FN.getOriginalPath()))
-        utils_update_file_mtime(dest_img_FN.getPath())
+        utils.update_file_mtime(dest_img_FN.getPath())
 
     # --- Unset asset ---
     elif mindex == 2:
@@ -6363,15 +6032,14 @@ def mgui_delete_category(cfg, category):
             log.info('Deleting linked launcher "{}" id {}'.format(laun_name, launcherID))
             db.unlink_ROMs_database(cfg.ROMS_DIR, cfg.launchers[launcherID])
             cfg.launchers.pop(launcherID)
-        # Delete category from database.
-        cfg.categories.pop(categoryID)
     else:
         ret = kodi.dialog_yesno('Category "{}" has no launchers. '.format(cat_name) +
             'Are you sure you want to delete "{}"?'.format(cat_name))
         if not ret: return False
         log.info('Deleting category "{}" id {}'.format(cat_name, categoryID))
         log.info('Category has no launchers, so no launchers to delete.')
-        cfg.categories.pop(categoryID)
+    # Delete category from database.
+    cfg.categories.pop(categoryID)
     kodi.notify('Deleted category {}'.format(cat_name))
     return True
 
