@@ -28,8 +28,7 @@ import os
 # Output: ['png', 'jpg', 'PNG', 'JPG']
 def get_filesearch_extension_list(exts):
     ext_list = list(exts)
-    for ext in exts:
-        ext_list.append(ext.upper())
+    for ext in exts: ext_list.append(ext.upper())
     return ext_list
 
 # Gets extensions to be used in Kodi file dialog.
@@ -37,8 +36,7 @@ def get_filesearch_extension_list(exts):
 # Output: '.png|.jpg'
 def get_dialog_extension_list(exts):
     ext_string = ''
-    for ext in exts:
-        ext_string += '.' + ext + '|'
+    for ext in exts: ext_string += '.' + ext + '|'
     # Remove trailing '|' character
     ext_string = ext_string[:-1]
     return ext_string
@@ -48,8 +46,7 @@ def get_dialog_extension_list(exts):
 # Output: '(png|jpg)'
 def get_regexp_extension_list(exts):
     ext_string = ''
-    for ext in exts:
-        ext_string += ext + '|'
+    for ext in exts: ext_string += ext + '|'
     # Remove trailing '|' character
     ext_string = ext_string[:-1]
     return '(' + ext_string + ')'
@@ -57,81 +54,50 @@ def get_regexp_extension_list(exts):
 # -------------------------------------------------------------------------------------------------
 # Asset functions
 # -------------------------------------------------------------------------------------------------
-def get_default_artwork_dir(asset_ID, launcher):
-    if launcher['platform'] == 'MAME':
-        if   asset_ID == ASSET_FANART_ID: return 'fanarts'
-        elif asset_ID == ASSET_BANNER_ID: return 'marquees'
-        elif asset_ID == ASSET_CLEARLOGO_ID: return 'clearlogos'
-        elif asset_ID == ASSET_TITLE_ID: return 'titles'
-        elif asset_ID == ASSET_SNAP_ID: return 'snaps'
-        elif asset_ID == ASSET_BOXFRONT_ID: return 'cabinets'
-        elif asset_ID == ASSET_BOXBACK_ID: return 'cpanels'
-        elif asset_ID == ASSET_3DBOX_ID: return '3dboxes'
-        elif asset_ID == ASSET_CARTRIDGE_ID: return 'PCBs'
-        elif asset_ID == ASSET_FLYER_ID: return 'flyers'
-        elif asset_ID == ASSET_MAP_ID: return 'maps'
-        elif asset_ID == ASSET_MANUAL_ID: return 'manuals'
-        elif asset_ID == ASSET_TRAILER_ID: return 'trailers'
-        else: raise ValueError
-    else:
-        if   asset_ID == ASSET_FANART_ID: return 'fanarts'
-        elif asset_ID == ASSET_BANNER_ID: return 'banners'
-        elif asset_ID == ASSET_CLEARLOGO_ID: return 'clearlogos'
-        elif asset_ID == ASSET_TITLE_ID: return 'titles'
-        elif asset_ID == ASSET_SNAP_ID: return 'snaps'
-        elif asset_ID == ASSET_BOXFRONT_ID: return 'boxfronts'
-        elif asset_ID == ASSET_BOXBACK_ID: return 'boxbacks'
-        elif asset_ID == ASSET_3DBOX_ID: return '3dboxes'
-        elif asset_ID == ASSET_CARTRIDGE_ID: return 'cartridges'
-        elif asset_ID == ASSET_FLYER_ID: return 'flyers'
-        elif asset_ID == ASSET_MAP_ID: return 'maps'
-        elif asset_ID == ASSET_MANUAL_ID: return 'manuals'
-        elif asset_ID == ASSET_TRAILER_ID: return 'trailers'
-        else: raise ValueError
-
-# Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
-# struct.
+# Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher struct.
+# Used at launcher creation time (wizard and XML configuration import).
 def init_asset_dir(assets_path_FName, launcher):
     log.debug('init_asset_dir() asset_path "{}"'.format(assets_path_FName.getPath()))
 
     # --- Fill in launcher fields and create asset directories ---
     if launcher['platform'] == 'MAME':
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
+        create_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        create_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
+        create_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
+        create_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+        create_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
+        create_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
+        create_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
+        create_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
+        create_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
+        create_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
+        create_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
+        create_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
+        create_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
     else:
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
+        create_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        create_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
+        create_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
+        create_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+        create_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
+        create_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
+        create_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
+        create_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
+        create_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
+        create_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
+        create_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
+        create_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
+        create_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
-# Create asset path and assign it to Launcher dictionary.
-def parse_asset_dir(launcher, assets_path_FName, key, pathName):
+# Create asset directory and assign it to Launcher dictionary.
+def create_asset_dir(launcher, assets_path_FName, key, pathName):
     subPath = assets_path_FName.pjoin(pathName)
     launcher[key] = subPath.getOriginalPath()
     log.debug('parse_asset_dir() Creating dir "{}"'.format(subPath.getPath()))
     subPath.makedirs()
 
 # Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
+# Used when rendering Categories/Launchers.
 def get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
     return object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
@@ -141,99 +107,6 @@ def get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''
     conf_asset_key = launcher[object_key]
     return rom[conf_asset_key] if rom[conf_asset_key] else default_asset
 
-# Gets a human readable name string for the asset field name.
-def get_asset_name_str(default_asset):
-    asset_name_str = ''
-
-    # ROMs
-    if   default_asset == 's_title':     asset_name_str = 'Title'
-    elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
-    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
-    elif default_asset == 's_map':       asset_name_str = 'Map'
-    elif default_asset == 's_manual':    asset_name_str = 'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    # Categories/Launchers
-    elif default_asset == 's_icon':       asset_name_str = 'Icon'
-    elif default_asset == 's_poster':     asset_name_str = 'Poster'
-    elif default_asset == 's_controller': asset_name_str = 'Controller'
-    else:
-        kodi_notify_warn('Wrong asset key {}'.format(default_asset))
-        log.error('get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
-
-    return asset_name_str
-
-# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-def choose_Category_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_icon'
-    elif index == 1: dict_object[key] = 's_fanart'
-    elif index == 2: dict_object[key] = 's_banner'
-    elif index == 3: dict_object[key] = 's_poster'
-    elif index == 4: dict_object[key] = 's_clearlogo'
-
-# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-def get_Category_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_icon':       index = 0
-    elif dict_object[key] == 's_fanart':     index = 1
-    elif dict_object[key] == 's_banner':     index = 2
-    elif dict_object[key] == 's_poster':     index = 3
-    elif dict_object[key] == 's_clearlogo':  index = 4
-    else:                                    index = 0
-    return index
-
-# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-def choose_Launcher_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_icon'
-    elif index == 1: dict_object[key] = 's_fanart'
-    elif index == 2: dict_object[key] = 's_banner'
-    elif index == 3: dict_object[key] = 's_poster'
-    elif index == 4: dict_object[key] = 's_clearlogo'
-    elif index == 5: dict_object[key] = 's_controller'
-
-# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-def get_Launcher_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_icon':       index = 0
-    elif dict_object[key] == 's_fanart':     index = 1
-    elif dict_object[key] == 's_banner':     index = 2
-    elif dict_object[key] == 's_poster':     index = 3
-    elif dict_object[key] == 's_clearlogo':  index = 4
-    elif dict_object[key] == 's_controller': index = 5
-    else:                                    index = 0
-    return index
-
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-def choose_ROM_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_title'
-    elif index == 1: dict_object[key] = 's_snap'
-    elif index == 2: dict_object[key] = 's_boxfront'
-    elif index == 3: dict_object[key] = 's_boxback'
-    elif index == 4: dict_object[key] = 's_cartridge'
-    elif index == 5: dict_object[key] = 's_fanart'
-    elif index == 6: dict_object[key] = 's_banner'
-    elif index == 7: dict_object[key] = 's_clearlogo'
-    elif index == 8: dict_object[key] = 's_flyer'
-    elif index == 9: dict_object[key] = 's_map'
-
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-def get_ROM_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_title':     index = 0
-    elif dict_object[key] == 's_snap':      index = 1
-    elif dict_object[key] == 's_boxfront':  index = 2
-    elif dict_object[key] == 's_boxback':   index = 3
-    elif dict_object[key] == 's_cartridge': index = 4
-    elif dict_object[key] == 's_fanart':    index = 5
-    elif dict_object[key] == 's_banner':    index = 6
-    elif dict_object[key] == 's_clearlogo': index = 7
-    elif dict_object[key] == 's_flyer':     index = 8
-    elif dict_object[key] == 's_map':       index = 9
-    else:                                   index = 0
-    return index
-
 # Scheme DIR uses different directories for artwork and no sufixes.
 #
 # Assets    -> Assets info object
@@ -241,8 +114,7 @@ def get_ROM_mapped_asset_idx(dict_object, key):
 # ROM       -> ROM name FileName object
 #
 # Returns a FileName object
-def get_path_noext_DIR(Asset, AssetPath, ROM):
-    return AssetPath.pjoin(ROM.getBaseNoExt())
+def get_path_noext_DIR(Asset, AssetPath, ROM): return AssetPath.pjoin(ROM.getBaseNoExt())
 
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
 # Name example: "Sonic The Hedgehog (Europe)_a3e_title"
@@ -442,16 +314,18 @@ def assets_get_ROM_asset_path(launcher):
     log.debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{}"'.format(path_first_asset_FN.getOriginalPath()))
     log.debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{}"'.format(path_first_asset_FN.getBase()))
     log.debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{}"'.format(ROM_asset_path_FN.getDir()))
-    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-        AInfo = assets_get_info_scheme(asset_kind)
+    for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+        AInfo = assets_get_info_scheme(asset_ID)
         # If asset path is unconfigured consider it as common so a default path will
         # be created when importing.
         if not launcher[AInfo.path_key]:
             duplicated_bool_list[i] = True
             continue
         # If asset path is not the standard one force return of ''.
-        current_path_FN = FileName(launcher[AInfo.path_key])
-        default_dir = assets_get_default_artwork_dir(AInfo.ID, launcher)
+        current_path_FN = utils.FileName(launcher[AInfo.path_key])
+        # default_dir = assets_get_default_artwork_dir(AInfo.ID, launcher)
+        # default_dir = AInfo.subdir_MAME if launcher['platform'] == 'MAME' else AInfo.subdir
+        default_dir = AInfo.subdir_MAME if platforms.is_arcade_launcher(launcher) else AInfo.subdir
         if default_dir != current_path_FN.getBase():
             duplicated_bool_list[i] = False
             continue
@@ -510,8 +384,12 @@ class AssetInfo:
         self.rom_default_key = ''
         self.name            = ''
         self.name_plural     = ''
+        # Asset subdirectory name. Only used for ROMs?
+        self.subdir          = ''
+        # Asset subdirectory name for MAME (Arcade) platform. Only used for ROMs?
+        self.subdir_MAME     = ''
         self.fname_infix     = '' # Used only when searching assets when importing XML
-        self.kind_str        = ''
+        self.type_str        = '' # Image, Video, etc.
         self.exts            = []
         self.exts_dialog     = []
         self.path_key        = ''
@@ -533,8 +411,10 @@ a_icon.default_key     = 'default_icon'
 a_icon.rom_default_key = 'roms_default_icon'
 a_icon.name            = 'Icon'
 a_icon.name_plural     = 'Icons'
+a_icon.subdir          = 'icons'
+a_icon.subdir_MAME     = 'icons'
 a_icon.fname_infix     = 'icon'
-a_icon.kind_str        = 'image'
+a_icon.type_str        = 'image'
 a_icon.exts            = cached_filesearch_extension_list
 a_icon.exts_dialog     = cached_dialog_extension_list
 a_icon.path_key        = 'path_icon'
@@ -545,39 +425,44 @@ a_fanart.key             = 's_fanart'
 a_fanart.default_key     = 'default_fanart'
 a_fanart.rom_default_key = 'roms_default_fanart'
 a_fanart.name            = 'Fanart'
-a_fanart.plural          = 'Fanarts'
+a_fanart.name_plural     = 'Fanarts'
+a_fanart.subdir          = 'fanarts'
+a_fanart.subdir_MAME     = 'fanarts'
 a_fanart.fname_infix     = 'fanart'
-a_fanart.kind_str        = 'image'
+a_fanart.type_str        = 'image'
 a_fanart.exts            = cached_filesearch_extension_list
 a_fanart.exts_dialog     = cached_dialog_extension_list
 a_fanart.path_key        = 'path_fanart'
 
 a_banner = AssetInfo()
-a_banner.id                = const.ASSET_BANNER_ID
-a_banner.key               = 's_banner'
-a_banner.default_key       = 'default_banner'
-a_banner.rom_default_key   = 'roms_default_banner'
-a_banner.name              = 'Banner'
-a_banner.description       = 'Banner / Marquee'
-a_banner.plural            = 'Banners'
-a_banner.fname_infix       = 'banner'
-a_banner.kind_str          = 'image'
-a_banner.exts              = cached_filesearch_extension_list
-a_banner.exts_dialog       = cached_dialog_extension_list
-a_banner.path_key          = 'path_banner'
+a_banner.id              = const.ASSET_BANNER_ID
+a_banner.key             = 's_banner'
+a_banner.default_key     = 'default_banner'
+a_banner.rom_default_key = 'roms_default_banner'
+a_banner.name            = 'Banner / Marquee'
+a_banner.name_plural     = 'Banners / Marquees'
+a_banner.subdir          = 'banners'
+a_banner.subdir_MAME     = 'marquees'
+a_banner.fname_infix     = 'banner'
+a_banner.type_str        = 'image'
+a_banner.exts            = cached_filesearch_extension_list
+a_banner.exts_dialog     = cached_dialog_extension_list
+a_banner.path_key        = 'path_banner'
 
 a_poster = AssetInfo()        
-a_poster.id                = const.ASSET_POSTER_ID
-a_poster.key               = 's_poster'
-a_poster.default_key       = 'default_poster'
-a_poster.rom_default_key   = 'roms_default_poster'
-a_poster.name              = 'Poster'
-a_poster.plural            = 'Posters'
-a_poster.fname_infix       = 'poster'
-a_poster.kind_str          = 'image'
-a_poster.exts              = cached_filesearch_extension_list
-a_poster.exts_dialog       = cached_dialog_extension_list
-a_poster.path_key          = 'path_poster'
+a_poster.id              = const.ASSET_POSTER_ID
+a_poster.key             = 's_poster'
+a_poster.default_key     = 'default_poster'
+a_poster.rom_default_key = 'roms_default_poster'
+a_poster.name            = 'Poster / Flyer'
+a_poster.name_plural     = 'Posters / Flyers'
+a_poster.subdir          = 'posters'
+a_poster.subdir_MAME     = 'flyers'
+a_poster.fname_infix     = 'poster'
+a_poster.type_str        = 'image'
+a_poster.exts            = cached_filesearch_extension_list
+a_poster.exts_dialog     = cached_dialog_extension_list
+a_poster.path_key        = 'path_poster'
 
 a_clearlogo = AssetInfo()
 a_clearlogo.id              = const.ASSET_CLEARLOGO_ID
@@ -585,126 +470,158 @@ a_clearlogo.key             = 's_clearlogo'
 a_clearlogo.default_key     = 'default_clearlogo'
 a_clearlogo.rom_default_key = 'roms_default_clearlogo'
 a_clearlogo.name            = 'Clearlogo'
-a_clearlogo.plural          = 'Clearlogos'
+a_clearlogo.name_plural     = 'Clearlogos'
+a_clearlogo.subdir          = 'clearlogos'
+a_clearlogo.subdir_MAME     = 'clearlogos'
 a_clearlogo.fname_infix     = 'clearlogo'
-a_clearlogo.kind_str        = 'image'
+a_clearlogo.type_str        = 'image'
 a_clearlogo.exts            = cached_filesearch_extension_list
 a_clearlogo.exts_dialog     = cached_dialog_extension_list
 a_clearlogo.path_key        = 'path_clearlogo'
 
 a_controller = AssetInfo()
-a_controller.id             = const.ASSET_CONTROLLER_ID
-a_controller.key            = 's_controller'
-a_controller.name           = 'Controller'
-a_controller.plural         = 'Controllers'
-a_controller.fname_infix    = 'controller'
-a_controller.kind_str       = 'image'
-a_controller.exts           = cached_filesearch_extension_list
-a_controller.exts_dialog    = cached_dialog_extension_list
-a_controller.path_key       = 'path_controller'
+a_controller.id          = const.ASSET_CONTROLLER_ID
+a_controller.key         = 's_controller'
+a_controller.name        = 'Controller'
+a_controller.name_plural = 'Controllers'
+a_controller.subdir      = 'controllers'
+a_controller.subdir_MAME = 'controllers'
+a_controller.fname_infix = 'controller'
+a_controller.type_str    = 'image'
+a_controller.exts        = cached_filesearch_extension_list
+a_controller.exts_dialog = cached_dialog_extension_list
+a_controller.path_key    = 'path_controller'
 
 a_trailer = AssetInfo()
-a_trailer.id                = const.ASSET_TRAILER_ID
-a_trailer.key               = 's_trailer'
-a_trailer.name              = 'Trailer'
-a_trailer.plural            = 'Trailers'
-a_trailer.fname_infix       = 'trailer'
-a_trailer.kind_str          = 'video'
-a_trailer.exts              = get_filesearch_extension_list(const.TRAILER_EXTENSION_LIST)
-a_trailer.exts_dialog       = get_dialog_extension_list(const.TRAILER_EXTENSION_LIST)
-a_trailer.path_key          = 'path_trailer'
+a_trailer.id          = const.ASSET_TRAILER_ID
+a_trailer.key         = 's_trailer'
+a_trailer.name        = 'Trailer'
+a_trailer.name_plural = 'Trailers'
+a_trailer.subdir      = 'trailers'
+a_trailer.subdir_MAME = 'trailers'
+a_trailer.fname_infix = 'trailer'
+a_trailer.type_str    = 'video'
+a_trailer.exts        = get_filesearch_extension_list(const.TRAILER_EXTENSION_LIST)
+a_trailer.exts_dialog = get_dialog_extension_list(const.TRAILER_EXTENSION_LIST)
+a_trailer.path_key    = 'path_trailer'
 
 a_title = AssetInfo()
-a_title.id                  = const.ASSET_TITLE_ID
-a_title.key                 = 's_title'
-a_title.name                = 'Title'
-a_title.plural              = 'Titles'
-a_title.fname_infix         = 'title'
-a_title.kind_str            = 'image'
-a_title.exts                = cached_filesearch_extension_list
-a_title.exts_dialog         = cached_dialog_extension_list
-a_title.path_key            = 'path_title'
+a_title.id          = const.ASSET_TITLE_ID
+a_title.key         = 's_title'
+a_title.name        = 'Title'
+a_title.name_plural = 'Titles'
+a_title.subdir      = 'titles'
+a_title.subdir_MAME = 'titles'
+a_title.fname_infix = 'title'
+a_title.type_str    = 'image'
+a_title.exts        = cached_filesearch_extension_list
+a_title.exts_dialog = cached_dialog_extension_list
+a_title.path_key    = 'path_title'
 
 a_snap = AssetInfo()
-a_snap.id                   = const.ASSET_SNAP_ID
-a_snap.key                  = 's_snap'
-a_snap.name                 = 'Snap'
-a_snap.plural               = 'Snaps'
-a_snap.fname_infix          = 'snap'
-a_snap.kind_str             = 'image'
-a_snap.exts                 = cached_filesearch_extension_list
-a_snap.exts_dialog          = cached_dialog_extension_list
-a_snap.path_key             = 'path_snap'
+a_snap.id          = const.ASSET_SNAP_ID
+a_snap.key         = 's_snap'
+a_snap.name        = 'Snap'
+a_snap.name_plural = 'Snaps'
+a_snap.subdir      = 'snaps'
+a_snap.subdir_MAME = 'snaps'
+a_snap.fname_infix = 'snap'
+a_snap.type_str    = 'image'
+a_snap.exts        = cached_filesearch_extension_list
+a_snap.exts_dialog = cached_dialog_extension_list
+a_snap.path_key    = 'path_snap'
 
 a_boxfront = AssetInfo()
-a_boxfront.id               = const.ASSET_BOXFRONT_ID
-a_boxfront.key              = 's_boxfront'
-a_boxfront.name             = 'Boxfront'
-a_boxfront.description      = 'Boxfront / Cabinet'
-a_boxfront.plural           = 'Boxfronts'
-a_boxfront.fname_infix      = 'boxfront'
-a_boxfront.kind_str         = 'image'
-a_boxfront.exts             = cached_filesearch_extension_list
-a_boxfront.exts_dialog      = cached_dialog_extension_list
-a_boxfront.path_key         = 'path_boxfront'
+a_boxfront.id          = const.ASSET_BOXFRONT_ID
+a_boxfront.key         = 's_boxfront'
+a_boxfront.name        = 'Boxfront / Cabinet'
+a_boxfront.name_plural = 'Boxfronts / Cabinets'
+a_boxfront.subdir      = 'boxfronts'
+a_boxfront.subdir_MAME = 'cabinets'
+a_boxfront.fname_infix = 'boxfront'
+a_boxfront.type_str    = 'image'
+a_boxfront.exts        = cached_filesearch_extension_list
+a_boxfront.exts_dialog = cached_dialog_extension_list
+a_boxfront.path_key    = 'path_boxfront'
 
 a_boxback = AssetInfo()
-a_boxback.id                = const.ASSET_BOXBACK_ID
-a_boxback.key               = 's_boxback'
-a_boxback.name              = 'Boxback'
-a_boxback.description       = 'Boxback / CPanel'
-a_boxback.plural            = 'Boxbacks'
-a_boxback.fname_infix       = 'boxback'
-a_boxback.kind_str          = 'image'
-a_boxback.exts              = cached_filesearch_extension_list
-a_boxback.exts_dialog       = cached_dialog_extension_list
-a_boxback.path_key          = 'path_boxback'
+a_boxback.id          = const.ASSET_BOXBACK_ID
+a_boxback.key         = 's_boxback'
+a_boxback.name        = 'Boxback / CPanel'
+a_boxback.name_plural = 'Boxbacks / CPanels'
+a_boxback.subdir      = 'boxbacks'
+a_boxback.subdir_MAME = 'cpanels'
+a_boxback.fname_infix = 'boxback'
+a_boxback.type_str    = 'image'
+a_boxback.exts        = cached_filesearch_extension_list
+a_boxback.exts_dialog = cached_dialog_extension_list
+a_boxback.path_key    = 'path_boxback'
+
+a_3dbox = AssetInfo()
+a_3dbox.id          = const.ASSET_3DBOX_ID
+a_3dbox.key         = 's_3dbox'
+a_3dbox.name        = '3D Box'
+a_3dbox.name_plural = '3D Boxes'
+a_3dbox.subdir      = '3dboxes'
+a_3dbox.subdir_MAME = '3dboxes'
+a_3dbox.fname_infix = '3dbox'
+a_3dbox.type_str    = 'image'
+a_3dbox.exts        = cached_filesearch_extension_list
+a_3dbox.exts_dialog = cached_dialog_extension_list
+a_3dbox.path_key    = 'path_3dbox'
 
 a_cartridge = AssetInfo()
-a_cartridge.id              = const.ASSET_CARTRIDGE_ID
-a_cartridge.key             = 's_cartridge'
-a_cartridge.name            = 'Cartridge'
-a_cartridge.description     = 'Cartridge / PCB'
-a_cartridge.plural          = 'Cartridges'
-a_cartridge.fname_infix     = 'cartridge'
-a_cartridge.kind_str        = 'image'
-a_cartridge.exts            = cached_filesearch_extension_list
-a_cartridge.exts_dialog     = cached_dialog_extension_list
-a_cartridge.path_key        = 'path_cartridge'
+a_cartridge.id          = const.ASSET_CARTRIDGE_ID
+a_cartridge.key         = 's_cartridge'
+a_cartridge.name        = 'Cartridge / PCB'
+a_cartridge.name_plural = 'Cartridges / PCBs'
+a_cartridge.subdir      = 'cartridges'
+a_cartridge.subdir_MAME = 'PCBs'
+a_cartridge.fname_infix = 'cartridge'
+a_cartridge.type_str    = 'image'
+a_cartridge.exts        = cached_filesearch_extension_list
+a_cartridge.exts_dialog = cached_dialog_extension_list
+a_cartridge.path_key    = 'path_cartridge'
 
 a_flyer = AssetInfo()
-a_flyer.id                  = const.ASSET_FLYER_ID
-a_flyer.key                 = 's_flyer'
-a_flyer.name                = 'Flyer'
-a_flyer.plural              = 'Flyers'
-a_flyer.fname_infix         = 'flyer'
-a_flyer.kind_str            = 'image'
-a_flyer.fname_infix         = 'poster'
-a_flyer.exts                = cached_filesearch_extension_list
-a_flyer.exts_dialog         = cached_dialog_extension_list
-a_flyer.path_key            = 'path_flyer'
+a_flyer.id          = const.ASSET_FLYER_ID
+a_flyer.key         = 's_flyer'
+a_flyer.name        = 'Flyer'
+a_flyer.name_plural = 'Flyers'
+a_flyer.subdir      = 'flyers'
+a_flyer.subdir_MAME = 'flyers'
+a_flyer.fname_infix = 'flyer'
+a_flyer.type_str    = 'image'
+a_flyer.fname_infix = 'poster'
+a_flyer.exts        = cached_filesearch_extension_list
+a_flyer.exts_dialog = cached_dialog_extension_list
+a_flyer.path_key    = 'path_flyer'
 
 a_map = AssetInfo()
-a_map.id                    = const.ASSET_MAP_ID
-a_map.key                   = 's_map'
-a_map.name                  = 'Map'
-a_map.plural                = 'Maps'
-a_map.fname_infix           = 'map'
-a_map.kind_str              = 'image'
-a_map.exts                  = cached_filesearch_extension_list
-a_map.exts_dialog           = cached_dialog_extension_list
-a_map.path_key              = 'path_map'
+a_map.id          = const.ASSET_MAP_ID
+a_map.key         = 's_map'
+a_map.name        = 'Map'
+a_map.name_plural = 'Maps'
+a_map.subdir      = 'maps'
+a_map.subdir_MAME = 'maps'
+a_map.fname_infix = 'map'
+a_map.type_str    = 'image'
+a_map.exts        = cached_filesearch_extension_list
+a_map.exts_dialog = cached_dialog_extension_list
+a_map.path_key    = 'path_map'
 
 a_manual = AssetInfo()
-a_manual.id                 = const.ASSET_MANUAL_ID
-a_manual.key                = 's_manual'
-a_manual.name               = 'Manual'
-a_manual.plural             = 'Manuals'
-a_manual.fname_infix        = 'manual'
-a_manual.kind_str           = 'manual'
-a_manual.exts               = get_filesearch_extension_list(const.MANUAL_EXTENSION_LIST)
-a_manual.exts_dialog        = get_dialog_extension_list(const.MANUAL_EXTENSION_LIST)
-a_manual.path_key           = 'path_manual'
+a_manual.id          = const.ASSET_MANUAL_ID
+a_manual.key         = 's_manual'
+a_manual.name        = 'Manual'
+a_manual.name_plural = 'Manuals'
+a_manual.subdir      = 'manuals'
+a_manual.subdir_MAME = 'manuals'
+a_manual.fname_infix = 'manual'
+a_manual.type_str    = 'manual'
+a_manual.exts        = get_filesearch_extension_list(const.MANUAL_EXTENSION_LIST)
+a_manual.exts_dialog = get_dialog_extension_list(const.MANUAL_EXTENSION_LIST)
+a_manual.path_key    = 'path_manual'
 
 # Get AssetInfo object by asset ID.
 ASSET_INFO_DICT = {
@@ -719,6 +636,7 @@ ASSET_INFO_DICT = {
     const.ASSET_SNAP_ID       : a_snap,
     const.ASSET_BOXFRONT_ID   : a_boxfront,
     const.ASSET_BOXBACK_ID    : a_boxback,
+    const.ASSET_3DBOX_ID      : a_3dbox,
     const.ASSET_CARTRIDGE_ID  : a_cartridge,
     const.ASSET_FLYER_ID      : a_flyer,
     const.ASSET_MAP_ID        : a_map,
@@ -738,6 +656,7 @@ ASSET_INFO_KEY_DICT = {
     's_snap'       : a_snap,
     's_boxfront'   : a_boxfront,
     's_boxback'    : a_boxback,
+    's_3dbox'      : a_3dbox,
     's_cartridge'  : a_cartridge,
     's_flyer'      : a_flyer,
     's_map'        : a_map,

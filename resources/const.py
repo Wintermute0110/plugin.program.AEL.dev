@@ -394,11 +394,17 @@ ASSET_TRAILER_ID    = 'trailer'
 
 # --- AEL artwork types ---
 # What about supporting BOXSPINE and composite box (fron, spine and back in one image).
+#
+# [TODO] Current artwork model uses multiplexed artwork for non-MAME and MAME platforms.
+#        This was originally made to save space on the JSON databases. However, database space
+#        is not so important anymore.
+#        Is it better to use all artwork fields and then skinners create Arcade and non-Arcade views?
+#
 ASSET_TITLE_ID      = 'title'
 ASSET_SNAP_ID       = 'snap'
 ASSET_BOXFRONT_ID   = 'boxfront'  # Cabinet in MAME
 ASSET_BOXBACK_ID    = 'boxback'   # CPanel in MAME
-ASSET_3DBOX_ID      = '3dbox'
+ASSET_3DBOX_ID      = '3dbox'     # New field in release x.y.z???
 ASSET_CARTRIDGE_ID  = 'cartridge' # PCB in MAME
 ASSET_FLYER_ID      = 'flyer'
 ASSET_MAP_ID        = 'map'
