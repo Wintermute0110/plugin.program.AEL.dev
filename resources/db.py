@@ -386,8 +386,6 @@ def get_collection_ROMs_basename(collection_name, collectionID):
 # * This function must be called first to update cfg object fields that will be 
 #   used in many other functions.
 # * Include here all possible launcher information needed anywhere in the addon.
-#
-# >>>>> Merge get_launcher_fnames() into this function.
 def get_launcher_info(cfg, categoryID, launcherID):
     cfg.launcher_is_vlauncher = launcherID in const.VLAUNCHER_ID_LIST
     cfg.launcher_is_vcategory = categoryID in const.VCATEGORY_ID_LIST
@@ -638,10 +636,8 @@ def load_ROMs_Favourite_set(cfg):
         return
     cfg.roms_fav_set = set(roms_fav.keys())
 
-
-
-
-
+def save_ROMs(cfg, st):
+    pass
 
 
 
@@ -1471,9 +1467,8 @@ def import_ROM_NFO_file_scanner(NFO_FN):
 
 # Returns a FileName object
 def get_ROM_NFO_name(rom):
-    ROMFileName = FileName(rom['filename'])
-    nfo_FN = FileName(ROMFileName.getPathNoExt() + '.nfo')
-    return nfo_FN
+    ROM_FN = utils.FileName(rom['filename'])
+    return utils.FileName(ROM_FN.getPathNoExt() + '.nfo')
 
 # Standalone launchers: NFO files are stored in self.settings["launchers_nfo_dir"] if not empty.
 # If empty, it defaults to DEFAULT_LAUN_NFO_DIR.
@@ -1493,8 +1488,7 @@ def export_launcher_NFO(nfo_FN, launcher):
         misc.XML('developer', launcher['m_developer']),
         misc.XML('rating', launcher['m_rating']),
         misc.XML('plot', launcher['m_plot']),
-        '</launcher>',
-        '',
+        '</launcher>\n', # End file in newline
     ]
     # TODO: correctly catch and report errors here.
     utils.write_slist_to_file(nfo_FN.getPath(), nfo_slist)
@@ -1567,8 +1561,7 @@ def export_category_NFO(NFO_FN, category):
         misc.XML('developer', category['m_developer']),
         misc.XML('rating', category['m_rating']),
         misc.XML('plot', category['m_plot']),
-        '</category>',
-        '', # End file in newline
+        '</category>', # End file in newline
     ]
     utils.write_slist_to_file(NFO_FN.getPath(), nfo_slist)
     return True
@@ -1605,8 +1598,7 @@ def export_collection_NFO(nfo_FileName, collection):
         misc.XML('genre', collection['m_genre']),
         misc.XML('rating', collection['m_rating']),
         misc.XML('plot', collection['m_plot']),
-        '</collection>',
-        '',
+        '</collection>', # End file in newline
     ]
     utils_write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
     return True

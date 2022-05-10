@@ -215,22 +215,22 @@ class ScraperFactory(object):
         # the scrapers to show always in the same order.
         log.debug('ScraperFactory.__init__() Creating scraper objects...')
         self.scraper_objs = collections.OrderedDict()
-        if SCRAPER_NULL_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper(self.settings)
-        if SCRAPER_AEL_OFFLINE_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_AEL_OFFLINE_ID] = AEL_Offline(self.settings)
-        if SCRAPER_THEGAMESDB_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_THEGAMESDB_ID] = TheGamesDB(self.settings)
-        if SCRAPER_MOBYGAMES_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
-        if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper(self.settings)
-        if SCRAPER_GAMEFAQS_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
-        if SCRAPER_ARCADEDB_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_ARCADEDB_ID] = ArcadeDB(self.settings)
-        if SCRAPER_LIBRETRO_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
+        if const.SCRAPER_NULL_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_NULL_ID] = Null_Scraper(self.settings)
+        if const.SCRAPER_AEL_OFFLINE_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_AEL_OFFLINE_ID] = AEL_Offline(self.settings)
+        if const.SCRAPER_THEGAMESDB_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_THEGAMESDB_ID] = TheGamesDB(self.settings)
+        if const.SCRAPER_MOBYGAMES_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
+        if const.SCRAPER_SCREENSCRAPER_ID in const.SCRAPER_LIST:
+           self.scraper_objs[const.SCRAPER_SCREENSCRAPER_ID] = ScreenScraper(self.settings)
+        if const.SCRAPER_GAMEFAQS_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
+        if const.SCRAPER_ARCADEDB_ID in const.SCRAPER_LIST:
+            self.scraper_objs[const.SCRAPER_ARCADEDB_ID] = ArcadeDB(self.settings)
+        if const.SCRAPER_LIBRETRO_ID in const.SCRAPER_LIST:
+           self.scraper_objs[const.SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
 
     # Return a list with instantiated scrapers IDs. List always has same order.
     def get_scraper_ID_list(self):
@@ -260,7 +260,8 @@ class ScraperFactory(object):
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
             if scraper_obj.supports_metadata():
-                scraper_menu_list.append('Scrape with {}'.format(s_name))
+                # Add a tuple here to make it compatible with new context menu engine.
+                scraper_menu_list.append( (scraper_ID, 'Scrape with {}'.format(s_name)) )
                 self.metadata_menu_ID_list.append(scraper_ID)
                 log.debug('Scraper {} supports metadata (ENABLED)'.format(s_name))
             else:

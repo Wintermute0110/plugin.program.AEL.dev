@@ -1851,11 +1851,11 @@ def render_vlaunchers_GlobalReports(cfg):
 # Use a step render like AML: 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
 def render_ROMs(cfg, categoryID, launcherID):
     log.debug('render_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    st = utils.new_status_dic()
 
     # Load ROMs from disk database.
     # Set st dictionary to notify if no ROMs to render.
     loading_ticks_start = time.time()
+    st = utils.new_status_dic()
     db.get_launcher_info(cfg, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
     if utils.is_error_status(st):
@@ -4390,11 +4390,21 @@ def command_edit_launcher(self, categoryID, launcherID):
     kodi_refresh_container()
 
 # New generation context menu implementation. Avoid recursive implementation.
-# mpos tuple content standard: (menu_ID, menu message)
-# mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
+# Reference implementation is command_edit_category()
+#
+# Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID
+# if we are editing a ROM in Favourites.
+# Is this true anymore?
 def command_edit_rom(cfg, categoryID, launcherID, romID):
+    # if romID == UNKNOWN_ROMS_PARENT_ID:
+    #     kodi.dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
+    #     return
+
     # Load ROMs.
-    
+    st = utils.new_status_dic()
+    db.get_launcher_info(cfg, categoryID, launcherID)
+    db.load_ROMs(cfg, st, categoryID, launcherID)
+
     # Edit ROM context menu menu logic.
     mdic = {
         # Current position in menu. First element of the list is the menu root.
@@ -4403,14 +4413,14 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
         # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
         'mpos' : [0],
         'execute_menu' : True,
+        'continue_flag' : False, # Continue while loop after mgui_render_menu() function
     }
     while mdic['execute_menu']:
-        # category = cfg.categories[categoryID]
-        # mdic['diag_title'] = 'Select action for ROM [COLOR orange]{}[/COLOR]'.format(category['m_name'])
-        mdic['diag_title'] = 'Select action for ROM'
+        rom = cfg.roms[romID]
+        mdic['diag_title'] = 'Edit ROM [COLOR orange]{}[/COLOR]'.format(rom['m_name'])
 
         log.debug('Building menu...')
-        mdic['menu'] = command_edit_rom_build_menu(cfg, categoryID)
+        mdic['menu'] = command_edit_rom_build_menu(cfg, categoryID, launcherID, romID)
         log.debug('Rendering menu...')
         mgui_render_menu(mdic)
         if mdic['continue_flag']: continue
@@ -4418,9 +4428,73 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
         # Execute command.
         log.debug('Executing command "{}"'.format(mdic['command']))
         save_DB_flag = False # By default do not save the database unless told to do so.
-
         if mdic['command'] == 'EDIT_METADATA_TITLE':
-            save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'Category Title')
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_name', 'ROM Title')
+        elif mdic['command'] == 'EDIT_METADATA_RELEASEYEAR':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_year', 'ROM Release Year')
+        elif mdic['command'] == 'EDIT_METADATA_GENRE':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_genre', 'ROM Genre')
+        elif mdic['command'] == 'EDIT_METADATA_DEVELOPER':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_developer', 'ROM Developer')
+
+        elif mdic['command'] == 'EDIT_METADATA_NPLAYERS':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_nplayers', 'ROM NPlayers')
+
+        elif mdic['command'] == 'EDIT_METADATA_ESRB':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_esrb', 'ROM ESRB')
+
+        elif mdic['command'] == 'EDIT_METADATA_RATING':
+            save_DB_flag = mgui_edit_rating(rom, 'm_rating', 'ROM Rating')
+        elif mdic['command'] == 'EDIT_METADATA_PLOT':
+            save_DB_flag = mgui_edit_metadata_str(rom, 'm_plot', 'ROM Plot')
+
+        elif mdic['command'] == 'IMPORT_NFO_FILE':
+            if launcherID == VLAUNCHER_FAVOURITES_ID:
+                kodi.dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
+                return
+            if not fs_import_ROM_NFO(roms, romID): return
+        
+            # NFO_FN = db.get_category_NFO_name(cfg, rom)
+            # save_DB_flag = db.import_category_NFO(NFO_FN, rom)
+            # if save_DB_flag:
+            #     kodi.notify('Imported ROM NFO file {}'.format(NFO_FN.getPath()))
+
+        elif mdic['command'] == 'SAVE_NFO_FILE':
+            if launcherID == VLAUNCHER_FAVOURITES_ID:
+                kodi.dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
+                return
+            fs_export_ROM_NFO(roms[romID])
+            return # No need to save ROMs
+        
+            # NFO_FN = db.get_category_NFO_name(cfg, rom)
+            # # Returns False if exception happened. If an Exception happened function notifies
+            # # user, hence do not display anything here to avoid overwriting notification.
+            # success_flag = db.export_category_NFO(NFO_FN, cfg.categories[categoryID])
+            # if not success_flag: continue
+            # kodi.notify('Exported ROM NFO file {}'.format(NFO_FN.getPath()))
+
+        # How to deal with the metadata scrapers???
+
+
+
+        elif mdic['command'] == 'EDIT_ASSETS':
+            save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_ROM_ID, rom)
+
+        elif mdic['command'] == 'EDIT_ASSETS_ALL':
+            save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_ROM_ID, rom)
+
+        elif mdic['command'] == 'EDIT_CATEGORY_STATUS':
+            finished_flag = False if rom['finished'] else True
+            finished_str = 'Finished' if finished_flag else 'Unfinished'
+            rom['finished'] = finished_flag
+            save_DB_flag = True
+            kodi.dialog_OK('ROM "{}" status is now {}'.format(rom['m_name'], finished_str))
+
+        # If ROM is successfully deleted close context menu.
+        elif mdic['command'] == 'DELETE_CATEGORY':
+            if mgui_delete_ROM(cfg, rom):
+                save_DB_flag = True
+                mdic['execute_menu'] = False
 
         else:
             log.error('command_edit_rom() Unsupported command "{}"'.format(mdic['command']))
@@ -4430,199 +4504,83 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
 
         # Save the database if requested.
         if save_DB_flag:
-            log.debug('command_edit_rom() Saving launchers.xml database...')
-            db.write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
+            log.debug('command_edit_rom() Saving ROMs database...')
+            st = utils.new_status_dic()
+            db.save_ROMs(cfg, st)
         log.debug('command_edit_rom() End of loop...')
     kodi.notify('Finish Edit ROM')
     utils.refresh_container()
 
-def command_edit_rom_build_menu(cfg, categoryID):
-    # cat = cfg.categories[categoryID]
-    return [
-        ('EDIT_METADATA', 'Edit Metadata...'),
+def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
+    # ROM metadata.
+    rom = cfg.roms[romID]
+    finished_str = 'Finished' if rom['finished'] == True else 'Unfinished'
+    NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
+    plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
+    # Make a menu list of available metadata scrapers.
+    scrap_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    scraper_menu_list = scrap_factory.get_metadata_scraper_menu_list()
+    # Common edit metadata menu
+    common_menu_list = [
+        ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(rom['m_name'])),
+        ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(rom['m_year'])),
+        ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(rom['m_genre'])),
+        ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(rom['m_developer'])),
+        ('EDIT_METADATA_NPLAYERS', 'Edit NPlayers "{}"'.format(rom['m_nplayers'])),
+        ('EDIT_METADATA_ESRB', 'Edit ESRB rating "{}"'.format(rom['m_esrb'])),
+        ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(rom['m_rating'])),
+        ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
+        ('IMPORT_NFO_FILE', 'Import NFO file ({})'.format(NFO_found_str)),
+        ('SAVE_NFO_FILE', 'Save NFO file'),
     ]
+    # Build dynamic menus.
+    if launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
+                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
+                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
+            ]),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('DELETE_ROM', 'Delete Favourite ROM'),
+            ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...'),
+        ]
+    elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...'),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('DELETE_ROM', 'Delete Collection ROM'),
+            ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...'),
+            ('MANAGE_COLLECTION_ROM_POS', 'Manage Collection ROM position...'),
+        ]
+    else:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
+                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
+                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
+            ]),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', [
+                ('EDIT_CHANGE_ROM_FILE', 'Change ROM file "{}"'.format(rom['filename'])),
+                ('EDIT_CHANGE_ALT_APP', 'Alternative application "{}"'.format(rom['altapp'])),
+                ('EDIT_CHANGE_ALT_ARG', 'Alternative arguments "{}"'.format(rom['altarg'])),
+            ], 'Title of the dialog, implement me!'),
+            ('DELETE_ROM', 'Delete ROM'),
+        ]
+    return menu_list
 
-# Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID
-# if we are editing a ROM in Favourites.
 def command_edit_rom_OLD(self, categoryID, launcherID, romID):
-    if romID == UNKNOWN_ROMS_PARENT_ID:
-        kodi.dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
-        return
-
-    # --- Load ROMs ---
-    if categoryID == VCATEGORY_FAVOURITES_ID:
-        log.debug('_command_edit_rom() Editing Favourite ROM')
-        roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
-    elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        log.debug('_command_edit_rom() Editing Collection ROM')
-        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
-        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-        # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
-        #      a dictionary. Convert the Collection list into an ordered dictionary and then
-        #      converted back the ordered dictionary into a list before saving the collection.
-        roms = collections.OrderedDict()
-        for collection_rom in collection_rom_list: roms[collection_rom['id']] = collection_rom
-    else:
-        log.debug('_command_edit_rom() Editing ROM in Launcher')
-        launcher = self.launchers[launcherID]
-        roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
-
-    # --- Show a dialog with ROM editing options ---
-    rom_name = roms[romID]['m_name']
-    finished_display = 'Status: Finished' if roms[romID]['finished'] == True else 'Status: Unfinished'
-    sDialog = KodiSelectDialog('Edit ROM {}'.format(rom_name))
-    if categoryID == VCATEGORY_FAVOURITES_ID:
-        sDialog.setRows([
-            'Edit Metadata...',
-            'Edit Assets...',
-            'Edit Assets (all)...',
-            finished_display,
-            'Advanced Modifications...',
-            'Delete Favourite ROM',
-            'Manage Favourite ROM object...',
-        ])
-    elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        sDialog.setRows([
-            'Edit Metadata...',
-            'Edit Assets...',
-            'Edit Assets (all)...',
-            finished_display,
-            'Advanced Modifications...',
-            'Delete Collection ROM',
-            'Manage Collection ROM object...',
-            'Manage Collection ROM position...',
-        ])
-    else:
-        sDialog.setRows([
-            'Edit Metadata...',
-            'Edit Assets...',
-            'Edit Assets (all)...',
-            finished_display,
-            'Advanced Modifications...',
-            'Delete ROM',
-        ])
-    mindex = sDialog.executeDialog()
-    if mindex is None: return
-
     # --- Edit ROM metadata ---
     if mindex == 0:
-        # --- Make a menu list of available metadata scrapers ---
-        g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
-        scraper_menu_list = g_scrap_factory.get_metadata_scraper_menu_list()
-
-        # --- Metadata edit dialog ---
-        NFO_FileName = fs_get_ROM_NFO_name(roms[romID])
-        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
-        common_menu_list = [
-            "Edit Title: '{}'".format(roms[romID]['m_name']),
-            "Edit Release Year: '{}'".format(roms[romID]['m_year']),
-            "Edit Genre: '{}'".format(roms[romID]['m_genre']),
-            "Edit Developer: '{}'".format(roms[romID]['m_developer']),
-            "Edit NPlayers: '{}'".format(roms[romID]['m_nplayers']),
-            "Edit ESRB rating: '{}'".format(roms[romID]['m_esrb']),
-            "Edit Rating: '{}'".format(roms[romID]['m_rating']),
-            "Edit Plot: '{}'".format(plot_str),
-            'Import NFO file ({})'.format(NFO_found_str),
-            'Save NFO file',
-        ]
-        sDialog = KodiSelectDialog('Modify ROM metadata', common_menu_list + scraper_menu_list)
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # --- Edit of the rom title ---
-        if mindex2 == 0:
-            save_DB = aux_edit_str(roms[romID], 'm_name', 'ROM Title')
-            if not save_DB: return
-
-        # --- Edition of the rom release year ---
-        elif mindex2 == 1:
-            save_DB = aux_edit_str(roms[romID], 'm_year', 'ROM Release Year')
-            if not save_DB: return
-
-        # --- Edition of the rom game genre ---
-        elif mindex2 == 2:
-            save_DB = aux_edit_str(roms[romID], 'm_genre', 'ROM Genre')
-            if not save_DB: return
-
-        # --- Edition of the rom developer ---
-        elif mindex2 == 3:
-            save_DB = aux_edit_str(roms[romID], 'm_developer', 'ROM Developer')
-            if not save_DB: return
-
-        # --- Edition of launcher NPlayers ---
-        elif mindex2 == 4:
-            # Show a dialog select with the most used NPlayer entries, and have one option
-            # for manual entry.
-            menu_list = ['Not set', 'Manual entry'] + NPLAYERS_LIST
-            sDialog = KodiSelectDialog('Edit Launcher NPlayers', menu_list)
-            np_idx = sDialog.executeDialog()
-            if np_idx is None:
-                return # Do no save databases.
-            elif np_idx == 0:
-                roms[romID]['m_nplayers'] = ''
-                kodi_notify('Launcher NPlayers change to Not Set')
-            elif np_idx == 1:
-                # Manual entry. Open a text entry dialog.
-                new_value_str = kodi_get_keyboard_text('Edit NPlayers', roms[romID]['m_nplayers'])
-                roms[romID]['m_nplayers'] = new_value_str
-                kodi_notify('Changed Launcher NPlayers')
-            else:
-                list_idx = np_idx - 2
-                roms[romID]['m_nplayers'] = NPLAYERS_LIST[list_idx]
-                kodi_notify('Changed Launcher NPlayers')
-
-        # --- Edition of launcher ESRB rating ---
-        elif mindex2 == 5:
-            # Show a dialog select with the available ratings.
-            sDialog = KodiSelectDialog('Edit Launcher ESRB rating', ESRB_LIST)
-            esrb_index = sDialog.executeDialog()
-            if esrb_index is None: return
-            roms[romID]['m_esrb'] = ESRB_LIST[esrb_index]
-            kodi_notify('Changed Launcher ESRB rating')
-
-        # --- Edition of the ROM rating ---
-        elif mindex2 == 6:
-            sDialog = KodiSelectDialog('Edit ROM Rating')
-            sDialog.setRows([
-                'Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
-                'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10',
-            ])
-            rating = sDialog.executeDialog()
-            if rating is None:
-                kodi.dialog_OK("ROM rating '{}' not changed".format(roms[romID]['m_rating']))
-                return # Do not save databases.
-            elif rating == 0:
-                roms[romID]['m_rating'] = ''
-                kodi_notify('Changed ROM Rating to Not Set')
-            elif rating >= 1 and rating <= 11:
-                roms[romID]['m_rating'] = '{}'.format(rating - 1)
-                kodi_notify('Changed ROM Rating to {}'.format(roms[romID]['m_rating']))
-
-        # --- Edit ROM description (plot) ---
-        elif mindex2 == 7:
-            save_DB = aux_edit_str(roms[romID], 'm_plot', 'ROM Plot')
-            if not save_DB: return
-
-        # --- Import ROM metadata from NFO file ---
-        elif mindex2 == 8:
-            if launcherID == VLAUNCHER_FAVOURITES_ID:
-                kodi.dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
-                return
-            if not fs_import_ROM_NFO(roms, romID): return
-
-        # --- Export ROM metadata to NFO file ---
-        elif mindex2 == 9:
-            if launcherID == VLAUNCHER_FAVOURITES_ID:
-                kodi.dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
-                return
-            fs_export_ROM_NFO(roms[romID])
-            return # No need to save ROMs
-
         # --- Scrap ROM metadata ---
-        elif mindex2 >= 10:
+        if mindex2 >= 10:
             # --- Use the scraper chosen by user ---
             scraper_index = mindex2 - len(common_menu_list)
             scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
@@ -4655,163 +4613,6 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
             g_scrap_factory.destroy_CM()
             if kodi_display_status_message(st_dic): return
-
-    # --- Edit ROM Assets (single asset) ---
-    elif mindex == 1:
-        rom = roms[romID]
-
-        # Build asset image list for dialog.
-        label2_fanart    = rom['s_fanart']    if rom['s_fanart']    else 'Not set'
-        label2_banner    = rom['s_banner']    if rom['s_banner']    else 'Not set'
-        label2_clearlogo = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'
-        label2_title     = rom['s_title']     if rom['s_title']     else 'Not set'
-        label2_snap      = rom['s_snap']      if rom['s_snap']      else 'Not set'
-        label2_boxfront  = rom['s_boxfront']  if rom['s_boxfront']  else 'Not set'
-        label2_boxback   = rom['s_boxback']   if rom['s_boxback']   else 'Not set'
-        label2_3dbox     = rom['s_3dbox']     if rom['s_3dbox']     else 'Not set'
-        label2_cartridge = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'
-        label2_flyer     = rom['s_flyer']     if rom['s_flyer']     else 'Not set'
-        label2_map       = rom['s_map']       if rom['s_map']       else 'Not set'
-        label2_manual    = rom['s_manual']    if rom['s_manual']    else 'Not set'
-        label2_trailer   = rom['s_trailer']   if rom['s_trailer']   else 'Not set'
-
-        img_fanart       = rom['s_fanart']          if rom['s_fanart']    else 'DefaultAddonNone.png'
-        img_banner       = rom['s_banner']          if rom['s_banner']    else 'DefaultAddonNone.png'
-        img_clearlogo    = rom['s_clearlogo']       if rom['s_clearlogo'] else 'DefaultAddonNone.png'
-        img_title        = rom['s_title']           if rom['s_title']     else 'DefaultAddonNone.png'
-        img_snap         = rom['s_snap']            if rom['s_snap']      else 'DefaultAddonNone.png'
-        img_boxfront     = rom['s_boxfront']        if rom['s_boxfront']  else 'DefaultAddonNone.png'
-        img_boxback      = rom['s_boxback']         if rom['s_boxback']   else 'DefaultAddonNone.png'
-        img_3dbox        = rom['s_3dbox']           if rom['s_3dbox']     else 'DefaultAddonNone.png'
-        img_cartridge    = rom['s_cartridge']       if rom['s_cartridge'] else 'DefaultAddonNone.png'
-        img_flyer        = rom['s_flyer']           if rom['s_flyer']     else 'DefaultAddonNone.png'
-        img_map          = rom['s_map']             if rom['s_map']       else 'DefaultAddonNone.png'
-        img_manual       = 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'
-        img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
-
-        # Create ListItem objects for select dialog.
-        fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',             label2 = label2_fanart)
-        banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner / Marquee ...',   label2 = label2_banner)
-        clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...',          label2 = label2_clearlogo)
-        title_listitem     = xbmcgui.ListItem(label = 'Edit Title ...',              label2 = label2_title)
-        snap_listitem      = xbmcgui.ListItem(label = 'Edit Snap ...',               label2 = label2_snap)
-        boxfront_listitem  = xbmcgui.ListItem(label = 'Edit Boxfront / Cabinet ...', label2 = label2_boxfront)
-        boxback_listitem   = xbmcgui.ListItem(label = 'Edit Boxback / CPanel ...',   label2 = label2_boxback)
-        tdbox_listitem     = xbmcgui.ListItem(label = 'Edit 3D Box ...',             label2 = label2_3dbox)
-        cartridge_listitem = xbmcgui.ListItem(label = 'Edit Cartridge / PCB ...',    label2 = label2_cartridge)
-        flyer_listitem     = xbmcgui.ListItem(label = 'Edit Flyer ...',              label2 = label2_flyer)
-        map_listitem       = xbmcgui.ListItem(label = 'Edit Map ...',                label2 = label2_map)
-        manual_listitem    = xbmcgui.ListItem(label = 'Edit Manual ...',             label2 = label2_manual)
-        trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',            label2 = label2_trailer)
-
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-        title_listitem.setArt({'icon' : img_title})
-        snap_listitem.setArt({'icon' : img_snap})
-        boxfront_listitem.setArt({'icon' : img_boxfront})
-        boxback_listitem.setArt({'icon' : img_boxback})
-        tdbox_listitem.setArt({'icon' : img_3dbox})
-        cartridge_listitem.setArt({'icon' : img_cartridge})
-        flyer_listitem.setArt({'icon' : img_flyer})
-        map_listitem.setArt({'icon' : img_map})
-        manual_listitem.setArt({'icon' : img_manual})
-        trailer_listitem.setArt({'icon' : img_trailer})
-
-        # --- Execute select dialog ---
-        # Make sure this follows the same order as ROM_ASSET_ID_LIST
-        sDialog = KodiSelectDialog('Edit ROM Assets/Artwork', useDetails = True)
-        sDialog.setRows([
-            fanart_listitem,
-            banner_listitem,
-            clearlogo_listitem,
-            title_listitem,
-            snap_listitem,
-            boxfront_listitem,
-            boxback_listitem,
-            tdbox_listitem,
-            cartridge_listitem,
-            flyer_listitem,
-            map_listitem,
-            manual_listitem,
-            trailer_listitem,
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-        # If this function returns False no changes were made. No need to save categories XML
-        # and update container.
-        asset_kind = ROM_ASSET_ID_LIST[mindex2]
-        if not self._gui_edit_asset(KIND_ROM, asset_kind, rom, categoryID, launcherID): return
-
-    # --- Edit ROM Assets (all) ---
-    elif mindex == 2:
-        sDialog = KodiSelectDialog('Edit ROM assets (all)', [
-            'Scrape all assets (choose scraper)',
-            'Unset all assets',
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # Scrape all assets.
-        # Scraper disk caches are flushed (written to disk) even if there is a message
-        # to be printed here. A message here could be that no images were found, network
-        # error when downloading image, etc., however the caches (internal, etc.) may have
-        # valid data that needs to be saved.
-        if mindex2 == 0:
-            log.info('_command_edit_rom() Rescraping ROM all assets...')
-            # Prepare data for scraper object.
-            rom = roms[romID]
-            ROM_FN = utils.FileName(rom['filename'])
-            if rom['disks']:
-                ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
-            else:
-                ROM_hash_FN = ROM_FN
-            if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
-                platform = rom['platform']
-            else:
-                platform = self.launchers[launcherID]['platform']
-            data_dic = {
-                'ROM_FN' : ROM_FN,
-                'ROM_hash_FN' : ROM_hash_FN,
-                'platform' : platform,
-                'categoryID' : categoryID,
-                'launcherID' : launcherID,
-                'settings' : self.settings,
-                'launchers' : self.launchers,
-            }
-            st_dic = utils.new_status_dic()
-            # Create scraper factory and select scraper to use.
-            scrap_factory = ScraperFactory(g_PATHS, self.settings)
-            scraper_menu_list = scrap_factory.get_all_asset_scraper_menu_list()
-            scraper_index = KodiSelectDialog('Select scraper', scraper_menu_list).executeDialog()
-            if scraper_index is None: return False
-            scraper_ID = scrap_factory.get_all_asset_scraper_ID_from_menu_idx(scraper_index)
-            # Create scraper object and scrap all assets
-            scrap_strategy = scrap_factory.create_CM_asset(scraper_ID)
-            scrap_strategy.scrap_CM_asset_all(rom, data_dic, st_dic)
-            # Flush disk caches
-            pDialog = KodiProgressDialog()
-            pDialog.startProgress('Flushing scraper disk caches...')
-            scrap_factory.destroy_CM()
-            pDialog.endProgress()
-            # Display notification or error. If error return and do not save ROMs database.
-            if kodi_display_status_message(st_dic): return
-
-        # Unset all assets
-        elif mindex2 == 1:
-            log.info('_command_edit_rom() Unsetting ROM all assets...')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                AInfo = assets_get_info_scheme(asset_ID)
-                roms[romID][AInfo.key] = ''
-            kodi_notify('All ROM assets unset')
-
-    # --- Edit status ---
-    elif mindex == 3:
-        finished = roms[romID]['finished']
-        finished = False if finished else True
-        finished_display = 'Finished' if finished == True else 'Unfinished'
-        roms[romID]['finished'] = finished
-        kodi.dialog_OK("ROM '{}' status is now {}".format(roms[romID]['m_name'], finished_display))
 
     # --- Advanced ROM Modifications ---
     elif mindex == 4:
@@ -4847,43 +4648,6 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             t = 'Edit ROM custom application arguments'
             roms[romID]['altarg'] = kodi_get_keyboard_text(t, roms[romID]['altarg'])
 
-    # --- Delete ROM ---
-    elif mindex == 5:
-        is_Normal_Launcher = True
-        if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log.info('_command_remove_rom() Deleting ROM from Favourites (id {})'.format(romID))
-            msg_str = 'Are you sure you want to delete it from Favourites?'
-            is_Normal_Launcher = False
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log.info('_command_remove_rom() Deleting ROM from Collection (id {})'.format(romID))
-            msg_str = 'Are you sure you want to delete it from Collection "{}"?'.format(collection['m_name'])
-            is_Normal_Launcher = False
-        else:
-            if launcher['audit_state'] == AUDIT_STATE_ON and \
-                roms[romID]['nointro_status'] == NOINTRO_STATUS_MISS:
-                kodi.dialog_OK('You are trying to remove a Missing ROM. You cannot delete '
-                    'a ROM that does not exist! If you want to get rid of all missing '
-                    'ROMs then delete the XML DAT file.')
-                return
-            else:
-                log.info('_command_remove_rom() Deleting ROM from Launcher (id {})'.format(romID))
-                msg_str = 'Are you sure you want to delete it from Launcher "{}"?'.format(launcher['m_name'])
-
-        # --- Confirm deletion ---
-        rom_name = roms[romID]['m_name']
-        ret = kodi_dialog_yesno('ROM "{}". '.format(rom_name) + msg_str)
-        if not ret: return
-        roms.pop(romID)
-
-        # --- If there is a No-Intro XML configured audit ROMs ---
-        if is_Normal_Launcher and launcher['audit_state'] == AUDIT_STATE_ON:
-            log.info('No-Intro/Redump DAT configured. Starting ROM audit ...')
-            nointro_xml_FN = self._roms_set_NoIntro_DAT(launcher)
-            if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
-                kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
-
-        # --- Notify user ---
-        kodi_notify('Deleted ROM {}'.format(rom_name))
 
     # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
     elif mindex == 6:
@@ -5677,6 +5441,35 @@ def mgui_edit_metadata_list(obj_instance, metadata_name, str_list, get_method, s
     obj_instance.save_to_disk()
     kodi_notify('{} {} is now {}'.format(object_name, metadata_name, new_value))
 
+def mgui_edit_metadata_nplayers(edict):
+    # Show a dialog select with the most used NPlayer entries, and have one option
+    # for manual entry.
+    menu_list = ['Not set', 'Manual entry'] + NPLAYERS_LIST
+    sDialog = KodiSelectDialog('Edit Launcher NPlayers', menu_list)
+    np_idx = sDialog.executeDialog()
+    if np_idx is None:
+        return # Do no save databases.
+    elif np_idx == 0:
+        roms[romID]['m_nplayers'] = ''
+        kodi_notify('Launcher NPlayers change to Not Set')
+    elif np_idx == 1:
+        # Manual entry. Open a text entry dialog.
+        new_value_str = kodi_get_keyboard_text('Edit NPlayers', roms[romID]['m_nplayers'])
+        roms[romID]['m_nplayers'] = new_value_str
+        kodi_notify('Changed Launcher NPlayers')
+    else:
+        list_idx = np_idx - 2
+        roms[romID]['m_nplayers'] = NPLAYERS_LIST[list_idx]
+        kodi_notify('Changed Launcher NPlayers')
+
+def mgui_edit_metadata_esrb(edict):
+    # Show a dialog select with the available ratings.
+    sDialog = KodiSelectDialog('Edit Launcher ESRB rating', ESRB_LIST)
+    esrb_index = sDialog.executeDialog()
+    if esrb_index is None: return
+    roms[romID]['m_esrb'] = ESRB_LIST[esrb_index]
+    kodi_notify('Changed Launcher ESRB rating')
+
 # Rating 'Not set' is stored as an empty string.
 # Rating from 0 to 10 is stored as a string, '0', '1', ..., '10'
 # --- Return value
@@ -5685,7 +5478,7 @@ def mgui_edit_metadata_list(obj_instance, metadata_name, str_list, get_method, s
 # --- Example call
 # m_gui_edit_rating(category, 'm_rating', 'Category Rating')
 # m_gui_edit_rating(launcher, 'm_rating', 'Launcher Rating')
-def mgui_edit_rating(edict, dic_field, prop_name):
+def mgui_edit_metadata_rating(edict, dic_field, prop_name):
     options_list = ['Not set'] + ['Rating {}'.format(i) for i in range(11)]
     # object_name = obj_instance.get_object_name()
     current_rating_str = edict[dic_field]
@@ -6062,6 +5855,58 @@ def mgui_edit_default_asset(cfg, object_ID, edict, edit_ainfo):
     log.debug('mgui_edit_default_asset() Returning {}'.format(save_DB_flag))
     return save_DB_flag
 
+# Scrape all assets.
+# Scraper disk caches are flushed (written to disk) even if there is a message
+# to be printed here. A message here could be that no images were found, network
+# error when downloading image, etc., however the caches (internal, etc.) may have
+# valid data that needs to be saved.
+def mgui_scrape_all_assets():
+    log.info('_command_edit_rom() Rescraping ROM all assets...')
+    # Prepare data for scraper object.
+    rom = roms[romID]
+    ROM_FN = utils.FileName(rom['filename'])
+    if rom['disks']:
+        ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
+    else:
+        ROM_hash_FN = ROM_FN
+    if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+        platform = rom['platform']
+    else:
+        platform = self.launchers[launcherID]['platform']
+    data_dic = {
+        'ROM_FN' : ROM_FN,
+        'ROM_hash_FN' : ROM_hash_FN,
+        'platform' : platform,
+        'categoryID' : categoryID,
+        'launcherID' : launcherID,
+        'settings' : self.settings,
+        'launchers' : self.launchers,
+    }
+    st_dic = utils.new_status_dic()
+    # Create scraper factory and select scraper to use.
+    scrap_factory = ScraperFactory(g_PATHS, self.settings)
+    scraper_menu_list = scrap_factory.get_all_asset_scraper_menu_list()
+    scraper_index = KodiSelectDialog('Select scraper', scraper_menu_list).executeDialog()
+    if scraper_index is None: return False
+    scraper_ID = scrap_factory.get_all_asset_scraper_ID_from_menu_idx(scraper_index)
+    # Create scraper object and scrap all assets
+    scrap_strategy = scrap_factory.create_CM_asset(scraper_ID)
+    scrap_strategy.scrap_CM_asset_all(rom, data_dic, st_dic)
+    # Flush disk caches
+    pDialog = KodiProgressDialog()
+    pDialog.startProgress('Flushing scraper disk caches...')
+    scrap_factory.destroy_CM()
+    pDialog.endProgress()
+    # Display notification or error. If error return and do not save ROMs database.
+    if kodi.display_status_message(st_dic): return
+
+def mgui_unset_all_assets():
+    log.info('_command_edit_rom() Unsetting ROM all assets...')
+    for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+        AInfo = assets_get_info_scheme(asset_ID)
+        roms[romID][AInfo.key] = ''
+    kodi.notify('All ROM assets unset')
+
 # Remove a category. Also removes launchers belonging to category.
 # Returns True if the category was succesfully removed.
 # Returns False if the operation was cancelled.
@@ -6095,6 +5940,41 @@ def mgui_delete_category(cfg, category):
     cfg.categories.pop(categoryID)
     kodi.notify('Deleted category {}'.format(cat_name))
     return True
+
+def mgui_delete_ROM(cfg, romID):
+    is_Normal_Launcher = True
+    if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
+        log.info('_command_remove_rom() Deleting ROM from Favourites (id {})'.format(romID))
+        msg_str = 'Are you sure you want to delete it from Favourites?'
+        is_Normal_Launcher = False
+    elif categoryID == VCATEGORY_COLLECTIONS_ID:
+        log.info('_command_remove_rom() Deleting ROM from Collection (id {})'.format(romID))
+        msg_str = 'Are you sure you want to delete it from Collection "{}"?'.format(collection['m_name'])
+        is_Normal_Launcher = False
+    else:
+        if launcher['audit_state'] == AUDIT_STATE_ON and \
+            roms[romID]['nointro_status'] == NOINTRO_STATUS_MISS:
+            kodi.dialog_OK('You are trying to remove a Missing ROM. You cannot delete '
+                'a ROM that does not exist! If you want to get rid of all missing '
+                'ROMs then delete the XML DAT file.')
+            return
+        else:
+            log.info('_command_remove_rom() Deleting ROM from Launcher (id {})'.format(romID))
+            msg_str = 'Are you sure you want to delete it from Launcher "{}"?'.format(launcher['m_name'])
+
+    # --- Confirm deletion ---
+    rom_name = roms[romID]['m_name']
+    ret = kodi_dialog_yesno('ROM "{}". '.format(rom_name) + msg_str)
+    if not ret: return
+    roms.pop(romID)
+
+    # --- If there is a No-Intro XML configured audit ROMs ---
+    if is_Normal_Launcher and launcher['audit_state'] == AUDIT_STATE_ON:
+        log.info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+        nointro_xml_FN = self._roms_set_NoIntro_DAT(launcher)
+        if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
+            kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
+    kodi.notify('Deleted ROM {}'.format(rom_name))
 
 # ------------------------------------------------------------------------------------------------
 # Manage ROMs command
