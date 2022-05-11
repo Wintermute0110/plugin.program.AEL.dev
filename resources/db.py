@@ -664,7 +664,7 @@ def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0
     # It is much faster to create a list of string and them join them!
     # See https://waymoot.org/home/python_string/
     sl = []
-    sl.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    sl.append('<?xml encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher version="{}">'.format(const.AEL_STORAGE_FORMAT))
 
     # --- Control information ---
@@ -972,7 +972,7 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Print some information in the XML so the user can now which launcher created it.
     # Note that this is ignored when reading the file.
     sl = []
-    sl.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    sl.append('<?xml encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
     sl.append('<launcher>')
     sl.append(text_XML('id', launcher['id']))
@@ -1009,7 +1009,7 @@ def write_Favourites_JSON(roms_json_file, roms):
 def write_Collection_index_XML(xml_fname, collections):
     log.info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     sl = []
-    sl.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    sl.append('<?xml encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(const.AEL_STORAGE_FORMAT))
     # Control information.
     sl.append('<control>')
@@ -1391,8 +1391,7 @@ def export_ROM_NFO(rom, verbose = True):
         misc.XML('esrb', rom['m_esrb']),
         misc.XML('rating', rom['m_rating']),
         misc.XML('plot', rom['m_plot']),
-        '</game>',
-        '',
+        '</game>\n',
     ]
     # TODO: report error if exception is produced here.
     utils.write_slist_to_file(nfo_file_path, nfo_content)
@@ -1561,7 +1560,7 @@ def export_category_NFO(NFO_FN, category):
         misc.XML('developer', category['m_developer']),
         misc.XML('rating', category['m_rating']),
         misc.XML('plot', category['m_plot']),
-        '</category>', # End file in newline
+        '</category>\n', # End file in newline
     ]
     utils.write_slist_to_file(NFO_FN.getPath(), nfo_slist)
     return True
@@ -1598,7 +1597,7 @@ def export_collection_NFO(nfo_FileName, collection):
         misc.XML('genre', collection['m_genre']),
         misc.XML('rating', collection['m_rating']),
         misc.XML('plot', collection['m_plot']),
-        '</collection>', # End file in newline
+        '</collection>\n', # End file in newline
     ]
     utils_write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
     return True

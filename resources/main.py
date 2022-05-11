@@ -4409,8 +4409,6 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
     mdic = {
         # Current position in menu. First element of the list is the menu root.
         # Second, third, etc., is for nested menus.
-        # mpos tuple content standard: (menu_ID, menu message)
-        # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
         'mpos' : [0],
         'execute_menu' : True,
         'continue_flag' : False, # Continue while loop after mgui_render_menu() function
@@ -4437,11 +4435,14 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
         elif mdic['command'] == 'EDIT_METADATA_DEVELOPER':
             save_DB_flag = mgui_edit_metadata_str(rom, 'm_developer', 'ROM Developer')
 
+
         elif mdic['command'] == 'EDIT_METADATA_NPLAYERS':
             save_DB_flag = mgui_edit_metadata_str(rom, 'm_nplayers', 'ROM NPlayers')
 
+
         elif mdic['command'] == 'EDIT_METADATA_ESRB':
             save_DB_flag = mgui_edit_metadata_str(rom, 'm_esrb', 'ROM ESRB')
+
 
         elif mdic['command'] == 'EDIT_METADATA_RATING':
             save_DB_flag = mgui_edit_rating(rom, 'm_rating', 'ROM Rating')
@@ -4474,8 +4475,9 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
             # kodi.notify('Exported ROM NFO file {}'.format(NFO_FN.getPath()))
 
         # How to deal with the metadata scrapers???
-
-
+        # Special command strings like "EDIT_METADATA_SCRAPER_SCRAPERNAME"???
+        # Crate a function in module scrap to deal with this???
+        
 
         elif mdic['command'] == 'EDIT_ASSETS':
             save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_ROM_ID, rom)
@@ -4490,142 +4492,8 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
             save_DB_flag = True
             kodi.dialog_OK('ROM "{}" status is now {}'.format(rom['m_name'], finished_str))
 
-        # If ROM is successfully deleted close context menu.
-        elif mdic['command'] == 'DELETE_CATEGORY':
-            if mgui_delete_ROM(cfg, rom):
-                save_DB_flag = True
-                mdic['execute_menu'] = False
-
-        else:
-            log.error('command_edit_rom() Unsupported command "{}"'.format(mdic['command']))
-            kodi.dialog_OK('command_edit_rom() Unknown command {}. '.format(mdic['command']) +
-                'Please report this bug.')
-            continue
-
-        # Save the database if requested.
-        if save_DB_flag:
-            log.debug('command_edit_rom() Saving ROMs database...')
-            st = utils.new_status_dic()
-            db.save_ROMs(cfg, st)
-        log.debug('command_edit_rom() End of loop...')
-    kodi.notify('Finish Edit ROM')
-    utils.refresh_container()
-
-def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
-    # ROM metadata.
-    rom = cfg.roms[romID]
-    finished_str = 'Finished' if rom['finished'] == True else 'Unfinished'
-    NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
-    plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
-    # Make a menu list of available metadata scrapers.
-    scrap_factory = scrap.ScraperFactory(cfg, cfg.settings)
-    scraper_menu_list = scrap_factory.get_metadata_scraper_menu_list()
-    # Common edit metadata menu
-    common_menu_list = [
-        ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(rom['m_name'])),
-        ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(rom['m_year'])),
-        ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(rom['m_genre'])),
-        ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(rom['m_developer'])),
-        ('EDIT_METADATA_NPLAYERS', 'Edit NPlayers "{}"'.format(rom['m_nplayers'])),
-        ('EDIT_METADATA_ESRB', 'Edit ESRB rating "{}"'.format(rom['m_esrb'])),
-        ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(rom['m_rating'])),
-        ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
-        ('IMPORT_NFO_FILE', 'Import NFO file ({})'.format(NFO_found_str)),
-        ('SAVE_NFO_FILE', 'Save NFO file'),
-    ]
-    # Build dynamic menus.
-    if launcherID == const.VLAUNCHER_FAVOURITES_ID:
-        menu_list = [
-            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
-            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
-                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
-                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
-            ]),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
-            ('DELETE_ROM', 'Delete Favourite ROM'),
-            ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...'),
-        ]
-    elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
-        menu_list = [
-            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
-            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...'),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
-            ('DELETE_ROM', 'Delete Collection ROM'),
-            ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...'),
-            ('MANAGE_COLLECTION_ROM_POS', 'Manage Collection ROM position...'),
-        ]
-    else:
-        menu_list = [
-            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
-            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
-                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
-                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
-            ]),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', [
-                ('EDIT_CHANGE_ROM_FILE', 'Change ROM file "{}"'.format(rom['filename'])),
-                ('EDIT_CHANGE_ALT_APP', 'Alternative application "{}"'.format(rom['altapp'])),
-                ('EDIT_CHANGE_ALT_ARG', 'Alternative arguments "{}"'.format(rom['altarg'])),
-            ], 'Title of the dialog, implement me!'),
-            ('DELETE_ROM', 'Delete ROM'),
-        ]
-    return menu_list
-
-def command_edit_rom_OLD(self, categoryID, launcherID, romID):
-    # --- Edit ROM metadata ---
-    if mindex == 0:
-        # --- Scrap ROM metadata ---
-        if mindex2 >= 10:
-            # --- Use the scraper chosen by user ---
-            scraper_index = mindex2 - len(common_menu_list)
-            scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
-
-            # Prepare data for scraping.
-            rom = roms[romID]
-            ROM_FN = utils.FileName(rom['filename'])
-            if rom['disks']:
-                ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
-            else:
-                ROM_hash_FN = ROM_FN
-            if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
-                platform = rom['platform']
-            else:
-                platform = self.launchers[launcherID]['platform']
-            data_dic = {
-                'ROM_FN' : ROM_FN,
-                'ROM_hash_FN' : ROM_hash_FN,
-                'platform' : platform,
-            }
-
-            # --- Scrape! ---
-            # If status_dic['status'] is False then some error happened. Do not save
-            # the database and return immediately.
-            # Scraper caches are flushed. An error here could mean that no metadata
-            # was found, however the cache can have valid data for the candidates.
-            # Remember to flush caches after scraping.
-            st_dic = utils.new_status_dic()
-            s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
-            s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
-            g_scrap_factory.destroy_CM()
-            if kodi_display_status_message(st_dic): return
-
-    # --- Advanced ROM Modifications ---
-    elif mindex == 4:
-        sDialog = KodiSelectDialog('Advanced ROM Modifications', [
-            "Change ROM file: '{}'".format(roms[romID]['filename']),
-            "Alternative application: '{}'".format(roms[romID]['altapp']),
-            "Alternative arguments: '{}'".format(roms[romID]['altarg']),
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # Change ROM file
-        if mindex2 == 0:
+        # Advanced ROM Modifications -> Change ROM file
+        elif mdic['command'] == 'EDIT_CHANGE_ROM_FILE':
             # Abort if multidisc ROM
             if roms[romID]['disks']:
                 kodi.dialog_OK('Edition of multidisc ROMs not supported yet.')
@@ -4636,35 +4504,29 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             item_file = kodi_dialog_get_file('Select the file', '.' + romext.replace('|', '|.', filename))
             if not item_file: return
             roms[romID]['filename'] = item_file
-        # Alternative launcher application file path
-        elif mindex2 == 1:
+
+        # Advanced ROM Modifications -> Alternative launcher application file path
+        elif mdic['command'] == 'EDIT_CHANGE_ALT_APP':
             filter_str = '.bat|.exe|.cmd' if is_windows() else ''
             filename = roms[romID]['altapp']
             item_file = kodi_dialog_get_file('Select ROM custom launcher application', filter_str, filename)
             if not altapp: return
             roms[romID]['altapp'] = altapp
-        # Alternative launcher arguments
-        elif mindex2 == 2:
+
+        # Advanced ROM Modifications -> Alternative launcher arguments
+        elif mdic['command'] == 'EDIT_CHANGE_ALT_ARG':
             t = 'Edit ROM custom application arguments'
             roms[romID]['altarg'] = kodi_get_keyboard_text(t, roms[romID]['altarg'])
 
+        # If ROM is successfully deleted close context menu.
+        elif mdic['command'] == 'DELETE_ROM':
+            if mgui_delete_ROM(cfg, rom):
+                save_DB_flag = True
+                mdic['execute_menu'] = False
 
-    # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
-    elif mindex == 6:
-        sDialog = KodiSelectDialog('Manage ROM object', [
-            'Choose another parent ROM (launcher info only)...',
-            'Choose another parent ROM (update all)...',
-            'Copy launcher info from parent ROM',
-            'Copy metadata from parent ROM',
-            'Copy assets/artwork from parent ROM',
-            'Copy all from parent ROM',
-            'Manage default Assets/Artwork...',
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # --- Choose another parent ROM ---
-        if mindex2 == 0 or mindex2 == 1:
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Choose another parent ROM (launcher info only)..."
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Choose another parent ROM (update all)..."
+        elif mdic['command'] == 'EDIT_FAV_NEW_PARENT_LINFO' or mdic['command'] == 'EDIT_FAV_NEW_PARENT_ALL':
             # --- STEP 1: select new launcher ---
             launcher_IDs = []
             launcher_names = []
@@ -4744,11 +4606,12 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Relinked Favourite ROM')
             elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Relinked Collection ROM')
 
-        # --- Copy launcher info from parent ROM ---
-        # --- Copy metadata from parent ROM ---
-        # --- Copy assets/artwork from parent ROM ---
-        # --- Copy all from parent ROM ---
-        elif mindex2 == 2 or mindex2 == 3 or mindex2 == 4 or mindex2 == 5:
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Copy launcher info from parent ROM"
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Copy metadata from parent ROM"
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Copy assets/artwork from parent ROM"
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Copy all from parent ROM"
+        elif mdic['command'] == 'EDIT_FAV_UPDATE_LINFO' or mdic['command'] == 'EDIT_FAV_UPDATE_METADATA' or \
+            mdic['command'] == 'EDIT_FAV_UPDATE_ASSETS' or mdic['command'] == 'EDIT_FAV_UPDATE_ALL':
             # Get launcher and parent ROM. Check Favourite ROM is linked (parent ROM exists)
             fav_rom = roms[romID]
             fav_launcher_id = fav_rom['launcherID']
@@ -4787,8 +4650,257 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             if categoryID == VCATEGORY_FAVOURITES_ID:    kodi_notify('Updated Favourite ROM {}'.format(info_str))
             elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Updated Collection ROM {}'.format(info_str))
 
+        # Root menu "Manage Favourite/Collection ROM object..." -> "Manage default Assets/Artwork..."
+        elif mdic['command'] == 'EDIT_FAV_MANAGE_DEFAUL_ASSETS':
+            raise TypeError
+
+        # Root menu "Manage Collection ROM position..." -> Choose ROM order
+        elif mdic['command'] == 'EDIT_COLLECTION_ROM_ORDER':
+            # Get position of current ROM in the list.
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log.debug('command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
+            log.debug('command_edit_rom() Collection has {} ROMs'.format(num_roms))
+
+            # --- Show a select dialog ---
+            rom_menu_list = []
+            for key in roms:
+                if key == romID: continue
+                rom_menu_list.append(roms[key]['m_name'])
+            rom_menu_list.append('Last')
+            sDialog = KodiSelectDialog('Choose position for ROM {}'.format(roms[romID]['m_name']), rom_menu_list)
+            mindex3 = sDialog.executeDialog()
+            if mindex3 is None: return
+            new_pos_index = mindex3
+            log.debug('command_edit_rom() new_pos_index = {}'.format(new_pos_index))
+
+            # --- Reorder Collection OrderedDict ---
+            # new_oder = [0, 1, ..., num_roms-1]
+            new_order = range(num_roms)
+            # Delete current element
+            del new_order[current_ROM_position]
+            # Insert current element at selected position
+            new_order.insert(new_pos_index, current_ROM_position)
+            log.debug('command_edit_rom() old_order = {}'.format(text_type(range(num_roms))))
+            log.debug('command_edit_rom() new_order = {}'.format(text_type(new_order)))
+
+            # Reorder ROMs
+            new_roms = collections.OrderedDict()
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
+        # Root menu "Manage Collection ROM position..." -> Move Collection ROM up
+        elif mdic['command'] == 'EDIT_COLLECTION_ROM_UP':
+            if not roms:
+                kodi_notify('Collection is empty. Add ROMs to this collection first.')
+                return
+
+            # Get position of current ROM in the list
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log.debug('command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
+            log.debug('command_edit_rom() Collection has {} ROMs'.format(num_roms))
+            log.debug('command_edit_rom() Moving ROM in position {} up'.format(current_ROM_position))
+
+            # If ROM is first of the list do nothing
+            if current_ROM_position == 0:
+                kodi.dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
+                return
+
+            # Reorder OrderedDict
+            # http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+            new_order                           = range(num_roms)
+            new_order[current_ROM_position - 1] = current_ROM_position
+            new_order[current_ROM_position]     = current_ROM_position - 1
+            new_roms = collections.OrderedDict()
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
+        # Root menu "Manage Collection ROM position..." -> Move Collection ROM down
+        elif mdic['command'] == 'EDIT_COLLECTION_ROM_DOWN':
+            if not roms:
+                kodi_notify('Collection is empty. Add ROMs to this collection first.')
+                return
+
+            # Get position of current ROM in the list.
+            num_roms = len(roms)
+            current_ROM_position = roms.keys().index(romID)
+            if current_ROM_position < 0:
+                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
+                return
+            log.debug('command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
+            log.debug('command_edit_rom() Collection has {} ROMs'.format(num_roms))
+            log.debug('command_edit_rom() Moving ROM in position {} down'.format(current_ROM_position))
+
+            # If ROM is first of the list do nothing
+            if current_ROM_position == num_roms - 1:
+                kodi.dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
+                return
+
+            # Reorder OrderedDict
+            # http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
+            new_order                           = range(num_roms)
+            new_order[current_ROM_position]     = current_ROM_position + 1
+            new_order[current_ROM_position + 1] = current_ROM_position
+            new_roms = collections.OrderedDict()
+            for order_idx in new_order:
+                key_value_tuple = roms.items()[order_idx]
+                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
+            roms = new_roms
+
+        else:
+            log.error('command_edit_rom() Unsupported command "{}"'.format(mdic['command']))
+            kodi.dialog_OK('command_edit_rom() Unknown command {}. '.format(mdic['command']) +
+                'Please report this bug.')
+            continue
+
+        # Save the database if requested.
+        if save_DB_flag:
+            log.debug('command_edit_rom() Saving ROMs database...')
+            st = utils.new_status_dic()
+            db.save_ROMs(cfg, st)
+        log.debug('command_edit_rom() End of loop...')
+    kodi.notify('Finish Edit ROM')
+    utils.refresh_container()
+
+def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
+    # ROM metadata.
+    rom = cfg.roms[romID]
+    finished_str = 'Finished' if rom['finished'] == True else 'Unfinished'
+    NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
+    plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
+    # Make a menu list of available metadata scrapers.
+    scrap_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    scraper_menu_list = scrap_factory.get_metadata_scraper_menu_list()
+    # Common edit metadata menu
+    common_menu_list = [
+        ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(rom['m_name'])),
+        ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(rom['m_year'])),
+        ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(rom['m_genre'])),
+        ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(rom['m_developer'])),
+        ('EDIT_METADATA_NPLAYERS', 'Edit NPlayers "{}"'.format(rom['m_nplayers'])),
+        ('EDIT_METADATA_ESRB', 'Edit ESRB rating "{}"'.format(rom['m_esrb'])),
+        ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(rom['m_rating'])),
+        ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
+        ('IMPORT_NFO_FILE', 'Import NFO file ({})'.format(NFO_found_str)),
+        ('SAVE_NFO_FILE', 'Save NFO file'),
+    ]
+    # Build dynamic menus.
+    if launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
+                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
+                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
+            ]),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('DELETE_ROM', 'Delete Favourite ROM'),
+            ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...', [
+                ('EDIT_FAV_NEW_PARENT_LINFO', 'Choose another parent ROM (launcher info only)...'),
+                ('EDIT_FAV_NEW_PARENT_ALL', 'Choose another parent ROM (update all)...'),
+                ('EDIT_FAV_UPDATE_LINFO', 'Copy launcher info from parent ROM'),
+                ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
+                ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
+                ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
+                ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
+            ], 'Manage Favourite ROM object'),
+        ]
+    elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...'),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('DELETE_ROM', 'Delete Collection ROM'),
+            ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...', [
+                ('EDIT_FAV_NEW_PARENT_LINFO', 'Choose another parent ROM (launcher info only)...'),
+                ('EDIT_FAV_NEW_PARENT_ALL', 'Choose another parent ROM (update all)...'),
+                ('EDIT_FAV_UPDATE_LINFO', 'Copy launcher info from parent ROM'),
+                ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
+                ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
+                ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
+                ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
+            ], 'Manage Favourite ROM object'),
+            ('MANAGE_COLLECTION_ROM_POS', 'Manage Collection ROM position...', [
+                ('EDIT_COLLECTION_ROM_ORDER', 'Choose Collection ROM order...'),
+                ('EDIT_COLLECTION_ROM_UP', 'Move Collection ROM up'),
+                ('EDIT_COLLECTION_ROM_DOWN', 'Move Collection ROM down'),
+            ], 'Manage ROM position'),
+        ]
+    else:
+        menu_list = [
+            ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
+            ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
+                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
+                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
+            ]),
+            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', [
+                ('EDIT_CHANGE_ROM_FILE', 'Change ROM file "{}"'.format(rom['filename'])),
+                ('EDIT_CHANGE_ALT_APP', 'Alternative application "{}"'.format(rom['altapp'])),
+                ('EDIT_CHANGE_ALT_ARG', 'Alternative arguments "{}"'.format(rom['altarg'])),
+            # Implement this!
+            ], 'Title of the dialog, implement me!'),
+            ('DELETE_ROM', 'Delete ROM'),
+        ]
+    return menu_list
+
+def command_edit_rom_OLD(self, categoryID, launcherID, romID):
+    # --- Edit ROM metadata ---
+    if mindex == 0:
+        # --- Scrap ROM metadata ---
+        if mindex2 >= 10:
+            # --- Use the scraper chosen by user ---
+            scraper_index = mindex2 - len(common_menu_list)
+            scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
+
+            # Prepare data for scraping.
+            rom = roms[romID]
+            ROM_FN = utils.FileName(rom['filename'])
+            if rom['disks']:
+                ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
+            else:
+                ROM_hash_FN = ROM_FN
+            if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+                platform = rom['platform']
+            else:
+                platform = self.launchers[launcherID]['platform']
+            data_dic = {
+                'ROM_FN' : ROM_FN,
+                'ROM_hash_FN' : ROM_hash_FN,
+                'platform' : platform,
+            }
+
+            # --- Scrape! ---
+            # If status_dic['status'] is False then some error happened. Do not save
+            # the database and return immediately.
+            # Scraper caches are flushed. An error here could mean that no metadata
+            # was found, however the cache can have valid data for the candidates.
+            # Remember to flush caches after scraping.
+            st_dic = utils.new_status_dic()
+            s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
+            s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
+            g_scrap_factory.destroy_CM()
+            if kodi_display_status_message(st_dic): return
+
+    # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
+    elif mindex == 6:
         # --- Choose default Favourite/Collection assets/artwork ---
-        elif mindex2 == 6:
+        if mindex2 == 6:
             rom = roms[romID]
 
             # Label1 an label2.
@@ -4887,121 +4999,12 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
                 if type_s is None: return
                 assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
 
-    # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
-    elif mindex == 7:
-        sDialog = KodiSelectDialog('Manage ROM position', [
-            'Choose Collection ROM order...',
-            'Move Collection ROM up',
-            'Move Collection ROM down',
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # --- Choose ROM order ---
-        if mindex2 == 0:
-            # Get position of current ROM in the list.
-            num_roms = len(roms)
-            current_ROM_position = roms.keys().index(romID)
-            if current_ROM_position < 0:
-                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
-                return
-            log.debug('_command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
-            log.debug('_command_edit_rom() Collection has {} ROMs'.format(num_roms))
-
-            # --- Show a select dialog ---
-            rom_menu_list = []
-            for key in roms:
-                if key == romID: continue
-                rom_menu_list.append(roms[key]['m_name'])
-            rom_menu_list.append('Last')
-            sDialog = KodiSelectDialog('Choose position for ROM {}'.format(roms[romID]['m_name']), rom_menu_list)
-            mindex3 = sDialog.executeDialog()
-            if mindex3 is None: return
-            new_pos_index = mindex3
-            log.debug('_command_edit_rom() new_pos_index = {}'.format(new_pos_index))
-
-            # --- Reorder Collection OrderedDict ---
-            # new_oder = [0, 1, ..., num_roms-1]
-            new_order = range(num_roms)
-            # Delete current element
-            del new_order[current_ROM_position]
-            # Insert current element at selected position
-            new_order.insert(new_pos_index, current_ROM_position)
-            log.debug('_command_edit_rom() old_order = {}'.format(text_type(range(num_roms))))
-            log.debug('_command_edit_rom() new_order = {}'.format(text_type(new_order)))
-
-            # Reorder ROMs
-            new_roms = collections.OrderedDict()
-            for order_idx in new_order:
-                key_value_tuple = roms.items()[order_idx]
-                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
-            roms = new_roms
-
-        # --- Move Collection ROM up ---
-        elif mindex2 == 1:
-            if not roms:
-                kodi_notify('Collection is empty. Add ROMs to this collection first.')
-                return
-
-            # Get position of current ROM in the list
-            num_roms = len(roms)
-            current_ROM_position = roms.keys().index(romID)
-            if current_ROM_position < 0:
-                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
-                return
-            log.debug('_command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
-            log.debug('_command_edit_rom() Collection has {} ROMs'.format(num_roms))
-            log.debug('_command_edit_rom() Moving ROM in position {} up'.format(current_ROM_position))
-
-            # If ROM is first of the list do nothing
-            if current_ROM_position == 0:
-                kodi.dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
-                return
-
-            # Reorder OrderedDict
-            # http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
-            new_order                           = range(num_roms)
-            new_order[current_ROM_position - 1] = current_ROM_position
-            new_order[current_ROM_position]     = current_ROM_position - 1
-            new_roms = collections.OrderedDict()
-            for order_idx in new_order:
-                key_value_tuple = roms.items()[order_idx]
-                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
-            roms = new_roms
-
-        # --- Move Collection ROM down ---
-        elif mindex2 == 2:
-            if not roms:
-                kodi_notify('Collection is empty. Add ROMs to this collection first.')
-                return
-
-            # Get position of current ROM in the list.
-            num_roms = len(roms)
-            current_ROM_position = roms.keys().index(romID)
-            if current_ROM_position < 0:
-                kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
-                return
-            log.debug('_command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
-            log.debug('_command_edit_rom() Collection has {} ROMs'.format(num_roms))
-            log.debug('_command_edit_rom() Moving ROM in position {} down'.format(current_ROM_position))
-
-            # If ROM is first of the list do nothing
-            if current_ROM_position == num_roms - 1:
-                kodi.dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
-                return
-
-            # Reorder OrderedDict
-            # http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
-            new_order                           = range(num_roms)
-            new_order[current_ROM_position]     = current_ROM_position + 1
-            new_order[current_ROM_position + 1] = current_ROM_position
-            new_roms = collections.OrderedDict()
-            for order_idx in new_order:
-                key_value_tuple = roms.items()[order_idx]
-                new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
-            roms = new_roms
-
     # --- Save ROMs or Favourites ROMs or Collection ROMs ---
+    
+    
+    # -----------------------> TODO Move this stuff to db.save_ROMs() <---------------------------
+    
+    
     # Always save if we reach this point of the function
     if launcherID == VLAUNCHER_FAVOURITES_ID:
         fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms)
