@@ -330,7 +330,7 @@ def load_XML_to_ET(filename):
             log.error('load_XML_to_ET() (IOError) Unhandled errno value.')
     except xml.etree.ElementTree.ParseError as ex:
         log.error('load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
-        log.error('load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
+        log.error('load_XML_to_ET() (ParseError) {}'.format(const.text_type(ex)))
     return xml_tree
 
 # -------------------------------------------------------------------------------------------------

@@ -1330,17 +1330,17 @@ def create_vcategories_data_Browse_by(cfg):
 # Renders the launchers belonging to a category.
 def render_launchers_in_category(cfg, categoryID):
     # Set content type
-    misc_set_all_sorting_methods()
-    misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
-    misc_clear_AEL_Launcher_Content()
+    misc_set_all_sorting_methods(cfg)
+    misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
+    misc_clear_AEL_Launcher_Content(cfg)
 
     # If the category has no launchers then render nothing
     launcher_IDs = []
-    for launcher_id in self.launchers:
+    for launcher_id in cfg.launchers:
         if cfg.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
     if not launcher_IDs:
         category_name = cfg.categories[categoryID]['m_name']
-        kodi_notify('Category {} has no launchers. Add launchers first.'.format(category_name))
+        kodi.notify('Category {} has no launchers. Add launchers first.'.format(category_name))
         # NOTE If we return at this point Kodi produces and error:
         # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
         # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
@@ -2909,29 +2909,19 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 # ------------------------------------------------------------------------------------------------
 # Editing commands
 # ------------------------------------------------------------------------------------------------
-# New generation context menu implementation. Avoid recursive implementation.
+# New generation context menu implementation. Avoid recursive implementations.
 def command_edit_category(cfg, categoryID):
-    mdic = {
-        # Current position in menu. First element of the list is the menu root.
-        # Second, third, etc., is for nested menus.
-        # mpos tuple content standard: (menu_ID, menu message)
-        # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
-        'mpos' : [0],
-        'execute_menu' : True,
-    }
+    mdic = mgui_initialise_menu_dictionary()
     while mdic['execute_menu']:
-        category = cfg.categories[categoryID]
-        mdic['diag_title'] = 'Select action for Category [COLOR orange]{}[/COLOR]'.format(category['m_name'])
-
+        log.debug('command_edit_category() Beginning of loop...')
         # The Menu changes if the category being edited changes, so it must be rebuilt dynamically.
-        log.debug('Building menu...')
         mdic['menu'] = command_edit_category_build_menu(cfg, categoryID)
-        log.debug('Rendering menu...')
         mgui_render_menu(mdic)
         if mdic['continue_flag']: continue
 
         # Execute command.
         log.debug('Executing command "{}"'.format(mdic['command']))
+        category = cfg.categories[categoryID]
         save_DB_flag = False # By default do not save the database unless told to do so.
         if mdic['command'] == 'EDIT_METADATA_TITLE':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'Category Title')
@@ -3008,12 +2998,15 @@ def command_edit_category(cfg, categoryID):
 # The menu is dynamic because the category being edited may change.
 def command_edit_category_build_menu(cfg, categoryID):
     cat = cfg.categories[categoryID]
+    root_dialog_title = 'Select action for Category [COLOR orange]{}[/COLOR]'.format(cat['m_name'])
     finished_str = 'Finished' if cat['finished'] == True else 'Unfinished'
     NFO_FN = db.get_category_NFO_name(cfg, cat)
     NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
     plot_str = misc.limit_string(cat['m_plot'], const.PLOT_STR_MAXSIZE)
     return [
+        root_dialog_title,
         ('EDIT_METADATA', 'Edit Metadata...', [
+            'Edit Category metadata',
             ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(cat['m_name'])),
             ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(cat['m_year'])),
             ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(cat['m_genre'])),
@@ -4406,25 +4399,16 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
     db.load_ROMs(cfg, st, categoryID, launcherID)
 
     # Edit ROM context menu menu logic.
-    mdic = {
-        # Current position in menu. First element of the list is the menu root.
-        # Second, third, etc., is for nested menus.
-        'mpos' : [0],
-        'execute_menu' : True,
-        'continue_flag' : False, # Continue while loop after mgui_render_menu() function
-    }
+    mdic = mgui_initialise_menu_dictionary()
     while mdic['execute_menu']:
-        rom = cfg.roms[romID]
-        mdic['diag_title'] = 'Edit ROM [COLOR orange]{}[/COLOR]'.format(rom['m_name'])
-
-        log.debug('Building menu...')
+        log.debug('command_edit_rom() Beginning of loop...')
         mdic['menu'] = command_edit_rom_build_menu(cfg, categoryID, launcherID, romID)
-        log.debug('Rendering menu...')
         mgui_render_menu(mdic)
         if mdic['continue_flag']: continue
 
         # Execute command.
         log.debug('Executing command "{}"'.format(mdic['command']))
+        rom = cfg.roms[romID]
         save_DB_flag = False # By default do not save the database unless told to do so.
         if mdic['command'] == 'EDIT_METADATA_TITLE':
             save_DB_flag = mgui_edit_metadata_str(rom, 'm_name', 'ROM Title')
@@ -4774,8 +4758,10 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
     utils.refresh_container()
 
 def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
+    log.debug('command_edit_rom_build_menu() Building menu...')
     # ROM metadata.
     rom = cfg.roms[romID]
+    root_dialog_title = 'Select action for ROM [COLOR orange]{}[/COLOR]'.format(rom['m_name'])
     finished_str = 'Finished' if rom['finished'] == True else 'Unfinished'
     NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
     plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
@@ -4784,6 +4770,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
     scraper_menu_list = scrap_factory.get_metadata_scraper_menu_list()
     # Common edit metadata menu
     common_menu_list = [
+        'Modify ROM metadata',
         ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(rom['m_name'])),
         ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(rom['m_year'])),
         ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(rom['m_genre'])),
@@ -4795,66 +4782,64 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
         ('IMPORT_NFO_FILE', 'Import NFO file ({})'.format(NFO_found_str)),
         ('SAVE_NFO_FILE', 'Save NFO file'),
     ]
+    edit_assets_all_menu_list = [
+        'Edit ROM Assets/Artwork (all)',
+        ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
+        ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
+    ]
+    edit_advanced_mods_menu_list = [
+        'Edit ROM advanced modifications',
+        ('EDIT_CHANGE_ROM_FILE', 'Change ROM file "{}"'.format(rom['filename'])),
+        ('EDIT_CHANGE_ALT_APP', 'Alternative application "{}"'.format(rom['altapp'])),
+        ('EDIT_CHANGE_ALT_ARG', 'Alternative arguments "{}"'.format(rom['altarg'])),
+    ]
+    edit_manage_fav_obj_menu_list = [
+        'Manage Favourite/Collection ROM object',
+        ('EDIT_FAV_NEW_PARENT_LINFO', 'Choose another parent ROM (launcher info only)...'),
+        ('EDIT_FAV_NEW_PARENT_ALL', 'Choose another parent ROM (update all)...'),
+        ('EDIT_FAV_UPDATE_LINFO', 'Copy launcher info from parent ROM'),
+        ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
+        ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
+        ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
+        ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
+    ]
     # Build dynamic menus.
     if launcherID == const.VLAUNCHER_FAVOURITES_ID:
         menu_list = [
+            root_dialog_title,
             ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
             ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
-                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
-                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
-            ]),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', edit_assets_all_menu_list),
+            ('EDIT_STATUS', 'ROM status [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', edit_advanced_mods_menu_list),
             ('DELETE_ROM', 'Delete Favourite ROM'),
-            ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...', [
-                ('EDIT_FAV_NEW_PARENT_LINFO', 'Choose another parent ROM (launcher info only)...'),
-                ('EDIT_FAV_NEW_PARENT_ALL', 'Choose another parent ROM (update all)...'),
-                ('EDIT_FAV_UPDATE_LINFO', 'Copy launcher info from parent ROM'),
-                ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
-                ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
-                ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
-                ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
-            ], 'Manage Favourite ROM object'),
+            ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...', edit_manage_fav_obj_menu_list),
         ]
     elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         menu_list = [
+            root_dialog_title,
             ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
             ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...'),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', edit_assets_all_menu_list),
+            ('EDIT_STATUS', 'ROM status [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', edit_advanced_mods_menu_list),
             ('DELETE_ROM', 'Delete Collection ROM'),
-            ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...', [
-                ('EDIT_FAV_NEW_PARENT_LINFO', 'Choose another parent ROM (launcher info only)...'),
-                ('EDIT_FAV_NEW_PARENT_ALL', 'Choose another parent ROM (update all)...'),
-                ('EDIT_FAV_UPDATE_LINFO', 'Copy launcher info from parent ROM'),
-                ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
-                ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
-                ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
-                ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
-            ], 'Manage Favourite ROM object'),
+            ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...', edit_manage_fav_obj_menu_list),
             ('MANAGE_COLLECTION_ROM_POS', 'Manage Collection ROM position...', [
+                'Manage Collection ROM position',
                 ('EDIT_COLLECTION_ROM_ORDER', 'Choose Collection ROM order...'),
                 ('EDIT_COLLECTION_ROM_UP', 'Move Collection ROM up'),
                 ('EDIT_COLLECTION_ROM_DOWN', 'Move Collection ROM down'),
-            ], 'Manage ROM position'),
+            ]),
         ]
     else:
         menu_list = [
+            root_dialog_title,
             ('EDIT_METADATA', 'Edit Metadata...', common_menu_list + scraper_menu_list),
             ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
-            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', [
-                ('EDIT_ASSETS_ALL_SCRAPE', 'Scrape all assets (choose scraper)'),
-                ('EDIT_ASSETS_ALL_UNSET', 'Unset all assets'),
-            ]),
-            ('EDIT_STATUS', 'ROM status: [COLOR orange]{}[/COLOR]'.format(finished_str)),
-            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', [
-                ('EDIT_CHANGE_ROM_FILE', 'Change ROM file "{}"'.format(rom['filename'])),
-                ('EDIT_CHANGE_ALT_APP', 'Alternative application "{}"'.format(rom['altapp'])),
-                ('EDIT_CHANGE_ALT_ARG', 'Alternative arguments "{}"'.format(rom['altarg'])),
-            # Implement this!
-            ], 'Title of the dialog, implement me!'),
+            ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', edit_assets_all_menu_list),
+            ('EDIT_STATUS', 'ROM status [COLOR orange]{}[/COLOR]'.format(finished_str)),
+            ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', edit_advanced_mods_menu_list),
             ('DELETE_ROM', 'Delete ROM'),
         ]
     return menu_list
@@ -5352,13 +5337,34 @@ def command_edit_collection(self, categoryID, launcherID):
 # ------------------------------------------------------------------------------------------------
 # Edit menu auxiliar functions.
 # ------------------------------------------------------------------------------------------------
+# Returns mdic dicionary used by mgui_render_menu()
+def mgui_initialise_menu_dictionary():
+    return {
+        # Current position in menu. First element of the list is the menu root.
+        # Second, third, etc., is for nested menus.
+        # mpos tuple content standard: (menu_ID, menu message)
+        # mpos tuple content submenu: (menu_ID, menu message, sub_menu_list)
+        'mpos' : [1],
+        'execute_menu' : True,
+        'continue_flag' : False, # Continue while loop after mgui_render_menu() function
+    }
+
+# menu_list_example = [
+#    'Select dialog title',
+#    ('EDIT_METADATA', 'Edit Metadata...', [
+#        'Select dialog title',
+#        ('EDIT_METADATA_TITLE', 'Edit Title '),
+#        ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year'),
+#    ]),
+#    ('EDIT_ASSETS', 'Edit Assets...'),
+# ]
 def mgui_render_menu(mdic):
     log.debug('mgui_render_menu() BEGIN function...')
 
     # Initizialze variables.
     mdic['execute_menu'] = True
     mdic['continue_flag'] = False
-    mdic['command'] = ''
+    mdic['command'] = None
     menu_list = mdic['menu']
     mpos_list = mdic['mpos']
 
@@ -5366,9 +5372,14 @@ def mgui_render_menu(mdic):
     log.debug('mpos_list = {}'.format(pprint.pformat(mpos_list)))
     flag_root_menu = len(mpos_list) == 1
     m_iterable = menu_list if flag_root_menu else menu_list[mpos_list[-2]][2]
-    mlist = [mtuple[1] for mtuple in m_iterable]
+    # First elemnt of iterable list is the select dialog title.
+    # Next elements are the menu data tuples.
+    diag_title = m_iterable[0]
+    mlist = [m_iterable[i][1] for i in range(1, len(m_iterable))]
     pre_select_idx = mpos_list[-1]
-    sDialog = kodi.SelectDialog(mdic['diag_title'], mlist, pre_select_idx)
+    # Careful: menu indices start from 1. Select indices start from 0.
+    # This is to account for the select dialog title.
+    sDialog = kodi.SelectDialog(diag_title, mlist, pre_select_idx - 1)
     mindex = sDialog.executeDialog()
     log.debug('mindex = {}'.format(pprint.pformat(mindex)))
     # Exit context menu or move one step down in the menu chain.
@@ -5384,12 +5395,13 @@ def mgui_render_menu(mdic):
         mdic['continue_flag'] = True
         return
     # Update pre selected menu entry.
-    mpos_list[-1] = mindex
+    mpos_list[-1] = mindex + 1
     # Check if open submenu or execute command.
-    mtuple_t = m_iterable[mindex]
+    # Add 1 because first element of list is the dialog title.
+    mtuple_t = m_iterable[mindex + 1]
     if len(mtuple_t) == 3:
-        # Open submenu.
-        mpos_list.append(0)
+        # Open submenu. Default index is 1 to account for the select dialog title.
+        mpos_list.append(1)
         mdic['continue_flag'] = True
         return
     mdic['command'] = mtuple_t[0]
