@@ -664,7 +664,7 @@ def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0
     # It is much faster to create a list of string and them join them!
     # See https://waymoot.org/home/python_string/
     sl = []
-    sl.append('<?xml encoding="utf-8"?>')
+    sl.append('<?xml version="1.0" encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher version="{}">'.format(const.AEL_STORAGE_FORMAT))
 
     # --- Control information ---
@@ -972,7 +972,7 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Print some information in the XML so the user can now which launcher created it.
     # Note that this is ignored when reading the file.
     sl = []
-    sl.append('<?xml encoding="utf-8"?>')
+    sl.append('<?xml version="1.0" encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
     sl.append('<launcher>')
     sl.append(text_XML('id', launcher['id']))
@@ -1009,7 +1009,7 @@ def write_Favourites_JSON(roms_json_file, roms):
 def write_Collection_index_XML(xml_fname, collections):
     log.info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     sl = []
-    sl.append('<?xml encoding="utf-8"?>')
+    sl.append('<?xml version="1.0" encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(const.AEL_STORAGE_FORMAT))
     # Control information.
     sl.append('<control>')
@@ -1277,7 +1277,7 @@ def collection_ROM_index_by_romID(romID, collection_rom_list):
 def write_VCategory_XML(roms_xml_file, roms):
     log.info('write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
     sl = []
-    sl.append('<?xml encoding="UTF-8" ?>')
+    sl.append('<?xml version="1.0" encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_Virtual_Category_index version="{}">'.format(AEL_STORAGE_FORMAT))
 
     # --- Control information ---
@@ -1380,7 +1380,7 @@ def export_ROM_NFO(rom, verbose = True):
 
     # Always overwrite NFO files.
     nfo_content = [
-        '<?xml encoding="UTF-8" ?>',
+        '<?xml version="1.0" encoding="utf-8"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<game>',
         misc.XML('title', rom['m_name']),
@@ -1479,7 +1479,7 @@ def export_launcher_NFO(nfo_FN, launcher):
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml encoding="UTF-8" ?>',
+        '<?xml version="1.0" encoding="utf-8"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<launcher>',
         misc.XML('year', launcher['m_year']),
@@ -1552,7 +1552,7 @@ def export_category_NFO(NFO_FN, category):
     log.debug('export_category_NFO() Exporting "{}"'.format(NFO_FN.getPath()))
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml encoding="UTF-8" ?>',
+        '<?xml version="1.0" encoding="utf-8"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<category>',
         misc.XML('year', category['m_year']),
@@ -1591,7 +1591,7 @@ def export_collection_NFO(nfo_FileName, collection):
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml encoding="UTF-8" ?>',
+        '<?xml version="1.0" encoding="utf-8"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<collection>',
         misc.XML('genre', collection['m_genre']),
