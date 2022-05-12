@@ -183,6 +183,11 @@ VCATEGORY_ID_LIST = [
     VCATEGORY_AOS_ID,
 ] + VCATEGORY_BROWSE_BY_ID_LIST
 
+
+# IMPORTANT
+# In many parts of the addon it is important to differentiate the type of launcher.
+# Create more virtual launcher variables??? 
+# Also, how to simplify the addon URLs?
 VLAUNCHER_FAVOURITES_ID = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
@@ -515,7 +520,7 @@ TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'm
 # Use True only for development.
 SCRAPER_CACHE_HUMAN_JSON = True
 
-# --- IDs ---
+# --- Scraper IDs ---
 SCRAPER_NULL_ID          = 10
 SCRAPER_AEL_OFFLINE_ID   = 20
 SCRAPER_THEGAMESDB_ID    = 30

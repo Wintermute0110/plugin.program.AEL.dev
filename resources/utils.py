@@ -685,130 +685,30 @@ else:
     kodi_running_version = KODI_VERSION_MATRIX
 
 # -------------------------------------------------------------------------------------------------
-# Kodi GUI error reporting.
-# * Errors can be reported up in the function backtrace with `if not st_dic['status']: return` after
-#   every function call.
-# * Warnings and non-fatal messages are printed in the callee function.
-# * If st_dic['status'] is True but st_dic['dialog'] is not KODI_MESSAGE_NONE then display
-#   the message but do not abort execution (success information message).
-# * When kodi_display_status_message() is used to display the last message on a chaing of
-#   function calls it is irrelevant its return value because addon always finishes.
-#
-# How to use:
-# def high_level_function():
-#     st_dic = kodi_new_status_dic()
-#     function_that_does_something_that_may_fail(..., st_dic)
-#     if kodi_display_status_message(st_dic): return # Display error message and abort addon execution.
-#     if not st_dic['status']: return # Alternative code to return to caller function.
-#
-# def function_that_does_something_that_may_fail(..., st_dic):
-#     code_that_fails
-#     kodi_set_error_status(st_dic, 'Message') # Or change st_dic manually.
-#     return
-# -------------------------------------------------------------------------------------------------
-KODI_MESSAGE_NONE        = 100
-# Kodi notifications must be short.
-KODI_MESSAGE_NOTIFY      = 200
-KODI_MESSAGE_NOTIFY_WARN = 300
-# Kodi OK dialog to display a message.
-KODI_MESSAGE_DIALOG      = 400
-
-# If st_dic['abort'] is False then everything is OK.
-# If st_dic['abort'] is True then execution must be aborted and error displayed.
-# Success message can also be displayed (st_dic['abort'] False and
-# st_dic['dialog'] is different from KODI_MESSAGE_NONE).
-def new_status_dic():
-    return {
-        'abort' : False,
-        'dialog' : KODI_MESSAGE_NONE,
-        'msg' : '',
-    }
-
-# Display an status/error message in the GUI.
-# Note that it is perfectly OK to display an error message and not abort execution.
-# Returns True in case of error and addon must abort/exit immediately.
-# Returns False if no error.
-#
-# Example of use: if kodi_display_user_message(st_dic): return
-def display_status_message(st_dic):
-    # Display (error) message and return status.
-    if st_dic['dialog'] == KODI_MESSAGE_NONE:
-        pass
-    elif st_dic['dialog'] == KODI_MESSAGE_NOTIFY:
-        kodi_notify(st_dic['msg'])
-    elif st_dic['dialog'] == KODI_MESSAGE_NOTIFY_WARN:
-        kodi_notify(st_dic['msg'])
-    elif st_dic['dialog'] == KODI_MESSAGE_DIALOG:
-        kodi.dialog_OK(st_dic['msg'])
-    else:
-        raise TypeError('st_dic["dialog"] = {}'.format(st_dic['dialog']))
-
-    return st_dic['abort']
-
-def is_error_status(st_dic): return st_dic['abort']
-
-# Utility function to write more compact code.
-# By default error messages are shown in modal OK dialogs.
-def set_error_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG):
-    st_dic['abort'] = True
-    st_dic['msg'] = msg
-    st_dic['dialog'] = dialog
-
-def set_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG, abort = True):
-    st_dic['abort'] = abort
-    st_dic['msg'] = msg
-    st_dic['dialog'] = dialog
-
-def set_st_notify(st_dic, msg):
-    st_dic['abort'] = True
-    st_dic['msg'] = msg
-    st_dic['dialog'] = KODI_MESSAGE_NOTIFY
-
-def set_st_nwarn(st_dic, msg):
-    st_dic['abort'] = True
-    st_dic['msg'] = msg
-    st_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
-
-def set_st_dialog(st_dic, msg):
-    st_dic['abort'] = True
-    st_dic['msg'] = msg
-    st_dic['dialog'] = KODI_MESSAGE_DIALOG
-
-def reset_status(st_dic):
-    st_dic['abort'] = False
-    st_dic['msg'] = ''
-    st_dic['dialog'] = KODI_MESSAGE_NONE
-
-# -------------------------------------------------------------------------------------------------
 # Alternative Kodi GUI error reporting.
 # This is a more phytonic way of reporting errors than using st_dic.
 # -------------------------------------------------------------------------------------------------
+# [TODO] Move this to module const???
+#
 # Create a Exception-derived class and use that for reporting.
 #
 # Example code:
 # try:
 #     function_that_may_fail()
 # except KodiAddonError as ex:
-#     kodi_display_status_message(ex)
+#     kodi.display_exception(ex)
 # else:
-#     kodi_notify('Operation completed')
+#     kodi.notify('Operation completed')
 #
 # def function_that_may_fail():
 #     raise KodiAddonError(msg, dialog)
 class KodiAddonError(Exception):
-    def __init__(self, msg, dialog = KODI_MESSAGE_DIALOG):
-        self.dialog = dialog
+    def __init__(self, msg, dialog = None):
         self.msg = msg
+        self.dialog = dialog
 
     def __str__(self):
         return self.msg
-
-def display_exception(ex):
-    st_dic = kodi_new_status_dic()
-    st_dic['abort'] = True
-    st_dic['dialog'] = ex.dialog
-    st_dic['msg'] = ex.msg
-    display_status_message(st_dic)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi specific stuff

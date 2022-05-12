@@ -1858,7 +1858,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     st = utils.new_status_dic()
     db.get_launcher_info(cfg, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
-    if utils.is_error_status(st):
+    if kodi.is_error_status(st):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         kodi_display_status_message(st)
         return
@@ -1868,7 +1868,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Only standard ROM launchers are filtered.
     filtering_ticks_start = time.time()
     # render_ROMs_filter(cfg, st, launcher)
-    # if utils.is_error_status(st):
+    # if kodi.is_error_status(st):
     #     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
     #     kodi_display_status_message(st)
     #     return
@@ -2022,7 +2022,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
     # Prepare data depending on launcher class ---------------------------------------------------
     if cfg.launcher_is_standard:
         launcher = db.get_launcher(cfg, st, launcherID)
-        if utils.is_error_status(st):
+        if kodi.is_error_status(st):
             xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
             kodi_display_status_message(st)
             return
@@ -4393,8 +4393,11 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
     #     kodi.dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
     #     return
 
+    # Instantiate the unique ScraperFactory object.
+    cfg.s_factory = scrap.ScraperFactory(cfg, cfg.settings)
+
     # Load ROMs.
-    st = utils.new_status_dic()
+    st = kodi.new_status_dic()
     db.get_launcher_info(cfg, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
 
@@ -4458,10 +4461,35 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
             # if not success_flag: continue
             # kodi.notify('Exported ROM NFO file {}'.format(NFO_FN.getPath()))
 
-        # How to deal with the metadata scrapers???
-        # Special command strings like "EDIT_METADATA_SCRAPER_SCRAPERNAME"???
-        # Crate a function in module scrap to deal with this???
-        
+        elif mdic['command'].startswith('EDIT_METADATA_SCRAPER_'):
+            # Prepare data for scraping.
+            ROM_FN = utils.FileName(rom['filename'])
+            if rom['disks']:
+                ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
+            else:
+                ROM_hash_FN = ROM_FN
+            if launcherID == const.VLAUNCHER_FAVOURITES_ID or categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+                platform = rom['platform']
+            else:
+                platform = cfg.launchers[launcherID]['platform']
+            data_dic = {
+                'ROM_FN' : ROM_FN,
+                'ROM_hash_FN' : ROM_hash_FN,
+                'platform' : platform,
+            }
+
+            # --- Scrape! ---
+            # If status_dic['status'] is False then some error happened. Do not save
+            # the database and return immediately.
+            # Scraper caches are flushed. An error here could mean that no metadata
+            # was found, however the cache can have valid data for the candidates.
+            # Remember to flush caches after scraping.
+            st = kodi.new_status_dic()
+            scraper_ID = cfg.s_factory.get_metadata_scraper_ID_from_menu_label(mdic['command'])
+            s_strategy = cfg.s_factory.create_CM_metadata(scraper_ID, platform)
+            s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st)
+            cfg.s_factory.destroy_CM()
+            if kodi.display_status_message(st): return
 
         elif mdic['command'] == 'EDIT_ASSETS':
             save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_ROM_ID, rom)
@@ -4766,8 +4794,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
     NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
     plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
     # Make a menu list of available metadata scrapers.
-    scrap_factory = scrap.ScraperFactory(cfg, cfg.settings)
-    scraper_menu_list = scrap_factory.get_metadata_scraper_menu_list()
+    scraper_menu_list = cfg.s_factory.get_metadata_scraper_menu_list()
     # Common edit metadata menu
     common_menu_list = [
         'Modify ROM metadata',
@@ -4845,45 +4872,8 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
     return menu_list
 
 def command_edit_rom_OLD(self, categoryID, launcherID, romID):
-    # --- Edit ROM metadata ---
-    if mindex == 0:
-        # --- Scrap ROM metadata ---
-        if mindex2 >= 10:
-            # --- Use the scraper chosen by user ---
-            scraper_index = mindex2 - len(common_menu_list)
-            scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
-
-            # Prepare data for scraping.
-            rom = roms[romID]
-            ROM_FN = utils.FileName(rom['filename'])
-            if rom['disks']:
-                ROM_hash_FN = utils.FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
-            else:
-                ROM_hash_FN = ROM_FN
-            if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
-                platform = rom['platform']
-            else:
-                platform = self.launchers[launcherID]['platform']
-            data_dic = {
-                'ROM_FN' : ROM_FN,
-                'ROM_hash_FN' : ROM_hash_FN,
-                'platform' : platform,
-            }
-
-            # --- Scrape! ---
-            # If status_dic['status'] is False then some error happened. Do not save
-            # the database and return immediately.
-            # Scraper caches are flushed. An error here could mean that no metadata
-            # was found, however the cache can have valid data for the candidates.
-            # Remember to flush caches after scraping.
-            st_dic = utils.new_status_dic()
-            s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
-            s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
-            g_scrap_factory.destroy_CM()
-            if kodi_display_status_message(st_dic): return
-
     # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
-    elif mindex == 6:
+    if mindex == 6:
         # --- Choose default Favourite/Collection assets/artwork ---
         if mindex2 == 6:
             rom = roms[romID]
