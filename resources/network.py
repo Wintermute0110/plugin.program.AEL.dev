@@ -36,7 +36,7 @@ else:
 # USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0'
 USER_AGENT = 'Mozilla/5.0 (X11; Linux i686; rv:88.0) Gecko/20100101 Firefox/88.0'
 
-def net_get_random_UserAgent():
+def get_random_UserAgent():
     platform = random.choice(['Macintosh', 'Windows', 'X11'])
     if platform == 'Macintosh':
         os_str  = random.choice(['68K', 'PPC'])
@@ -50,24 +50,24 @@ def net_get_random_UserAgent():
         os_str  = random.choice(['Linux i686', 'Linux x86_64'])
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
-        webkit = text_type(random.randint(500, 599))
-        version = text_type(random.randint(0, 24)) + '.0' + \
-            text_type(random.randint(0, 1500)) + '.' + text_type(random.randint(0, 999))
+        webkit = const.text_type(random.randint(500, 599))
+        version = const.text_type(random.randint(0, 24)) + '.0' + \
+            const.text_type(random.randint(0, 1500)) + '.' + const.text_type(random.randint(0, 999))
         return 'Mozilla/5.0 (' + os_str + ') AppleWebKit/' + \
             webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
 
     elif browser == 'firefox':
-        year = text_type(random.randint(2000, 2012))
+        year = const.text_type(random.randint(2000, 2012))
         month = random.randint(1, 12)
         if month < 10:
-            month = '0' + text_type(month)
+            month = '0' + const.text_type(month)
         else:
-            month = text_type(month)
+            month = const.text_type(month)
         day = random.randint(1, 30)
         if day < 10:
-            day = '0' + text_type(day)
+            day = '0' + const.text_type(day)
         else:
-            day = text_type(day)
+            day = const.text_type(day)
         gecko = year + month + day
         version = random.choice([
             '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0',
@@ -76,8 +76,8 @@ def net_get_random_UserAgent():
         return 'Mozilla/5.0 (' + os_str + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
 
     elif browser == 'ie':
-        version = text_type(random.randint(1, 10)) + '.0'
-        engine = text_type(random.randint(1, 5)) + '.0'
+        version = const.text_type(random.randint(1, 10)) + '.0'
+        engine = const.text_type(random.randint(1, 5)) + '.0'
         option = random.choice([True, False])
         if option == True:
             token = random.choice(['.NET CLR', 'SV1', 'Tablet PC', 'Win64; IA64', 'Win64; x64', 'WOW64']) + '; '
@@ -85,11 +85,11 @@ def net_get_random_UserAgent():
             token = ''
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os_str + '; ' + token + 'Trident/' + engine + ')'
 
-def net_download_img(img_url, file_path):
+def download_img(img_url, file_path):
     # --- Download image to a buffer in memory ---
     # If an exception happens here no file is created (avoid creating files with 0 bytes).
     try:
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             req = urllib2.Request(img_url)
             # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
             req.add_unredirected_header('User-Agent', USER_AGENT)
@@ -98,7 +98,7 @@ def net_download_img(img_url, file_path):
             response = urllib2.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             img_buf = response.read()
             response.close()
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             req = urllib.request.Request(img_url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
             response = urllib.request.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
@@ -110,12 +110,12 @@ def net_download_img(img_url, file_path):
     except IOError as ex:
         log.error('(IOError) In net_download_img(), network code.')
         log.error('(IOError) Object type "{}"'.format(type(ex)))
-        log.error('(IOError) Message "{}"'.format(text_type(ex)))
+        log.error('(IOError) Message "{}"'.format(const.text_type(ex)))
         return
     except Exception as ex:
         log.error('(Exception) In net_download_img(), network code.')
         log.error('(Exception) Object type "{}"'.format(type(ex)))
-        log.error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
         return
 
     # --- Write image file to disk ---
@@ -127,11 +127,11 @@ def net_download_img(img_url, file_path):
     except IOError as ex:
         log.error('(IOError) In net_download_img(), disk code.')
         log.error('(IOError) Object type "{}"'.format(type(ex)))
-        log.error('(IOError) Message "{}"'.format(text_type(ex)))
+        log.error('(IOError) Message "{}"'.format(const.text_type(ex)))
     except Exception as ex:
         log.error('(Exception) In net_download_img(), disk code.')
         log.error('(Exception) Object type "{}"'.format(type(ex)))
-        log.error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
 
 # User agent is fixed and defined in global var USER_AGENT
 # https://docs.python.org/2/library/urllib2.html
@@ -141,10 +141,10 @@ def net_download_img(img_url, file_path):
 # @return: [tuple] Tuple of strings. First tuple element is a string with the web content as
 #          a Unicode string or None if network error/exception. Second tuple element is the
 #          HTTP status code as integer or None if network error/exception.
-def net_get_URL(url, url_log = None):
+def get_URL(url, url_log = None):
     page_bytes, http_code = None, None
     if url_log is not None: log.debug('net_get_URL() GET URL "{}"'.format(url_log))
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         try:
             req = urllib2.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
@@ -164,19 +164,19 @@ def net_get_URL(url, url_log = None):
                 page_bytes = ex.read()
                 ex.close()
             except:
-                page_bytes = text_type(ex.reason)
+                page_bytes = const.text_type(ex.reason)
             log.error('(HTTPError) In net_get_URL()')
             log.error('(HTTPError) Object type "{}"'.format(type(ex)))
-            log.error('(HTTPError) Message "{}"'.format(text_type(ex)))
+            log.error('(HTTPError) Message "{}"'.format(const.text_type(ex)))
             log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         # If an unknown exception happens return empty data.
         except Exception as ex:
             log.error('(Exception) In net_get_URL()')
             log.error('(Exception) Object type "{}"'.format(type(ex)))
-            log.error('(Exception) Message "{}"'.format(text_type(ex)))
+            log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
             return page_bytes, http_code
-    elif ADDON_RUNNING_PYTHON_3:
+    elif const.ADDON_RUNNING_PYTHON_3:
         try:
             req = urllib.request.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
@@ -192,16 +192,16 @@ def net_get_URL(url, url_log = None):
                 page_bytes = ex.read()
                 ex.close()
             except:
-                page_bytes = text_type(ex.reason)
+                page_bytes = const.text_type(ex.reason)
             log.error('(HTTPError) In net_get_URL()')
             log.error('(HTTPError) Object type "{}"'.format(type(ex)))
-            log.error('(HTTPError) Message "{}"'.format(text_type(ex)))
+            log.error('(HTTPError) Message "{}"'.format(const.text_type(ex)))
             log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         except Exception as ex:
             log.error('(Exception) In net_get_URL()')
             log.error('(Exception) Object type "{}"'.format(type(ex)))
-            log.error('(Exception) Message "{}"'.format(text_type(ex)))
+            log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
             return page_bytes, http_code
 
     # --- Convert to Unicode ---
@@ -212,7 +212,7 @@ def net_get_URL(url, url_log = None):
 
     return page_data, http_code
 
-def net_get_URL_oneline(url, url_log = None):
+def get_URL_oneline(url, url_log = None):
     page_data, http_code = net_get_URL(url, url_log)
     if page_data is None: return (page_data, http_code)
 
@@ -224,10 +224,10 @@ def net_get_URL_oneline(url, url_log = None):
 
 # Do HTTP request with POST: https://docs.python.org/2/library/urllib2.html#urllib2.Request
 # If an exception happens return empty data.
-def net_post_URL(url, data):
+def post_URL(url, data):
     page_data = ''
     try:
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             req = urllib2.Request(url, data)
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
@@ -237,7 +237,7 @@ def net_post_URL(url, data):
             page_bytes = response.read()
             encoding = response.headers['content-type'].split('charset=')[-1]
             response.close()
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             req = urllib.request.Request(url, data)
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
@@ -249,11 +249,11 @@ def net_post_URL(url, data):
             response.close()
     except IOError as ex:
         log.error('(IOError exception) In net_get_URL()')
-        log.error('Message: {}'.format(text_type(ex)))
+        log.error('Message: {}'.format(const.text_type(ex)))
         return page_data
     except Exception as ex:
         log.error('(General exception) In net_get_URL()')
-        log.error('Message: {}'.format(text_type(ex)))
+        log.error('Message: {}'.format(const.text_type(ex)))
         return page_data
     num_bytes = len(page_bytes)
     log.debug('net_post_URL() Read {} bytes'.format(num_bytes))
@@ -262,7 +262,7 @@ def net_post_URL(url, data):
 
     return page_data
 
-def net_decode_URL_data(page_bytes, MIME_type):
+def decode_URL_data(page_bytes, MIME_type):
     # --- Try to guess encoding ---
     if MIME_type == 'text/html':
         encoding = 'utf-8'
