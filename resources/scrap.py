@@ -2711,7 +2711,7 @@ class TheGamesDB(Scraper):
         if self.publishers is None:
             log.debug('TheGamesDB. No cached publishers. Retrieving from online.')
             url = TheGamesDB.URL_Publishers + '?apikey={}'.format(self._get_API_key())
-            page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
+            page_data_raw = network.get_URL(url, self._clean_URL_for_log(url))
             publishers_json = json.loads(page_data_raw)
             self.publishers = {}
             for publisher_id in publishers_json['data']['publishers']:
@@ -2814,10 +2814,10 @@ class TheGamesDB(Scraper):
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 
-        # If page_data_raw is None at this point is because of an exception in net_get_URL()
+        # If page_data_raw is None at this point is because of an exception in network.get_URL()
         # which is not urllib2.HTTPError.
         if page_data_raw is None:
-            self._handle_error(st_dic, 'Network error in net_get_URL()')
+            self._handle_error(st_dic, 'Network error in network.get_URL()')
             return None
 
         # Convert data to JSON.
@@ -3222,7 +3222,7 @@ class MobyGames(Scraper):
     # * When a game search is not succesfull MobyGames returns valid JSON with an empty list.
     def _retrieve_URL_as_JSON(self, url, st_dic):
         self._wait_for_API_request()
-        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        page_data_raw, http_code = network.get_URL(url, self._clean_URL_for_log(url))
         self.last_http_call = datetime.datetime.now()
 
         # --- Check HTTP error codes ---
@@ -3247,10 +3247,10 @@ class MobyGames(Scraper):
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 
-        # If page_data_raw is None at this point is because of an exception in net_get_URL()
+        # If page_data_raw is None at this point is because of an exception in network.get_URL()
         # which is not urllib2.HTTPError.
         if page_data_raw is None:
-            self._handle_error(st_dic, 'Network error/exception in net_get_URL()')
+            self._handle_error(st_dic, 'Network error/exception in network.get_URL()')
             return None
 
         # Convert data to JSON.
@@ -4212,7 +4212,7 @@ class ScreenScraper(Scraper):
     # * When the a game search is not succesfull SS returns a "HTTP Error 404: Not Found" error.
     #   In this case st_dic marks no error and return None.
     def _retrieve_URL_as_JSON(self, url, st_dic):
-        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        page_data_raw, http_code = network.get_URL(url, self._clean_URL_for_log(url))
 
         # --- Check HTTP error codes ---
         if http_code == 400:
@@ -4231,10 +4231,10 @@ class ScreenScraper(Scraper):
             return None
         # self._dump_file_debug('ScreenScraper_data_raw.txt', page_data_raw)
 
-        # If page_data_raw is None at this point is because of an exception in net_get_URL()
+        # If page_data_raw is None at this point is because of an exception in network.get_URL()
         # which is not urllib2.HTTPError.
         if page_data_raw is None:
-            self._handle_error(st_dic, 'Network error/exception in net_get_URL()')
+            self._handle_error(st_dic, 'Network error/exception in network.get_URL()')
             return None
 
         # Convert data to JSON.
@@ -4379,7 +4379,7 @@ class GameFAQs(Scraper):
         # --- Grab game information page ---
         log.debug('GameFAQs._scraper_get_metadata() Get metadata from {}'.format(candidate['id']))
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
-        page_data = net_get_URL(url)
+        page_data = network.get_URL(url)
         self._dump_file_debug('GameFAQs_get_metadata.html', page_data)
 
         # --- Parse data ---
@@ -4426,7 +4426,7 @@ class GameFAQs(Scraper):
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['url'])
         log.debug('GameFAQs._scraper_resolve_asset_URL() Get image from "{}" for asset type {}'.format(
             url, asset_info.name))
-        page_data = net_get_URL(url)
+        page_data = network.get_URL(url)
         self._dump_json_debug('GameFAQs_scraper_resolve_asset_URL.html', page_data)
 
         r_str = '<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>'
@@ -4463,7 +4463,7 @@ class GameFAQs(Scraper):
             data = urllib.urlencode({'game': search_term, 'platform': scraper_platform})
             page_data = net_post_URL(url, data)
         else:
-            page_data = net_get_URL(url)
+            page_data = network.get_URL(url)
         self._dump_file_debug('GameFAQs_get_candidates.html', page_data)
 
         # --- Parse game list ---
@@ -4624,7 +4624,7 @@ class GameFAQs(Scraper):
     def _load_assets_from_page(self, candidate):
         url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
         log.debug('GameFAQs._scraper_get_assets_all() Get asset data from {}'.format(url))
-        page_data = net_get_URL(url)
+        page_data = network.get_URL(url)
         self._dump_file_debug('GameFAQs_load_assets_from_page.html', page_data)
 
         # --- Parse all assets ---
@@ -4929,7 +4929,7 @@ class ArcadeDB(Scraper):
     # * ArcadeDB has no API restrictions.
     # * When a game search is not succesfull ArcadeDB returns valid JSON with an empty list.
     def _retrieve_URL_as_JSON(self, url, st_dic):
-        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        page_data_raw, http_code = network.get_URL(url, self._clean_URL_for_log(url))
         # self._dump_file_debug('ArcadeDB_data_raw.txt', page_data_raw)
 
         # --- Check HTTP error codes ---
@@ -4943,10 +4943,10 @@ class ArcadeDB(Scraper):
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 
-        # If page_data_raw is None at this point is because of an exception in net_get_URL()
+        # If page_data_raw is None at this point is because of an exception in network.get_URL()
         # which is not urllib2.HTTPError.
         if page_data_raw is None:
-            self._handle_error(st_dic, 'Network error/exception in net_get_URL()')
+            self._handle_error(st_dic, 'Network error/exception in network.get_URL()')
             return None
 
         # Convert data to JSON.

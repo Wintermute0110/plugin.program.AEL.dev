@@ -493,10 +493,10 @@ def run_protected(cfg, command, args):
     elif command == 'EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS': command_exec_utils_check_retro_launchers()
     elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS': command_exec_utils_check_retro_BIOS()
 
-    elif command == 'EXECUTE_UTILS_TGDB_CHECK': command_exec_utils_TGDB_check()
-    elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK': command_exec_utils_MobyGames_check()
-    elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': command_exec_utils_ScreenScraper_check()
-    elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': command_exec_utils_ArcadeDB_check()
+    elif command == 'EXECUTE_UTILS_TGDB_CHECK': exec_utils_TGDB_check(cfg)
+    elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK': exec_utils_MobyGames_check(cfg)
+    elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': exec_utils_ScreenScraper_check(cfg)
+    elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': exec_utils_ArcadeDB_check(cfg)
 
     # Commands called from Global Reports menu.
     elif command == 'EXECUTE_GLOBAL_ROM_STATS': command_exec_global_rom_stats()
@@ -4871,6 +4871,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
         ]
     return menu_list
 
+# MAKE THIS FUNCTION DISSAPEAR ASAP.
 def command_edit_rom_OLD(self, categoryID, launcherID, romID):
     # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
     if mindex == 6:
@@ -8122,22 +8123,22 @@ def exec_utils_check_retro_BIOS(self):
 
 # Use TGDB scraper to get the monthly allowance and report to the user.
 # TGDB API docs https://api.thegamesdb.net/
-def exec_utils_TGDB_check(self):
+def exec_utils_TGDB_check(cfg):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = utils.new_status_dic()
-    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
-    TGDB = g_scraper_factory.get_scraper_object(SCRAPER_THEGAMESDB_ID)
-    TGDB.check_before_scraping(st_dic)
-    if kodi_display_status_message(st_dic): return
+    st = kodi.new_status_dic()
+    scraper_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    TGDB = scraper_factory.get_scraper_object(const.SCRAPER_THEGAMESDB_ID)
+    TGDB.check_before_scraping(st)
+    if kodi.display_status_message(st): return
 
     # To check the scraper monthly allowance, get the list of platforms as JSON. This JSON
     # data contains the monthly allowance.
-    pdialog = KodiProgressDialog()
+    pdialog = kodi.ProgressDialog()
     pdialog.startProgress('Retrieving info from TheGamesDB...')
-    json_data = TGDB.debug_get_genres(st_dic)
+    json_data = TGDB.debug_get_genres(st)
     pdialog.endProgress()
-    if kodi_display_status_message(st_dic): return
+    if kodi.display_status_message(st): return
     extra_allowance = json_data['extra_allowance']
     remaining_monthly_allowance = json_data['remaining_monthly_allowance']
     allowance_refresh_timer = json_data['allowance_refresh_timer']
@@ -8145,51 +8146,53 @@ def exec_utils_TGDB_check(self):
 
     # --- Print and display report ---
     window_title = 'TheGamesDB scraper information'
-    sl = []
-    sl.append('extra_allowance              {}'.format(extra_allowance))
-    sl.append('remaining_monthly_allowance  {}'.format(remaining_monthly_allowance))
-    sl.append('allowance_refresh_timer      {}'.format(allowance_refresh_timer))
-    sl.append('allowance_refresh_timer_str  {}'.format(allowance_refresh_timer_str))
-    sl.append('')
-    sl.append('TGDB scraper seems to be working OK.')
+    sl = [
+        'extra_allowance              {}'.format(extra_allowance),
+        'remaining_monthly_allowance  {}'.format(remaining_monthly_allowance),
+        'allowance_refresh_timer      {}'.format(allowance_refresh_timer),
+        'allowance_refresh_timer_str  {}'.format(allowance_refresh_timer_str),
+        '',
+        'TGDB scraper seems to be working OK.',
+    ]
     kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
 # MobyGames API docs https://www.mobygames.com/info/api
 # Currently there is no way to check the MobyGames allowance.
-def exec_utils_MobyGames_check(self):
+def exec_utils_MobyGames_check(cfg):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = utils.new_status_dic()
-    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
-    MobyGames = g_scraper_factory.get_scraper_object(SCRAPER_MOBYGAMES_ID)
-    MobyGames.check_before_scraping(st_dic)
-    if kodi_display_status_message(st_dic): return
+    st = kodi.new_status_dic()
+    scraper_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    MobyGames = scraper_factory.get_scraper_object(const.SCRAPER_MOBYGAMES_ID)
+    MobyGames.check_before_scraping(st)
+    if kodi.display_status_message(st): return
 
     # TTBOMK, there is no way to know the current limits of MobyGames scraper.
     # Just get the list of platforms and report to the user.
-    pdialog = KodiProgressDialog()
+    pdialog = kodi.ProgressDialog()
     pdialog.startProgress('Retrieving info from MobyGames...')
-    json_data = MobyGames.debug_get_platforms(st_dic)
+    json_data = MobyGames.debug_get_platforms(st)
     pdialog.endProgress()
-    if kodi_display_status_message(st_dic): return
+    if kodi.display_status_message(st): return
 
     # --- Print and display report ---
     window_title = 'MobyGames scraper information'
-    sl = []
-    sl.append('The API allowance of MobyGames cannot be currently checked.')
-    sl.append('')
-    sl.append('MobyGames has {} platforms.'.format(len(json_data['platforms'])))
-    sl.append('')
-    sl.append('MobyGames scraper seems to be working OK.')
-    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+    sl = [
+        'The API allowance of MobyGames cannot be currently checked.',
+        '',
+        'MobyGames has {} platforms.'.format(len(json_data['platforms'])),
+        '',
+        'MobyGames scraper seems to be working OK.',
+    ]
+    kodi.display_text_window_mono(window_title, '\n'.join(sl))
 
 # ScreenScraper API docs https://www.screenscraper.fr/webapi.php
-def exec_utils_ScreenScraper_check(self):
+def exec_utils_ScreenScraper_check(cfg):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = utils.new_status_dic()
-    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
-    ScreenScraper = g_scraper_factory.get_scraper_object(SCRAPER_SCREENSCRAPER_ID)
+    st_dic = kodi.new_status_dic()
+    g_scraper_factory = ScraperFactory(cfg, cfg.settings)
+    ScreenScraper = g_scraper_factory.get_scraper_object(const.SCRAPER_SCREENSCRAPER_ID)
     ScreenScraper.check_before_scraping(st_dic)
     if kodi_display_status_message(st_dic): return
 
@@ -8231,10 +8234,10 @@ def exec_utils_ScreenScraper_check(self):
 
 # Retrieve an example game to test if ArcadeDB works.
 # TTBOMK there are not API retrictions at the moment (August 2019).
-def exec_utils_ArcadeDB_check(self):
-    st_dic = utils.new_status_dic()
-    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
-    ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
+def exec_utils_ArcadeDB_check(cfg):
+    st_dic = kodi.new_status_dic()
+    g_scraper_factory = ScraperFactory(cfg, cfg.settings)
+    ArcadeDB = g_scraper_factory.get_scraper_object(const.SCRAPER_ARCADEDB_ID)
     ArcadeDB.check_before_scraping(st_dic)
     if kodi_display_status_message(st_dic): return
 
