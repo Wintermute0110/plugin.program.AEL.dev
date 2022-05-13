@@ -387,7 +387,7 @@ class ScraperFactory(object):
             self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title_MAME']
         else:
             self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title']
-        log.debug('self.strategy_obj.scan_ignore_scrap_title is {}'.format(text_type(
+        log.debug('self.strategy_obj.scan_ignore_scrap_title is {}'.format(const.text_type(
             self.strategy_obj.scan_ignore_scrap_title)))
 
         return self.strategy_obj
@@ -1297,9 +1297,9 @@ class ScrapeStrategy(object):
             if not keyboard.isConfirmed():
                 utils.set_error_status(st_dic, '{} scraping canceled'.format(object_name))
                 return
-            if ADDON_RUNNING_PYTHON_2:
+            if const.ADDON_RUNNING_PYTHON_2:
                 search_term = keyboard.getData().strip().decode('utf-8')
-            elif ADDON_RUNNING_PYTHON_3:
+            elif const.ADDON_RUNNING_PYTHON_3:
                 search_term = keyboard.getData().strip()
             else:
                 raise TypeError('Undefined Python runtime version.')
@@ -1569,7 +1569,7 @@ class Scraper(object):
     def _dump_json_debug(self, file_name, data_dic):
         if not self.dump_file_flag: return
         file_path = os.path.join(self.dump_dir, file_name)
-        if SCRAPER_CACHE_HUMAN_JSON:
+        if const.SCRAPER_CACHE_HUMAN_JSON:
             json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
         else:
             json_str = json.dumps(data_dic)
@@ -1879,7 +1879,7 @@ class Scraper(object):
     # All messages from the scrapers are KODI_MESSAGE_DIALOG.
     def _handle_exception(self, ex, st_dic, user_msg):
         log.error('(Exception) Object type "{}"'.format(type(ex)))
-        log.error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
         self._handle_error(st_dic, user_msg)
 
     # --- Private disk cache functions -----------------------------------------------------------
@@ -1941,9 +1941,9 @@ class Scraper(object):
     # --- Private global disk caches -------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
         json_fname = cache_type + '.json'
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
         else:
             raise TypeError('Undefined Python runtime version.')
@@ -2368,7 +2368,7 @@ class TheGamesDB(Scraper):
         rombase_noext = rom_FN.getBaseNoExt()
 
         # --- Get candidates ---
-        scraper_platform = AEL_platform_to_TheGamesDB(platform)
+        scraper_platform = platforms.AEL_platform_to_TheGamesDB(platform)
         log.debug('TheGamesDB.get_candidates() search_term         "{}"'.format(search_term))
         log.debug('TheGamesDB.get_candidates() rombase_noext       "{}"'.format(rombase_noext))
         log.debug('TheGamesDB.get_candidates() AEL platform        "{}"'.format(platform))
@@ -2452,44 +2452,41 @@ class TheGamesDB(Scraper):
 
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
-    def get_assets(self, asset_ID, st_dic):
+    def get_assets(self, asset_ID, st):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             log.debug('TheGamesDB.get_assets() Scraper disabled. Returning empty data.')
             return []
-
-        asset_info = assets_get_info_scheme(asset_ID)
+        ainfo = assets.ASSET_INFO_DICT[asset_ID]
         log.debug('TheGamesDB.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
-            asset_info.name, asset_ID, self.candidate['id']))
+            ainfo.name, asset_ID, self.candidate['id']))
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a
         # candidate. Then select asset of a particular type.
-        all_asset_list = self._retrieve_all_assets(self.candidate, st_dic)
-        if kodi.is_error_status(st_dic): return None
+        all_asset_list = self._retrieve_all_assets(self.candidate, st)
+        if kodi.is_error_status(st): return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log.debug('TheGamesDB.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
 
-    def resolve_asset_URL(self, selected_asset, st_dic):
+    def resolve_asset_URL(self, selected_asset, st):
         url = selected_asset['url']
         url_log = self._clean_URL_for_log(url)
-
         return url, url_log
 
-    def resolve_asset_URL_extension(self, selected_asset, image_url, st_dic):
+    def resolve_asset_URL_extension(self, selected_asset, image_url, st):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
-    def debug_get_platforms(self, st_dic):
+    def debug_get_platforms(self, st):
         log.debug('TheGamesDB.debug_get_platforms() BEGIN...')
         url = TheGamesDB.URL_Platforms + '?apikey={}'.format(self._get_API_key())
-        json_data = self._retrieve_URL_as_JSON(url, st_dic)
-        if kodi.is_error_status(st_dic): return None
+        json_data = self._retrieve_URL_as_JSON(url, st)
+        if kodi.is_error_status(st): return None
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
-
         return json_data
 
     def debug_get_genres(self, st_dic):
@@ -2509,9 +2506,9 @@ class TheGamesDB(Scraper):
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # UTF-8 encoded string and does not work with Unicode strings.
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         else:
             raise TypeError('Undefined Python runtime version.')
@@ -2558,7 +2555,7 @@ class TheGamesDB(Scraper):
             if title.lower().find(search_term.lower()) != -1:
                 candidate['order'] += 1
             # if scraper_platform > 0 and platform == scraper_platform:
-            if scraper_platform != DEFAULT_PLAT_TGDB and platform == scraper_platform:
+            if scraper_platform != platforms.DEFAULT_PLAT_TGDB and platform == scraper_platform:
                 candidate['order'] += 1
             candidate_list.append(candidate)
 
@@ -2610,7 +2607,7 @@ class TheGamesDB(Scraper):
         if not genre_ids: return DEFAULT_META_GENRE
         # Convert integers to strings because the cached genres dictionary keys are strings.
         # This is because a JSON limitation.
-        genre_ids = [text_type(id) for id in genre_ids]
+        genre_ids = [const.text_type(id) for id in genre_ids]
         TGDB_genres = self._retrieve_genres(st_dic)
         if kodi.is_error_status(st_dic): return None
         genre_list = [TGDB_genres[genre_id] for genre_id in genre_ids]
@@ -2624,19 +2621,17 @@ class TheGamesDB(Scraper):
         if not developers_ids: return DEFAULT_META_DEVELOPER
         # Convert integers to strings because the cached genres dictionary keys are strings.
         # This is because a JSON limitation.
-        developers_ids = [text_type(id) for id in developers_ids]
+        developers_ids = [const.text_type(id) for id in developers_ids]
         TGDB_developers = self._retrieve_developers(st_dic)
         if kodi.is_error_status(st_dic): return None
         developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
-
         return ', '.join(developer_list)
 
     def _parse_metadata_nplayers(self, online_data):
         if 'players' in online_data and online_data['players'] is not None:
-            nplayers_str = text_type(online_data['players'])
+            nplayers_str = const.text_type(online_data['players'])
         else:
             nplayers_str = DEFAULT_META_NPLAYERS
-
         return nplayers_str
 
     def _parse_metadata_esrb(self, online_data):
@@ -2644,7 +2639,6 @@ class TheGamesDB(Scraper):
             esrb_str = online_data['rating']
         else:
             esrb_str = DEFAULT_META_ESRB
-
         return esrb_str
 
     def _parse_metadata_plot(self, online_data):
@@ -2652,7 +2646,6 @@ class TheGamesDB(Scraper):
             plot_str = online_data['overview']
         else:
             plot_str = DEFAULT_META_PLOT
-
         return plot_str
 
     # Get a dictionary of TGDB genres (integers) to AEL genres (strings).
@@ -2753,7 +2746,7 @@ class TheGamesDB(Scraper):
         base_url_thumb = page_data['data']['base_url']['thumb']
         base_url = page_data['data']['base_url']['original']
         assets_list = []
-        for image_data in page_data['data']['images'][text_type(candidate_id)]:
+        for image_data in page_data['data']['images'][const.text_type(candidate_id)]:
             asset_name = '{} ID {}'.format(image_data['type'], image_data['id'])
             if image_data['type'] == 'boxart':
                 if   image_data['side'] == 'front': asset_ID = ASSET_BOXFRONT_ID
@@ -3043,9 +3036,9 @@ class MobyGames(Scraper):
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # --- Retrieve JSON data with list of games ---
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         else:
             raise TypeError('Undefined Python runtime version.')
@@ -3566,19 +3559,18 @@ class ScreenScraper(Scraper):
         # ScreenScraper returns only one game or nothing at all.
         rompath = rom_FN.getPath()
         romchecksums_path = rom_checksums_FN.getPath()
-        scraper_platform = AEL_platform_to_ScreenScraper(platform)
+        scraper_platform = platforms.AEL_platform_to_ScreenScraper(platform)
         log.debug('ScreenScraper.get_candidates() rompath      "{}"'.format(rompath))
         log.debug('ScreenScraper.get_candidates() romchecksums "{}"'.format(romchecksums_path))
         log.debug('ScreenScraper.get_candidates() AEL platform "{}"'.format(platform))
         log.debug('ScreenScraper.get_candidates() SS platform  "{}"'.format(scraper_platform))
-        candidate_list = self._search_candidates_jeuInfos(
-            rom_FN, rom_checksums_FN, platform, scraper_platform, st_dic)
+        candidate_list = self._search_candidates_jeuInfos(rom_FN, rom_checksums_FN,
+            platform, scraper_platform, st_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
         # because jeu_dic is not introduced in the internal cache.
         # candidate_list = self._search_candidates_jeuRecherche(
         #     search_term, rombase_noext, platform, scraper_platform, st_dic)
         if kodi.is_error_status(st_dic): return None
-
         return candidate_list
 
     # This function may be called many times in the ROM Scanner. All calls to this function
@@ -3815,9 +3807,9 @@ class ScreenScraper(Scraper):
         crc_str = checksums['crc']
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             rom_name = urllib.quote_plus(checksums['rom_name'])
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             rom_name = urllib.parse.quote_plus(checksums['rom_name'])
         else:
             raise TypeError('Undefined Python runtime version.')
@@ -3848,7 +3840,7 @@ class ScreenScraper(Scraper):
 
         # --- Print some info ---
         jeu_dic = json_data['response']['jeu']
-        id_str = text_type(jeu_dic['id'])
+        id_str = const.text_type(jeu_dic['id'])
         title = jeu_dic['noms'][0]['text']
         log.debug('Game "{}" (ID {})'.format(title, id_str))
         log.debug('Number of ROMs {} / Number of assets {}'.format(
@@ -3882,9 +3874,9 @@ class ScreenScraper(Scraper):
         log.debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             recherche = urllib.quote_plus(rombase_noext)
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             recherche = urllib.parse.quote_plus(rombase_noext)
         else:
             raise TypeError('Undefined Python runtime version.')
@@ -4184,7 +4176,7 @@ class ScreenScraper(Scraper):
             # log.debug('{} "{}"'.format(keys, item))
             # log.debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, binary_type) and not isinstance(item, text_type): continue
+            if not isinstance(item, const.binary_type) and not isinstance(item, const.text_type): continue
             if item.startswith('http'):
                 # log.debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
@@ -4282,11 +4274,11 @@ class ScreenScraper(Scraper):
     # In Python 3 base64.b64decode() returns bytes! https://docs.python.org/3/library/base64.html
     def _get_common_SS_URL(self):
         t = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'
-        if ADDON_RUNNING_PYTHON_2:
+        if const.ADDON_RUNNING_PYTHON_2:
             url_SS = t.format(base64.b64decode(self.dev_id),
                 base64.b64decode(self.dev_pass), self.softname,
                 self.ssid, self.sspassword)
-        elif ADDON_RUNNING_PYTHON_3:
+        elif const.ADDON_RUNNING_PYTHON_3:
             url_SS = t.format(base64.b64decode(self.dev_id).decode('utf-8'),
                 base64.b64decode(self.dev_pass).decode('utf-8'),
                 self.softname, self.ssid, self.sspassword)
@@ -4569,7 +4561,7 @@ class GameFAQs(Scraper):
     # Cache the results because this function may be called multiple times for the
     # same candidate game.
     def _scraper_get_assets_all(self, candidate):
-        cache_key = text_type(candidate['id'])
+        cache_key = const.text_type(candidate['id'])
         if cache_key in self.all_asset_cache:
             log.debug('MobyGames._scraper_get_assets_all() Cache hit "{}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
@@ -4798,8 +4790,8 @@ class ArcadeDB(Scraper):
         gamedata['year']      = gameinfo_dic['year']
         gamedata['genre']     = gameinfo_dic['genre']
         gamedata['developer'] = gameinfo_dic['manufacturer']
-        gamedata['nplayers']  = text_type(gameinfo_dic['players'])
-        gamedata['esrb']      = DEFAULT_META_ESRB
+        gamedata['nplayers']  = const.text_type(gameinfo_dic['players'])
+        gamedata['esrb']      = const.DEFAULT_META_ESRB
         gamedata['plot']      = gameinfo_dic['history']
 
         return gamedata
@@ -4809,10 +4801,9 @@ class ArcadeDB(Scraper):
         if self.scraper_disabled:
             log.debug('ArcadeDB.get_assets() Scraper disabled. Returning empty data.')
             return []
-
-        asset_info = assets_get_info_scheme(asset_ID)
+        ainfo = assets.ASSET_INFO_DICT[asset_ID]
         log.debug('ArcadeDB.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
-            asset_info.name, asset_ID, self.candidate['id']))
+            ainfo.name, asset_ID, self.candidate['id']))
 
         # --- Retrieve json_response_dic from internal cache ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
@@ -4831,13 +4822,12 @@ class ArcadeDB(Scraper):
 
         return asset_list
 
-    def resolve_asset_URL(self, selected_asset, st_dic):
+    def resolve_asset_URL(self, selected_asset, st):
         url = selected_asset['url']
         url_log = self._clean_URL_for_log(url)
-
         return url, url_log
 
-    def resolve_asset_URL_extension(self, selected_asset, image_url, st_dic):
+    def resolve_asset_URL_extension(self, selected_asset, image_url, st):
         # All ArcadeDB images are in PNG format?
         return 'png'
 
@@ -4848,7 +4838,6 @@ class ArcadeDB(Scraper):
         log.debug('ArcadeDB.debug_get_QUERY_MAME_dic() Internal cache retrieving "{}"'.format(
             self.cache_key))
         json_response_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
-
         return json_response_dic
 
     # Call ArcadeDB API only function to retrieve all game metadata.
@@ -4865,7 +4854,6 @@ class ArcadeDB(Scraper):
         json_data = self._retrieve_URL_as_JSON(url, st_dic)
         if kodi.is_error_status(st_dic): return None
         self._dump_json_debug('ArcadeDB_get_QUERY_MAME.json', json_data)
-
         return json_data
 
     # Returns all assets found in the gameinfo_dic dictionary.
@@ -4874,51 +4862,48 @@ class ArcadeDB(Scraper):
 
         # --- Banner (Marquee in MAME) ---
         asset_data = self._get_asset_simple(
-            gameinfo_dic, ASSET_BANNER_ID, 'Banner (Marquee)', 'url_image_marquee')
+            gameinfo_dic, const.ASSET_BANNER_ID, 'Banner (Marquee)', 'url_image_marquee')
         if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- Title ---
         asset_data = self._get_asset_simple(
-            gameinfo_dic, ASSET_TITLE_ID, 'Title screenshot', 'url_image_title')
+            gameinfo_dic, const.ASSET_TITLE_ID, 'Title screenshot', 'url_image_title')
         if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- Snap ---
         asset_data = self._get_asset_simple(
-            gameinfo_dic, ASSET_SNAP_ID, 'Snap screenshot', 'url_image_ingame')
+            gameinfo_dic, const.ASSET_SNAP_ID, 'Snap screenshot', 'url_image_ingame')
         if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- BoxFront (Cabinet in MAME) ---
         asset_data = self._get_asset_simple(
-            gameinfo_dic, ASSET_BOXFRONT_ID, 'BoxFront (Cabinet)', 'url_image_cabinet')
+            gameinfo_dic, const.ASSET_BOXFRONT_ID, 'BoxFront (Cabinet)', 'url_image_cabinet')
         if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- BoxBack (CPanel in MAME) ---
         # asset_data = self._get_asset_simple(
-        #     gameinfo_dic, ASSET_BOXBACK_ID, 'BoxBack (CPanel)', '')
+        #     gameinfo_dic, const.ASSET_BOXBACK_ID, 'BoxBack (CPanel)', '')
         # if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- Cartridge (PCB in MAME) ---
         # asset_data = self._get_asset_simple(
-        #     gameinfo_dic, ASSET_CARTRIDGE_ID, 'Cartridge (PCB)', '')
+        #     gameinfo_dic, const.ASSET_CARTRIDGE_ID, 'Cartridge (PCB)', '')
         # if asset_data is not None: all_asset_list.append(asset_data)
 
         # --- Flyer ---
         asset_data = self._get_asset_simple(
-            gameinfo_dic, ASSET_FLYER_ID, 'Flyer', 'url_image_flyer')
+            gameinfo_dic, const.ASSET_FLYER_ID, 'Flyer', 'url_image_flyer')
         if asset_data is not None: all_asset_list.append(asset_data)
-
         return all_asset_list
 
     def _get_asset_simple(self, data_dic, asset_ID, title_str, key):
-        if key in data_dic:
-            asset_data = self._new_assetdata_dic()
-            asset_data['asset_ID'] = asset_ID
-            asset_data['display_name'] = title_str
-            asset_data['url_thumb'] = data_dic[key]
-            asset_data['url'] = data_dic[key]
-            return asset_data
-        else:
-            return None
+        if key not in data_dic: return None
+        asset_data = self._new_assetdata_dic()
+        asset_data['asset_ID'] = asset_ID
+        asset_data['display_name'] = title_str
+        asset_data['url_thumb'] = data_dic[key]
+        asset_data['url'] = data_dic[key]
+        return asset_data
 
     # No need for URL cleaning in ArcadeDB.
     def _clean_URL_for_log(self, url): return url
@@ -4955,5 +4940,4 @@ class ArcadeDB(Scraper):
         except Exception as ex:
             self._handle_exception(ex, st_dic, 'Error decoding JSON data from ArcadeDB.')
             return None
-
         return json_data

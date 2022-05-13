@@ -8190,18 +8190,18 @@ def exec_utils_MobyGames_check(cfg):
 def exec_utils_ScreenScraper_check(cfg):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = kodi.new_status_dic()
-    g_scraper_factory = ScraperFactory(cfg, cfg.settings)
-    ScreenScraper = g_scraper_factory.get_scraper_object(const.SCRAPER_SCREENSCRAPER_ID)
-    ScreenScraper.check_before_scraping(st_dic)
-    if kodi_display_status_message(st_dic): return
+    st = kodi.new_status_dic()
+    scraper_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    ScreenScraper = scraper_factory.get_scraper_object(const.SCRAPER_SCREENSCRAPER_ID)
+    ScreenScraper.check_before_scraping(st)
+    if kodi.display_status_message(st): return
 
     # Get ScreenScraper user information
-    pdialog = KodiProgressDialog()
+    pdialog = kodi.ProgressDialog()
     pdialog.startProgress('Retrieving info from ScreenScraper...')
-    json_data = ScreenScraper.debug_get_user_info(st_dic)
+    json_data = ScreenScraper.debug_get_user_info(st)
     pdialog.endProgress()
-    if kodi_display_status_message(st_dic): return
+    if kodi.display_status_message(st): return
 
     # --- Print and display report ---
     header = json_data['header']
@@ -8230,29 +8230,29 @@ def exec_utils_ScreenScraper_check(cfg):
         '',
         'ScreenScraper scraper seems to be working OK.',
     ]
-    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+    kodi.display_text_window_mono(window_title, '\n'.join(sl))
 
 # Retrieve an example game to test if ArcadeDB works.
 # TTBOMK there are not API retrictions at the moment (August 2019).
 def exec_utils_ArcadeDB_check(cfg):
-    st_dic = kodi.new_status_dic()
-    g_scraper_factory = ScraperFactory(cfg, cfg.settings)
-    ArcadeDB = g_scraper_factory.get_scraper_object(const.SCRAPER_ARCADEDB_ID)
-    ArcadeDB.check_before_scraping(st_dic)
-    if kodi_display_status_message(st_dic): return
+    st = kodi.new_status_dic()
+    scraper_factory = scrap.ScraperFactory(cfg, cfg.settings)
+    ArcadeDB = scraper_factory.get_scraper_object(const.SCRAPER_ARCADEDB_ID)
+    ArcadeDB.check_before_scraping(st)
+    if kodi.display_status_message(st): return
 
     search_str = 'atetris'
     rom_FN = utils.FileName('atetris.zip')
     rom_checksums_FN = utils.FileName('atetris.zip')
     platform = 'MAME'
 
-    pdialog = KodiProgressDialog()
+    pdialog = kodi.ProgressDialog()
     pdialog.startProgress('Retrieving info from ArcadeDB...')
     ArcadeDB.check_candidates_cache(rom_FN, platform)
     ArcadeDB.clear_cache(rom_FN, platform)
-    candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, st_dic)
+    candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, st)
     pdialog.endProgress()
-    if kodi_display_status_message(st_dic): return
+    if kodi.display_status_message(st): return
     if len(candidates) != 1:
         kodi.dialog_OK('There is a problem with ArcadeDB scraper.')
         return
@@ -8268,11 +8268,12 @@ def exec_utils_ArcadeDB_check(cfg):
         'emulator_name  {}'.format(json_response_dic['result'][0]['emulator_name']),
     ]
     if num_games == 1:
-        sl.append('')
-        sl.append('ArcadeDB scraper seems to be working OK.')
+        sl.append('\nArcadeDB scraper seems to be working OK.')
         sl.append('Remember this scraper only works with platform MAME.')
         sl.append('It will only return valid data for MAME games.')
-    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+    else:
+        sl.append('\nNo games returned. ArcadeDB scraper not working correctly.')
+    kodi.display_text_window_mono(window_title, '\n'.join(sl))
 
 def exec_global_rom_stats(self):
     log.debug('_command_exec_global_rom_stats() BEGIN')
