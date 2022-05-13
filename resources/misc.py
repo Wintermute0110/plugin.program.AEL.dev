@@ -136,25 +136,30 @@ def render_table(table_str, trim_Kodi_colours = False):
         for i in range(rows):
             new_table_str.append([])
             for j in range(cols):
-                s = text_remove_Kodi_color_tags(table_str[i][j])
+                s = remove_Kodi_color_tags(table_str[i][j])
                 new_table_str[i].append(s)
         table_str = new_table_str
 
     # Determine sizes and padding.
     # Ignore row 0 when computing sizes.
     table_str_list = []
-    col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
+    col_sizes = get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
+
+    # Table first horizontal line -----
+    total_size = sum(col_sizes) + 2*(cols-1)
+    table_str_list.append('{}'.format('-' * total_size))
 
     # --- Table header ---
     row_str = ''
     for j in range(cols):
         if j < cols - 1:
-            row_str += text_print_padded_left(table_str[1][j], col_sizes[j]) + '  '
+            row_str += print_padded_left(table_str[1][j], col_sizes[j]) + '  '
         else:
-            row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
+            row_str += print_padded_left(table_str[1][j], col_sizes[j])
     table_str_list.append(row_str)
-    # Table line -----
+
+    # Separation between table header and rows. Table line -----
     total_size = sum(col_sizes) + 2*(cols-1)
     table_str_list.append('{}'.format('-' * total_size))
 
@@ -164,16 +169,19 @@ def render_table(table_str, trim_Kodi_colours = False):
         for j in range(cols):
             if j < cols - 1:
                 if col_padding[j] == 'right':
-                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j]) + '  '
+                    row_str += print_padded_right(table_str[i][j], col_sizes[j]) + '  '
                 else:
-                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j]) + '  '
+                    row_str += print_padded_left(table_str[i][j], col_sizes[j]) + '  '
             else:
                 if col_padding[j] == 'right':
-                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j])
+                    row_str += print_padded_right(table_str[i][j], col_sizes[j])
                 else:
-                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j])
+                    row_str += print_padded_left(table_str[i][j], col_sizes[j])
         table_str_list.append(row_str)
 
+    # Table final horizontal line -----
+    total_size = sum(col_sizes) + 2*(cols-1)
+    table_str_list.append('{}'.format('-' * total_size))
     return table_str_list
 
 # First row             column aligment 'right' or 'left'
