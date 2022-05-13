@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2022 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -108,12 +108,12 @@ def download_img(img_url, file_path):
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
     except IOError as ex:
-        log.error('(IOError) In net_download_img(), network code.')
+        log.error('(IOError) In download_img(), network code.')
         log.error('(IOError) Object type "{}"'.format(type(ex)))
         log.error('(IOError) Message "{}"'.format(const.text_type(ex)))
         return
     except Exception as ex:
-        log.error('(Exception) In net_download_img(), network code.')
+        log.error('(Exception) In download_img(), network code.')
         log.error('(Exception) Object type "{}"'.format(type(ex)))
         log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
         return
@@ -125,11 +125,11 @@ def download_img(img_url, file_path):
         f.write(img_buf)
         f.close()
     except IOError as ex:
-        log.error('(IOError) In net_download_img(), disk code.')
+        log.error('(IOError) In download_img(), disk code.')
         log.error('(IOError) Object type "{}"'.format(type(ex)))
         log.error('(IOError) Message "{}"'.format(const.text_type(ex)))
     except Exception as ex:
-        log.error('(Exception) In net_download_img(), disk code.')
+        log.error('(Exception) In download_img(), disk code.')
         log.error('(Exception) Object type "{}"'.format(type(ex)))
         log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
 
@@ -143,12 +143,12 @@ def download_img(img_url, file_path):
 #          HTTP status code as integer or None if network error/exception.
 def get_URL(url, url_log = None):
     page_bytes, http_code = None, None
-    if url_log is not None: log.debug('net_get_URL() GET URL "{}"'.format(url_log))
+    if url_log is not None: log.debug('get_URL() GET URL "{}"'.format(url_log))
     if const.ADDON_RUNNING_PYTHON_2:
         try:
             req = urllib2.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
-            if url_log is None: log.debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
+            if url_log is None: log.debug('get_URL() GET URL "{}"'.format(req.get_full_url()))
             response = urllib2.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
@@ -165,14 +165,14 @@ def get_URL(url, url_log = None):
                 ex.close()
             except:
                 page_bytes = const.text_type(ex.reason)
-            log.error('(HTTPError) In net_get_URL()')
+            log.error('(HTTPError) In get_URL()')
             log.error('(HTTPError) Object type "{}"'.format(type(ex)))
             log.error('(HTTPError) Message "{}"'.format(const.text_type(ex)))
             log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         # If an unknown exception happens return empty data.
         except Exception as ex:
-            log.error('(Exception) In net_get_URL()')
+            log.error('(Exception) In get_URL()')
             log.error('(Exception) Object type "{}"'.format(type(ex)))
             log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
             return page_bytes, http_code
@@ -180,7 +180,7 @@ def get_URL(url, url_log = None):
         try:
             req = urllib.request.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
-            if url_log is None: log.debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
+            if url_log is None: log.debug('get_URL() GET URL "{}"'.format(req.get_full_url()))
             response = urllib.request.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
@@ -193,33 +193,31 @@ def get_URL(url, url_log = None):
                 ex.close()
             except:
                 page_bytes = const.text_type(ex.reason)
-            log.error('(HTTPError) In net_get_URL()')
+            log.error('(HTTPError) In get_URL()')
             log.error('(HTTPError) Object type "{}"'.format(type(ex)))
             log.error('(HTTPError) Message "{}"'.format(const.text_type(ex)))
             log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         except Exception as ex:
-            log.error('(Exception) In net_get_URL()')
+            log.error('(Exception) In get_URL()')
             log.error('(Exception) Object type "{}"'.format(type(ex)))
             log.error('(Exception) Message "{}"'.format(const.text_type(ex)))
             return page_bytes, http_code
 
     # --- Convert to Unicode ---
-    log.debug('net_get_URL() Read {:,} bytes'.format(len(page_bytes)))
-    log.debug('net_get_URL() HTTP status code {}'.format(http_code))
-    log.debug('net_get_URL() encoding {}'.format(encoding))
-    page_data = net_decode_URL_data(page_bytes, encoding)
-
+    log.debug('get_URL() Read {:,} bytes'.format(len(page_bytes)))
+    log.debug('get_URL() HTTP status code {}'.format(http_code))
+    log.debug('get_URL() encoding {}'.format(encoding))
+    page_data = decode_URL_data(page_bytes, encoding)
     return page_data, http_code
 
 def get_URL_oneline(url, url_log = None):
-    page_data, http_code = net_get_URL(url, url_log)
+    page_data, http_code = get_URL(url, url_log)
     if page_data is None: return (page_data, http_code)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
     page_data = page_data.replace('\n', '')
-
     return page_data, http_code
 
 # Do HTTP request with POST: https://docs.python.org/2/library/urllib2.html#urllib2.Request
@@ -232,7 +230,7 @@ def post_URL(url, data):
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
             req.add_header("Acept", "text/plain")
-            log.debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
+            log.debug('post_URL() POST URL "{}"'.format(req.get_full_url()))
             response = urllib2.urlopen(req, timeout = 120)
             page_bytes = response.read()
             encoding = response.headers['content-type'].split('charset=')[-1]
@@ -242,7 +240,7 @@ def post_URL(url, data):
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
             req.add_header("Acept", "text/plain")
-            log.debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
+            log.debug('post_URL() POST URL "{}"'.format(req.get_full_url()))
             response = urllib.request.urlopen(req, timeout = 120)
             page_bytes = response.read()
             encoding = response.headers['content-type'].split('charset=')[-1]
@@ -256,9 +254,9 @@ def post_URL(url, data):
         log.error('Message: {}'.format(const.text_type(ex)))
         return page_data
     num_bytes = len(page_bytes)
-    log.debug('net_post_URL() Read {} bytes'.format(num_bytes))
+    log.debug('post_URL() Read {} bytes'.format(num_bytes))
     # Convert page data to Unicode
-    page_data = net_decode_URL_data(page_bytes, encoding)
+    page_data = decode_URL_data(page_bytes, encoding)
 
     return page_data
 
@@ -274,9 +272,6 @@ def decode_URL_data(page_bytes, MIME_type):
         encoding = 'utf-16'
     else:
         encoding = 'utf-8'
-    # log.debug('net_decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
-
+    # log.debug('decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
     # Decode
-    page_data = page_bytes.decode(encoding)
-
-    return page_data
+    return page_bytes.decode(encoding)
