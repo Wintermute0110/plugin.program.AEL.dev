@@ -10,12 +10,17 @@ if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     print('Adding to sys.path {}'.format(path))
     sys.path.append(path)
-from resources.utils import *
-from resources.scrap import *
+import resources.const as const
+import resources.log as log
+import resources.misc as misc
+import resources.utils as utils
+import resources.kodi as kodi
+import resources.scrap as scrap
 import common
 
 # --- Python standard library ---
 import collections
+import io
 import pprint
 
 # --- configuration ------------------------------------------------------------------------------
@@ -31,21 +36,20 @@ use_cached_ScreenScraper_get_regions_list = False
 if use_cached_ScreenScraper_get_regions_list:
     filename = 'assets/ScreenScraper_get_regions_list.json'
     print('Loading file "{}"'.format(filename))
-    f = io.open(csv_fname, 'rt', encoding = 'utf-8')
-    json_str = f.read()
-    f.close()
+    with io.open(filename, 'rt', encoding = 'utf-8') as file:
+        json_str = file.read()
     json_data = json.loads(json_str)
 else:
-    set_log_level(LOG_DEBUG)
-    # --- Create scraper object ---
-    scraper_obj = ScreenScraper(common.settings)
-    scraper_obj.set_verbose_mode(False)
-    scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
-    st_dic = kodi_new_status_dic()
-    # --- Get platforms ---
+    log.set_log_level(log.LOG_DEBUG)
+    # --- Create scraper object
+    scraper = scrap.ScreenScraper(common.settings)
+    scraper.set_verbose_mode(False)
+    scraper.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+    st = kodi.new_status_dic()
+    # --- Get platforms
     # Call to this function will write file 'assets/ScreenScraper_get_platforms.json'
-    json_data = scraper_obj.debug_get_regions(st_dic)
-    common.abort_on_error(st_dic)
+    json_data = scraper.debug_get_regions(st)
+    common.abort_on_error(st)
 # pprint.pprint(json_data)
 # regions_dic is a dictionary of dictionaries
 regions_dic = json_data['response']['regions']
@@ -95,18 +99,18 @@ for shortname in sn_regions_od:
         print('Exception UnicodeEncodeError')
         print('ID {}'.format(platform['id']))
         sys.exit(0)
-table_str_list = text_render_table(table_str)
+table_str_list = misc.render_table(table_str)
 sl.extend(table_str_list)
 text_str = '\n'.join(sl)
 print('\n'.join(table_str_list))
 
 # --- Output file in TXT format ---
-print('\nWriting file "{}"'.format(txt_fname))
+print('Writing file "{}"'.format(txt_fname))
 with io.open(txt_fname, 'wt', encoding = 'utf-8') as file:
     file.write(text_str)
 
 # --- Output file in CSV format ---
-text_csv_slist = text_render_table_CSV(table_str)
+text_csv_slist = misc.render_table_CSV(table_str)
 text_csv = '\n'.join(text_csv_slist)
 print('Writing file "{}"'.format(csv_fname))
 with io.open(csv_fname, 'wt', encoding = 'utf-8') as file:

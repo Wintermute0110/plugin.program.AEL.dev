@@ -2,7 +2,12 @@
 
 # Common data to test the scrapers.
 
-from resources.misc import *
+# AEL modules.
+import resources.const as const
+import resources.misc as misc
+
+# Python standard library.
+import sys
 
 settings = {
     # --- AEL Offline ---
@@ -94,56 +99,46 @@ ASSET_URL_THUMB_L = 100
 def print_candidate_list(results):
     p_str = "{} {} {} {} {}"
     print('Found {} candidate/s'.format(len(results)))
-    print(p_str.format(
-        'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
+    print(p_str.format('Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
         'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
-    print(p_str.format(
-        '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
+    print(p_str.format('-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
     for game in results:
-        display_name = text_limit_string(game['display_name'], NAME_L)
-        score = text_limit_string(text_type(game['order']), SCORE_L)
-        id = text_limit_string(text_type(game['id']), ID_L)
-        platform = text_limit_string(text_type(game['platform']), PLATFORM_L)
-        splatform = text_limit_string(text_type(game['scraper_platform']), SPLATFORM_L)
-        print(p_str.format(
-            display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
+        display_name = misc.limit_string(game['display_name'], NAME_L)
+        score = misc.limit_string(const.text_type(game['order']), SCORE_L)
+        id = misc.limit_string(const.text_type(game['id']), ID_L)
+        platform = misc.limit_string(const.text_type(game['platform']), PLATFORM_L)
+        splatform = misc.limit_string(const.text_type(game['scraper_platform']), SPLATFORM_L)
+        print(p_str.format(display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
             platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
     print('')
 
 def print_game_metadata(metadata):
-    title     = text_limit_string(metadata['title'], TITLE_L)
+    title     = misc.limit_string(metadata['title'], TITLE_L)
     year      = metadata['year']
-    genre     = text_limit_string(metadata['genre'], GENRE_L)
-    developer = text_limit_string(metadata['developer'], DEVELOPER_L)
-    nplayers  = text_limit_string(metadata['nplayers'], NPLAYERS_L)
-    esrb      = text_limit_string(metadata['esrb'], ESRB_L)
-    plot      = text_limit_string(metadata['plot'], PLOT_L)
+    genre     = misc.limit_string(metadata['genre'], GENRE_L)
+    developer = misc.limit_string(metadata['developer'], DEVELOPER_L)
+    nplayers  = misc.limit_string(metadata['nplayers'], NPLAYERS_L)
+    esrb      = misc.limit_string(metadata['esrb'], ESRB_L)
+    plot      = misc.limit_string(metadata['plot'], PLOT_L)
 
     p_str = "{} {} {} {} {} {} {}"
     print('Displaying metadata for title "{}"'.format(title))
-    print(p_str.format(
-        'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
-        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
-        'Plot'.ljust(PLOT_L)))
-    print(p_str.format(
-        '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
-    print(p_str.format(
-        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
+    print(p_str.format('Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
+        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L), 'Plot'.ljust(PLOT_L)))
+    print(p_str.format('-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
+    print(p_str.format(title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
         nplayers.ljust(NPLAYERS_L), esrb.ljust(ESRB_L), plot.ljust(PLOT_L) ))
     print('')
 
 def print_game_assets(image_list):
     # print('Found {} image/s'.format(len(image_list)))
     p_str = "{} {} {}"
-    print(p_str.format(
-        'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
-        'URL thumb'.ljust(ASSET_URL_THUMB_L)))
+    print(p_str.format('Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L), 'URL thumb'.ljust(ASSET_URL_THUMB_L)))
     print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_THUMB_L))
     for image in image_list:
-        id           = text_limit_string(text_type(image['asset_ID']), ASSET_ID_L)
-        display_name = text_limit_string(image['display_name'], ASSET_NAME_L)
-        url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
-        print(p_str.format(
-            id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
+        id           = misc.limit_string(const.text_type(image['asset_ID']), ASSET_ID_L)
+        display_name = misc.limit_string(image['display_name'], ASSET_NAME_L)
+        url_thumb    = misc.limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
+        print(p_str.format(id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
             url_thumb.ljust(ASSET_URL_THUMB_L)))
     print('')
