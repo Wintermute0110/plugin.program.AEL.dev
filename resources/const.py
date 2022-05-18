@@ -460,8 +460,7 @@ OBJECT_ASSETS = {
     OBJECT_ROM_ID : ROM_ASSET_ID_LIST,
 }
 
-# List of assets that can be mapped to another assets.
-# These are the Kodi default assets.
+# List of Kodi default assets that can be default to another assets.
 DEFAULTABLE_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
@@ -470,43 +469,62 @@ DEFAULTABLE_ASSET_ID_LIST = [
     ASSET_CLEARLOGO_ID,
 ]
 
-# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
-MAPPABLE_CATEGORY_ASSET_ID_LIST = [
-    ASSET_ICON_ID,
-    ASSET_FANART_ID,
-    ASSET_BANNER_ID,
-    ASSET_POSTER_ID,
-    ASSET_CLEARLOGO_ID,
-]
+# Database fields for the defaultable assets.
+DEFAULTABLE_ASSET_DB_DIC = {
+    OBJECT_CATEGORY_ID : {
+        ASSET_ICON_ID : 'default_icon',
+        ASSET_FANART_ID : 'default_fanart',
+        ASSET_BANNER_ID : 'default_banner',
+        ASSET_POSTER_ID : 'default_poster',
+        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+    },
+    OBJECT_LAUNCHER_ID : {
+        ASSET_ICON_ID : 'default_icon',
+        ASSET_FANART_ID : 'default_fanart',
+        ASSET_BANNER_ID : 'default_banner',
+        ASSET_POSTER_ID : 'default_poster',
+        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+    },
+    # Edition of ROMs default assets in a ROM Launcher.
+    # Edition of Favourite ROM default assets.
+    OBJECT_ROM_ID : {
+        ASSET_ICON_ID : 'roms_default_icon',
+        ASSET_FANART_ID : 'roms_default_fanart',
+        ASSET_BANNER_ID : 'roms_default_banner',
+        ASSET_POSTER_ID : 'roms_default_poster',
+        ASSET_CLEARLOGO_ID : 'roms_default_clearlogo',
+    },
+}
 
-# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
-MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
-    ASSET_ICON_ID,
-    ASSET_FANART_ID,
-    ASSET_BANNER_ID,
-    ASSET_POSTER_ID,
-    ASSET_CLEARLOGO_ID,
-    ASSET_CONTROLLER_ID,
-]
-
-# List of assets that can be mapped. A mappable asset can be mapped to one of this list.
-MAPPABLE_ROMS_ASSET_ID_LIST = [
-    ASSET_TITLE_ID,
-    ASSET_SNAP_ID,
-    ASSET_BOXFRONT_ID,
-    ASSET_BOXBACK_ID,
-    ASSET_CARTRIDGE_ID,
-    ASSET_FANART_ID,
-    ASSET_BANNER_ID,
-    ASSET_CLEARLOGO_ID,
-    ASSET_FLYER_ID,
-    ASSET_MAP_ID,
-]
-
+# List of assets that can be mapped to a defaultable asset.
 MAPPABLE_ASSETS = {
-    OBJECT_CATEGORY_ID : MAPPABLE_CATEGORY_ASSET_ID_LIST,
-    OBJECT_LAUNCHER_ID : MAPPABLE_LAUNCHER_ASSET_ID_LIST,
-    OBJECT_ROM_ID : MAPPABLE_ROMS_ASSET_ID_LIST,
+    OBJECT_CATEGORY_ID : [
+        ASSET_ICON_ID,
+        ASSET_FANART_ID,
+        ASSET_BANNER_ID,
+        ASSET_POSTER_ID,
+        ASSET_CLEARLOGO_ID,
+    ],
+    OBJECT_LAUNCHER_ID : [
+        ASSET_ICON_ID,
+        ASSET_FANART_ID,
+        ASSET_BANNER_ID,
+        ASSET_POSTER_ID,
+        ASSET_CLEARLOGO_ID,
+        ASSET_CONTROLLER_ID,
+    ],
+    OBJECT_ROM_ID : [
+        ASSET_TITLE_ID,
+        ASSET_SNAP_ID,
+        ASSET_BOXFRONT_ID,
+        ASSET_BOXBACK_ID,
+        ASSET_CARTRIDGE_ID,
+        ASSET_FANART_ID,
+        ASSET_BANNER_ID,
+        ASSET_CLEARLOGO_ID,
+        ASSET_FLYER_ID,
+        ASSET_MAP_ID,
+    ],
 }
 
 # --- Addon will search these file extensions for assets ---

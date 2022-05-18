@@ -380,8 +380,6 @@ class AssetInfo:
     def __init__(self):
         self.id              = 0
         self.key             = ''
-        self.default_key     = ''
-        self.rom_default_key = ''
         self.name            = ''
         self.name_plural     = ''
         # Asset subdirectory name. Only used for ROMs?
@@ -407,8 +405,6 @@ cached_dialog_extension_list = get_dialog_extension_list(const.IMAGE_EXTENSION_L
 a_icon = AssetInfo()
 a_icon.id              = const.ASSET_ICON_ID
 a_icon.key             = 's_icon'
-a_icon.default_key     = 'default_icon'
-a_icon.rom_default_key = 'roms_default_icon'
 a_icon.name            = 'Icon'
 a_icon.name_plural     = 'Icons'
 a_icon.subdir          = 'icons'
@@ -422,8 +418,6 @@ a_icon.path_key        = 'path_icon'
 a_fanart = AssetInfo()
 a_fanart.id              = const.ASSET_FANART_ID
 a_fanart.key             = 's_fanart'
-a_fanart.default_key     = 'default_fanart'
-a_fanart.rom_default_key = 'roms_default_fanart'
 a_fanart.name            = 'Fanart'
 a_fanart.name_plural     = 'Fanarts'
 a_fanart.subdir          = 'fanarts'
@@ -437,8 +431,6 @@ a_fanart.path_key        = 'path_fanart'
 a_banner = AssetInfo()
 a_banner.id              = const.ASSET_BANNER_ID
 a_banner.key             = 's_banner'
-a_banner.default_key     = 'default_banner'
-a_banner.rom_default_key = 'roms_default_banner'
 a_banner.name            = 'Banner / Marquee'
 a_banner.name_plural     = 'Banners / Marquees'
 a_banner.subdir          = 'banners'
@@ -452,8 +444,6 @@ a_banner.path_key        = 'path_banner'
 a_poster = AssetInfo()        
 a_poster.id              = const.ASSET_POSTER_ID
 a_poster.key             = 's_poster'
-a_poster.default_key     = 'default_poster'
-a_poster.rom_default_key = 'roms_default_poster'
 a_poster.name            = 'Poster / Flyer'
 a_poster.name_plural     = 'Posters / Flyers'
 a_poster.subdir          = 'posters'
@@ -467,8 +457,6 @@ a_poster.path_key        = 'path_poster'
 a_clearlogo = AssetInfo()
 a_clearlogo.id              = const.ASSET_CLEARLOGO_ID
 a_clearlogo.key             = 's_clearlogo'
-a_clearlogo.default_key     = 'default_clearlogo'
-a_clearlogo.rom_default_key = 'roms_default_clearlogo'
 a_clearlogo.name            = 'Clearlogo'
 a_clearlogo.name_plural     = 'Clearlogos'
 a_clearlogo.subdir          = 'clearlogos'
@@ -763,16 +751,6 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         raise TypeError
 
     return afn
-
-# Given an object ID return a list of AssetInfo objects that can be mapped.
-def get_mappable_asset_list(object_ID):
-    try:
-        mappable_list = const.MAPPABLE_ASSETS[object_ID]
-    except:
-        log.error('get_mappable_asset_list() Unknown object_ID = {}'.format(object_ID))
-        kodi.notify_warn("Unknown object_ID '{}'".format(object_ID))
-        raise TypeError
-    return [ASSET_INFO_DICT[asset_ID] for asset_ID in mappable_list]
 
 # Given an asset filename string get the asset filename.
 # This function is used in "Edit Category/Launcher/ROM" context menus, ...

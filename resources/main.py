@@ -1855,7 +1855,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Load ROMs from disk database.
     # Set st dictionary to notify if no ROMs to render.
     loading_ticks_start = time.time()
-    st = utils.new_status_dic()
+    st = kodi.new_status_dic()
     db.get_launcher_info(cfg, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
     if kodi.is_error_status(st):
@@ -2018,7 +2018,7 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 #
 # cfg.roms could be a dictionary or an OrderedDictionary (ROM Collection and Recently Played ROMs).
 def render_ROMs_process(cfg, categoryID, launcherID):
-    st = utils.new_status_dic()
+    st = kodi.new_status_dic()
     # Prepare data depending on launcher class ---------------------------------------------------
     if cfg.launcher_is_standard:
         launcher = db.get_launcher(cfg, st, launcherID)
@@ -3856,7 +3856,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                     if any(temp_asset_list):
                         log.debug('Getting asset candidate game.')
                         # What if st_dic reports and error here? It is ignored?
-                        st_dic = utils.new_status_dic()
+                        st_dic = kodi.new_status_dic()
                         # This is a workaround! It will fail for multidisc ROMs.
                         # See proper implementation in _roms_import_roms()
                         ROM_checksums = ROMFile
@@ -4663,8 +4663,8 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
             elif categoryID == VCATEGORY_COLLECTIONS_ID: kodi_notify('Updated Collection ROM {}'.format(info_str))
 
         # Root menu "Manage Favourite/Collection ROM object..." -> "Manage default Assets/Artwork..."
-        elif mdic['command'] == 'EDIT_FAV_MANAGE_DEFAUL_ASSETS':
-            raise TypeError
+        elif mdic['command'] == 'EDIT_FAV_MANAGE_DEFAULT_ASSETS':
+            save_DB_flag = mgui_edit_object_default_assets(cfg, const.OBJECT_ROM_ID, rom)
 
         # Root menu "Manage Collection ROM position..." -> Choose ROM order
         elif mdic['command'] == 'EDIT_COLLECTION_ROM_ORDER':
@@ -4779,7 +4779,7 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
         # Save the database if requested.
         if save_DB_flag:
             log.debug('command_edit_rom() Saving ROMs database...')
-            st = utils.new_status_dic()
+            st = kodi.new_status_dic()
             db.save_ROMs(cfg, st)
         log.debug('command_edit_rom() End of loop...')
     kodi.notify('Finish Edit ROM')
@@ -4828,7 +4828,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
         ('EDIT_FAV_UPDATE_METADATA', 'Copy metadata from parent ROM'),
         ('EDIT_FAV_UPDATE_ASSETS', 'Copy assets/artwork from parent ROM'),
         ('EDIT_FAV_UPDATE_ALL', 'Copy all from parent ROM'),
-        ('EDIT_FAV_MANAGE_DEFAUL_ASSETS', 'Manage default Assets/Artwork...'),
+        ('EDIT_FAV_MANAGE_DEFAULT_ASSETS', 'Manage default Assets/Artwork...'),
     ]
     # Build dynamic menus.
     if launcherID == const.VLAUNCHER_FAVOURITES_ID:
@@ -4839,8 +4839,8 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
             ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', edit_assets_all_menu_list),
             ('EDIT_STATUS', 'ROM status [COLOR orange]{}[/COLOR]'.format(finished_str)),
             ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', edit_advanced_mods_menu_list),
-            ('DELETE_ROM', 'Delete Favourite ROM'),
             ('MANAGE_FAV_ROM', 'Manage Favourite ROM object...', edit_manage_fav_obj_menu_list),
+            ('DELETE_ROM', 'Delete Favourite ROM'),
         ]
     elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         menu_list = [
@@ -4850,7 +4850,6 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
             ('EDIT_ASSETS_ALL', 'Edit Assets/Artwork (all)...', edit_assets_all_menu_list),
             ('EDIT_STATUS', 'ROM status [COLOR orange]{}[/COLOR]'.format(finished_str)),
             ('EDIT_ADVANCED_MODIFICATIONS', 'Advanced Modifications...', edit_advanced_mods_menu_list),
-            ('DELETE_ROM', 'Delete Collection ROM'),
             ('MANAGE_COLLECTION_ROM', 'Manage Collection ROM object...', edit_manage_fav_obj_menu_list),
             ('MANAGE_COLLECTION_ROM_POS', 'Manage Collection ROM position...', [
                 'Manage Collection ROM position',
@@ -4858,6 +4857,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
                 ('EDIT_COLLECTION_ROM_UP', 'Move Collection ROM up'),
                 ('EDIT_COLLECTION_ROM_DOWN', 'Move Collection ROM down'),
             ]),
+            ('DELETE_ROM', 'Delete Collection ROM'),
         ]
     else:
         menu_list = [
@@ -4873,114 +4873,7 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
 
 # MAKE THIS FUNCTION DISSAPEAR ASAP.
 def command_edit_rom_OLD(self, categoryID, launcherID, romID):
-    # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
-    if mindex == 6:
-        # --- Choose default Favourite/Collection assets/artwork ---
-        if mindex2 == 6:
-            rom = roms[romID]
-
-            # Label1 an label2.
-            asset_icon_str      = assets_get_asset_name_str(rom['roms_default_icon'])
-            asset_fanart_str    = assets_get_asset_name_str(rom['roms_default_fanart'])
-            asset_banner_str    = assets_get_asset_name_str(rom['roms_default_banner'])
-            asset_poster_str    = assets_get_asset_name_str(rom['roms_default_poster'])
-            asset_clearlogo_str = assets_get_asset_name_str(rom['roms_default_clearlogo'])
-
-            label_icon = 'Choose asset for Icon (currently {})'.format(asset_icon_str)
-            label_fanart = 'Choose asset for Fanart (currently {})'.format(asset_fanart_str)
-            label_banner = 'Choose asset for Banner (currently {})'.format(asset_banner_str)
-            label_poster = 'Choose asset for Poster (currently {})'.format(asset_poster_str)
-            label_clearlogo = 'Choose asset for Clearlogo (currently {})'.format(asset_clearlogo_str)
-
-            label2_icon      = rom[rom['roms_default_icon']]      if rom[rom['roms_default_icon']]      else 'Not set'
-            label2_fanart    = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'Not set'
-            label2_banner    = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'Not set'
-            label2_poster    = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'Not set'
-            label2_clearlogo = rom[rom['roms_default_clearlogo']] if rom[rom['roms_default_clearlogo']] else 'Not set'
-
-            img_icon      = rom[rom['roms_default_icon']]      if rom[rom['roms_default_icon']]      else 'DefaultAddonNone.png'
-            img_fanart    = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'DefaultAddonNone.png'
-            img_banner    = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'DefaultAddonNone.png'
-            img_poster    = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'DefaultAddonNone.png'
-            img_clearlogo = rom[rom['roms_default_clearlogo']] if rom[rom['roms_default_clearlogo']] else 'DefaultAddonNone.png'
-
-            icon_listitem = xbmcgui.ListItem(label = label_icon, label2 = label2_icon)
-            fanart_listitem = xbmcgui.ListItem(label = label_fanart, label2 = label2_fanart)
-            banner_listitem = xbmcgui.ListItem(label = label_banner, label2 = label2_banner)
-            poster_listitem = xbmcgui.ListItem(label = label_poster, label2 = label2_poster)
-            clearlogo_listitem = xbmcgui.ListItem(label = label_clearlogo, label2 = label2_clearlogo)
-
-            icon_listitem.setArt({'icon' : img_icon})
-            fanart_listitem.setArt({'icon' : img_fanart})
-            banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
-            clearlogo_listitem.setArt({'icon' : img_clearlogo})
-
-            # Execute select dialog
-            sDialog = KodiSelectDialog('Edit ROMs default Assets/Artwork', useDetails = True)
-            sDialog.setRows([icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem])
-            mindex3 = sDialog.executeDialog()
-            if mindex3 is None: return
-
-            ROM_LI_list = [
-                xbmcgui.ListItem(label = 'Title',     label2 = rom['s_title'] if rom['s_title'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Snap',      label2 = rom['s_snap'] if rom['s_snap'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Fanart',    label2 = rom['s_fanart'] if rom['s_fanart'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Banner',    label2 = rom['s_banner'] if rom['s_banner'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Clearlogo', label2 = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Boxfront',  label2 = rom['s_boxfront'] if rom['s_boxfront'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Boxback',   label2 = rom['s_boxback'] if rom['s_boxback'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Cartridge', label2 = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Flyer',     label2 = rom['s_flyer'] if rom['s_flyer'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Map',       label2 = rom['s_map'] if rom['s_map'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Manual',    label2 = rom['s_manual'] if rom['s_manual'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Trailer',   label2 = rom['s_trailer'] if rom['s_trailer'] else 'Not set'),
-            ]
-            ROM_LI_list[0].setArt({'icon' : rom['s_title'] if rom['s_title'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[1].setArt({'icon' : rom['s_snap'] if rom['s_snap'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[2].setArt({'icon' : rom['s_fanart'] if rom['s_fanart'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[3].setArt({'icon' : rom['s_banner'] if rom['s_banner'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[4].setArt({'icon' : rom['s_clearlogo'] if rom['s_clearlogo'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[5].setArt({'icon' : rom['s_boxfront'] if rom['s_boxfront'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[6].setArt({'icon' : rom['s_boxback'] if rom['s_boxback'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[7].setArt({'icon' : rom['s_cartridge'] if rom['s_cartridge'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[8].setArt({'icon' : rom['s_flyer'] if rom['s_flyer'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[9].setArt({'icon' : rom['s_map'] if rom['s_map'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[10].setArt({'icon' : rom['s_manual'] if rom['s_manual'] else 'DefaultAddonNone.png'})
-            ROM_LI_list[11].setArt({'icon' : rom['s_trailer'] if rom['s_trailer'] else 'DefaultAddonNone.png'})
-
-            if mindex3 == 0:
-                sDialog = KodiSelectDialog('Choose default Asset for Icon', ROM_LI_list, useDetails = True)
-                type_s = sDialog.executeDialog()
-                if type_s is None: return
-                assets_choose_category_ROM(rom, 'roms_default_icon', type_s)
-            elif mindex3 == 1:
-                sDialog = KodiSelectDialog('Choose default Asset for Fanart', ROM_LI_list, useDetails = True)
-                type_s = sDialog.executeDialog()
-                if type_s is None: return
-                assets_choose_category_ROM(rom, 'roms_default_fanart', type_s)
-            elif mindex3 == 2:
-                sDialog = KodiSelectDialog('Choose default Asset for Banner', ROM_LI_list, useDetails = True)
-                type_s = sDialog.executeDialog()
-                if type_s is None: return
-                assets_choose_category_ROM(rom, 'roms_default_banner', type_s)
-            elif mindex3 == 3:
-                sDialog = KodiSelectDialog('Choose default Asset for Poster', ROM_LI_list, useDetails = True)
-                type_s = sDialog.executeDialog()
-                if type_s is None: return
-                assets_choose_category_ROM(rom, 'roms_default_poster', type_s)
-            elif mindex3 == 4:
-                sDialog = KodiSelectDialog('Choose default Asset for Clearlogo', ROM_LI_list, useDetails = True)
-                type_s = sDialog.executeDialog()
-                if type_s is None: return
-                assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
-
-    # --- Save ROMs or Favourites ROMs or Collection ROMs ---
-    
-    
     # -----------------------> TODO Move this stuff to db.save_ROMs() <---------------------------
-    
-    
     # Always save if we reach this point of the function
     if launcherID == VLAUNCHER_FAVOURITES_ID:
         fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms)
@@ -5016,10 +4909,6 @@ def command_edit_rom_OLD(self, categoryID, launcherID, romID):
             pDialog.updateProgress(10, 'Saving Parents JSON...')
             fs_write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, parent_roms)
             pDialog.endProgress()
-
-    # It seems that updating the container does more harm than good... specially when having many ROMs
-    # By the way, what is the difference between Container.Refresh() and Container.Update()?
-    kodi_refresh_container()
 
 # Edits collection artwork
 def command_edit_collection(self, categoryID, launcherID):
@@ -5740,7 +5629,7 @@ def mgui_edit_asset(cfg, object_ID, edict, AInfo):
         # to be printed here. A message here could be that no images were found, network
         # error when downloading image, etc., however the caches (internal, etc.) may have
         # valid data that needs to be saved.
-        st = utils.new_status_dic()
+        st = kodi.new_status_dic()
         scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
         scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st)
         # Flush caches
@@ -5772,7 +5661,8 @@ def mgui_edit_object_default_assets(cfg, object_ID, edict):
         asset_info_list = [] # List to easily pick the selected AssetInfo() object
         for ainfo_t in default_assets_odict:
             # Get mapped asset for asset_ID, AssetInfo Object and filename.
-            mapped_asset_key = edict[ainfo_t.default_key]
+            default_db_key = const.DEFAULTABLE_ASSET_DB_DIC[object_ID][ainfo_t.id]
+            mapped_asset_key = edict[default_db_key]
             mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
             mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
             # Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
@@ -5808,16 +5698,17 @@ def mgui_edit_default_asset(cfg, object_ID, edict, edit_ainfo):
     log.debug('mgui_edit_default_asset() Editing "{}"'.format(edit_ainfo.name))
     obj_info = assets.OBJECT_INFO_DICT[object_ID]
     # Get mapped asset for asset_ID, AssetInfo Object and filename.
-    mapped_asset_key = edict[edit_ainfo.default_key]
+    default_db_key = const.DEFAULTABLE_ASSET_DB_DIC[object_ID][edit_ainfo.id]
+    mapped_asset_key = edict[default_db_key]
     mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
-    mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
+    # mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
     # Execute select menu logic.
     execute_menu, save_DB_flag, pre_select_idx = True, False, 0
     while execute_menu:
-        mappable_ainfo_list = assets.get_mappable_asset_list(object_ID)
         list_items = []
         asset_info_list = []
-        for ainfo_t in mappable_ainfo_list:
+        for a_id_t in const.MAPPABLE_ASSETS[object_ID]:
+            ainfo_t = assets.ASSET_INFO_DICT[a_id_t]
             mapped_asset_str = edict[ainfo_t.key] if ainfo_t.key in edict else ''
             # Label1 is the asset name (Icon, Fanart, etc.)
             # Label2 is the asset filename str as in the database or 'Not set'
@@ -5852,8 +5743,8 @@ def mgui_edit_default_asset(cfg, object_ID, edict, edit_ainfo):
             execute_menu = False
             continue
         log.debug('m_gui_edit_object_default_assets() Mapping {} (key {}) to {}.'.format(
-            edit_ainfo.name, edit_ainfo.default_key, selected_ainfo.name))
-        edict[edit_ainfo.default_key] = selected_ainfo.key
+            edit_ainfo.name, default_db_key, selected_ainfo.name))
+        edict[default_db_key] = selected_ainfo.key
         # Example: "Category Icon mapped to Fanart"
         kodi.notify('{} {} mapped to {}'.format(obj_info.name, edit_ainfo.name, selected_ainfo.name))
         save_DB_flag = True
@@ -5888,7 +5779,7 @@ def mgui_scrape_all_assets():
         'settings' : self.settings,
         'launchers' : self.launchers,
     }
-    st_dic = utils.new_status_dic()
+    st_dic = kodi.new_status_dic()
     # Create scraper factory and select scraper to use.
     scrap_factory = ScraperFactory(g_PATHS, self.settings)
     scraper_menu_list = scrap_factory.get_all_asset_scraper_menu_list()
@@ -6964,7 +6855,7 @@ def command_view_menu(cfg, categoryID, launcherID, romID):
         kodi.display_text_window_mono(window_title, '\n'.join(sl))
 
     elif action == ACTION_VIEW_ROM:
-        st = utils.new_status_dic()
+        st = kodi.new_status_dic()
         db.get_launcher_info(cfg, categoryID, launcherID)
         db.load_ROMs(cfg, st, categoryID, launcherID)
         rom = cfg.roms[romID]
