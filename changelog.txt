@@ -95,8 +95,9 @@ DONE     [CORE] New ROM rendering engine. Copy feature from AML.
          Functions render_ROMs(), render_ROMs_filter(), render_ROMs_process(), render_ROMs_commit().
 
 WIP NOW  [CORE] Improved context menu handling.
-         -> [DONE] Start with the Edit Category context menu (easiest).
-            This is a fixed menu (never changes).
+         -> [DONE] Start with the Edit Category context menu (easiest). This is a fixed menu (never changes).
+         -> [WIP NOW] Then Edit Collection. This is a fixed menu (never changes).
+         
          -> [WIP] Then Edit ROM.
             This is a dynamic menu (changes for standard ROMs, Favourite ROMs, etc.)
          -> Finally Edit Launcher (most complicated).

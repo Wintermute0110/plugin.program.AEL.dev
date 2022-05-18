@@ -450,7 +450,7 @@ def run_protected(cfg, command, args):
     elif command == 'ADD_TO_FAV': command_add_to_favourites(catID, launID, romID)
     elif command == 'ADD_TO_COLLECTION': command_add_ROM_to_collection(catID, launID, romID)
     elif command == 'ADD_COLLECTION': command_add_collection()
-    elif command == 'EDIT_COLLECTION': command_edit_collection(catID, launID)
+    elif command == 'EDIT_COLLECTION': command_edit_collection(cfg, catID, launID)
     elif command == 'IMPORT_COLLECTION': command_import_collection()
 
     # Manages Favourites and ROM Collections.
@@ -3024,6 +3024,322 @@ def command_edit_category_build_menu(cfg, categoryID):
         ('DELETE_CATEGORY', 'Delete Category'),
     ]
 
+# "Edit Collection" context menu.
+# New generation context menu implementation. Avoid recursive implementation.
+# Reference implementation is command_edit_category()
+def command_edit_collection(cfg, categoryID, launcherID):
+    # Load Collection.
+
+    # Edit ROM context menu menu logic.
+    mdic = mgui_initialise_menu_dictionary()
+
+def command_edit_collection_menu(cfg, categoryID, launcherID):
+    log.debug('command_edit_collection_menu() Building menu...')
+
+# Make this function dissapear.
+def command_edit_collection_OLD(self, categoryID, launcherID):
+    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+    collection = COL['collections'][launcherID]
+
+    # --- Shows a select box with the options to edit ---
+    t = 'Select action for ROM Collection {}'.format(collection['m_name'])
+    mindex = KodiSelectDialog(t, [
+        'Edit Metadata...',
+        'Edit Assets/Artwork...',
+        'Choose default Assets/Artwork...',
+        'Export ROM Collection',
+        'Delete ROM Collection',
+    ]).executeDialog()
+    if mindex is None: return
+
+    # --- Edit category metadata ---
+    if mindex == 0:
+        NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
+        NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
+        sDialog = KodiSelectDialog('Edit Category Metadata', [
+            "Edit Title: '{}'".format(collection['m_name']),
+            "Edit Genre: '{}'".format(collection['m_genre']),
+            "Edit Rating: '{}'".format(collection['m_rating']),
+            "Edit Plot: '{}'".format(plot_str),
+            'Import NFO file (default, {})'.format(NFO_str),
+            'Import NFO file (browse NFO file)...',
+            'Save NFO file (default location)',
+        ])
+        mindex2 = sDialog.executeDialog()
+        if mindex2 is None: return
+        if type2 < 0: return
+
+        # --- Edition of the collection name ---
+        if type2 == 0:
+            save_DB = aux_edit_str(collection, 'm_name', 'Collection Title')
+            if not save_DB: return
+
+        # --- Edition of the collection genre ---
+        elif type2 == 1:
+            save_DB = aux_edit_str(collection, 'm_genre', 'Collection Genre')
+            if not save_DB: return
+
+        # --- Edition of the collection rating ---
+        elif type2 == 2:
+            sDialog = KodiSelectDialog('Edit Category Rating')
+            sDialog.setRows([
+                'Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10',
+            ])
+            rating = sDialog.executeDialog()
+            if rating is None:
+                kodi_notify('Category rating not changed')
+                return
+            elif rating == 0:
+                collection['m_rating'] = ''
+                kodi_notify('Collection Rating changed to Not Set')
+            elif rating >= 1 and rating <= 11:
+                collection['m_rating'] = '{}'.format(rating - 1)
+                kodi_notify('Collection Rating is now {}'.format(collection['m_rating']))
+
+        # --- Edition of the plot (description) ---
+        elif type2 == 3:
+            save_DB = aux_edit_str(collection, 'm_plot', 'Collection Plot')
+            if not save_DB: return
+
+        # --- Import collection metadata from NFO file (automatic) ---
+        elif type2 == 4:
+            # Returns True if changes were made
+            NFO_FN = fs_get_collection_NFO_name(self.settings, collection)
+            save_DB = fs_import_collection_NFO(NFO_FN, collections, launcherID)
+            if not save_DB: return
+            kodi_notify('Imported Collection NFO file {}'.format(NFO_FN.getPath()))
+
+        # --- Browse for collection NFO file ---
+        elif type2 == 5:
+            NFO_file_str = kodi_dialog_get_file('Select NFO description file', '.nfo')
+            log.debug('_command_edit_category() Dialog().browse returned "{}"'.format(NFO_file_str))
+            if not NFO_file_str: return
+            NFO_FN = utils.FileName(NFO_file_str)
+            if not NFO_FN.exists(): return
+            save_DB = fs_import_collection_NFO(NFO_FN, collections, launcherID)
+            if not save_DB: return
+            kodi_notify('Imported Collection NFO file {}'.format(NFO_FN.getPath()))
+
+        # --- Export collection metadata to NFO file ---
+        elif type2 == 6:
+            NFO_FN = fs_get_collection_NFO_name(self.settings, collection)
+            # Returns False if exception happened. If an Exception happened function notifies
+            # user, so display nothing to not overwrite error notification.
+            success = fs_export_collection_NFO(NFO_FN, collection)
+            if not success: return
+            kodi_notify('Exported Collection NFO file {}'.format(NFO_FN.getPath()))
+            return # No need to save categories/launchers
+
+    # --- Edit artwork ---
+    elif mindex == 1:
+        # Create label2 and image ListItem fields.
+        label2_icon      = collection['s_icon']      if collection['s_icon']      else 'Not set'
+        label2_fanart    = collection['s_fanart']    if collection['s_fanart']    else 'Not set'
+        label2_banner    = collection['s_banner']    if collection['s_banner']    else 'Not set'
+        label2_poster    = collection['s_poster']    if collection['s_poster']    else 'Not set'
+        label2_clearlogo = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'
+        label2_trailer   = collection['s_trailer']   if collection['s_trailer']   else 'Not set'
+
+        img_icon         = collection['s_icon']      if collection['s_icon']      else 'DefaultAddonNone.png'
+        img_fanart       = collection['s_fanart']    if collection['s_fanart']    else 'DefaultAddonNone.png'
+        img_banner       = collection['s_banner']    if collection['s_banner']    else 'DefaultAddonNone.png'
+        img_poster       = collection['s_poster']    if collection['s_poster']    else 'DefaultAddonNone.png'
+        img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
+        img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
+
+        # Create ListItem objects for select dialog.
+        icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
+        fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
+        banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
+        poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
+        clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+        trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
+        icon_listitem.setArt({'icon' : img_icon})
+        fanart_listitem.setArt({'icon' : img_fanart})
+        banner_listitem.setArt({'icon' : img_banner})
+        poster_listitem.setArt({'icon' : img_poster})
+        clearlogo_listitem.setArt({'icon' : img_clearlogo})
+        trailer_listitem.setArt({'icon' : img_trailer})
+
+        # Execute select dialog
+        sDialog = KodiSelectDialog('Edit Collection Assets/Artwork', useDetails = True)
+        sDialog.setRows([
+            icon_listitem,
+            fanart_listitem,
+            banner_listitem,
+            poster_listitem,
+            clearlogo_listitem,
+            trailer_listitem,
+        ])
+        mindex2 = sDialog.executeDialog()
+        if mindex2 is None: return
+        asset_list = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID]
+        asset_kind = asset_list[mindex2]
+        save_DB = self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection)
+        if not save_DB: return
+
+    # --- Choose default Collection assets/artwork ---
+    elif mindex == 2:
+        # Label1 an label2
+        asset_icon_str = assets_get_asset_name_str(collection['default_icon'])
+        asset_fanart_str = assets_get_asset_name_str(collection['default_fanart'])
+        asset_banner_str = assets_get_asset_name_str(collection['default_banner'])
+        asset_poster_str = assets_get_asset_name_str(collection['default_poster'])
+        asset_clearlogo_str = assets_get_asset_name_str(collection['default_clearlogo'])
+
+        label_icon = 'Choose asset for Icon (currently {})'.format(asset_icon_str)
+        label_fanart = 'Choose asset for Fanart (currently {})'.format(asset_fanart_str)
+        label_banner = 'Choose asset for Banner (currently {})'.format(asset_banner_str)
+        label_poster = 'Choose asset for Poster (currently {})'.format(asset_poster_str)
+        label_clearlogo = 'Choose asset for Clearlogo (currently {})'.format(asset_clearlogo_str)
+
+        label2_icon = collection[collection['default_icon']] if collection[collection['default_icon']] else 'Not set'
+        label2_fanart = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'Not set'
+        label2_banner = collection[collection['default_banner']] if collection[collection['default_banner']] else 'Not set'
+        label2_poster = collection[collection['default_poster']] if collection[collection['default_poster']] else 'Not set'
+        label2_clearlogo = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'Not set'
+
+        icon_listitem = xbmcgui.ListItem(label = label_icon, label2 = label2_icon)
+        fanart_listitem = xbmcgui.ListItem(label = label_fanart, label2 = label2_fanart)
+        banner_listitem = xbmcgui.ListItem(label = label_banner, label2 = label2_banner)
+        poster_listitem = xbmcgui.ListItem(label = label_poster, label2 = label2_poster)
+        clearlogo_listitem = xbmcgui.ListItem(label = label_clearlogo, label2 = label2_clearlogo)
+
+        # Asset image
+        img_icon = collection[collection['default_icon']] if collection[collection['default_icon']] else 'DefaultAddonNone.png'
+        img_fanart = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'DefaultAddonNone.png'
+        img_banner = collection[collection['default_banner']] if collection[collection['default_banner']] else 'DefaultAddonNone.png'
+        img_poster = collection[collection['default_poster']] if collection[collection['default_poster']] else 'DefaultAddonNone.png'
+        img_clearlogo = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'DefaultAddonNone.png'
+        icon_listitem.setArt({'icon' : img_icon})
+        fanart_listitem.setArt({'icon' : img_fanart})
+        banner_listitem.setArt({'icon' : img_banner})
+        poster_listitem.setArt({'icon' : img_poster})
+        clearlogo_listitem.setArt({'icon' : img_clearlogo})
+
+        # Execute select dialog
+        sDialog = KodiSelectDialog('Edit Collection default Assets/Artwork', useDetails = True)
+        sDialog.setRows([icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem])
+        mindex2 = sDialog.executeDialog()
+        if mindex2 is None: return
+
+        # Build ListItem of assets that can be mapped.
+        LI_list = [
+            xbmcgui.ListItem(label = 'Icon', label2 = collection['s_icon'] if collection['s_icon'] else 'Not set'),
+            xbmcgui.ListItem(label = 'Fanart', label2 = collection['s_fanart'] if collection['s_fanart'] else 'Not set'),
+            xbmcgui.ListItem(label = 'Banner', label2 = collection['s_banner'] if collection['s_banner'] else 'Not set'),
+            xbmcgui.ListItem(label = 'Poster', label2 = collection['s_poster'] if collection['s_poster'] else 'Not set'),
+            xbmcgui.ListItem(label = 'Clearlogo', label2 = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'),
+        ]
+        LI_list[0].setArt({'icon' : collection['s_icon'] if collection['s_icon'] else 'DefaultAddonNone.png'})
+        LI_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
+        LI_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
+        LI_list[3].setArt({'icon' : collection['s_poster'] if collection['s_poster'] else 'DefaultAddonNone.png'})
+        LI_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
+
+        # Krypton feature: User preselected item in select() dialog.
+        if mindex2 == 0:
+            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_icon')
+            sDialog = KodiSelectDialog('Choose Collection default asset for Icon', LI_list, p_idx, True)
+            type_s = sDialog.executeDialog()
+            if type_s is None: return
+            assets_choose_Category_mapped_artwork(collection, 'default_icon', type_s)
+            asset_name = assets_get_asset_name_str(collection['default_icon'])
+            kodi_notify('ROM Collection Icon mapped to {}'.format(asset_name))
+        elif mindex2 == 1:
+            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_fanart')
+            sDialog = KodiSelectDialog('Choose Collection default asset for Fanart', LI_list, p_idx, True)
+            type_s = sDialog.executeDialog()
+            if type_s is None: return
+            assets_choose_Category_mapped_artwork(collection, 'default_fanart', type_s)
+            asset_name = assets_get_asset_name_str(collection['default_fanart'])
+            kodi_notify('ROM Collection Fanart mapped to {}'.format(asset_name))
+        elif mindex2 == 2:
+            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_banner')
+            sDialog = KodiSelectDialog('Choose Collection default asset for Banner', LI_list, p_idx, True)
+            type_s = sDialog.executeDialog()
+            if type_s is None: return
+            assets_choose_Category_mapped_artwork(collection, 'default_banner', type_s)
+            asset_name = assets_get_asset_name_str(collection['default_banner'])
+            kodi_notify('ROM Collection Banner mapped to {}'.format(asset_name))
+        elif mindex2 == 3:
+            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_poster')
+            sDialog = KodiSelectDialog('Choose Collection default asset for Poster', LI_list, p_idx, True)
+            type_s = sDialog.executeDialog()
+            if type_s is None: return
+            assets_choose_Category_mapped_artwork(collection, 'default_poster', type_s)
+            asset_name = assets_get_asset_name_str(collection['default_poster'])
+            kodi_notify('ROM Collection Poster mapped to {}'.format(asset_name))
+        elif mindex2 == 4:
+            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_clearlogo')
+            sDialog = KodiSelectDialog('Choose Collection default asset for Clearlogo', LI_list, p_idx, True)
+            type_s = sDialog.executeDialog()
+            if type_s is None: return
+            assets_choose_Category_mapped_artwork(collection, 'default_clearlogo', type_s)
+            asset_name = assets_get_asset_name_str(collection['default_clearlogo'])
+            kodi_notify('ROM Collection Clearlogo mapped to {}'.format(asset_name))
+
+    # --- Export ROM Collection ---
+    elif mindex == 3:
+        collections_asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
+
+        # --- Choose output directory ---
+        output_dir = kodi_dialog_get_wdirectory('Select Collection output directory')
+        if not output_dir: return
+        out_dir_FN = utils.FileName(output_dir)
+
+        # --- Load collection ROMs ---
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+        if not rom_list:
+            kodi_notify('Collection is empty. Add ROMs to this collection first.')
+            return
+
+        # --- Export collection metadata and assets ---
+        output_FN = out_dir_FN.pjoin(collection['m_name'] + '.json')
+        fs_export_ROM_collection(output_FN, collection, rom_list)
+        fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, collections_asset_dir_FN)
+
+        # --- User info ---
+        kodi_notify('Exported ROM Collection {} metadata and assets.'.format(collection['m_name']))
+
+    # --- Delete ROM Collection ---
+    elif mindex == 4:
+        # --- Load collection index and ROMs ---
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+
+        # --- Confirm deletion ---
+        num_roms = len(collection_rom_list)
+        collection_name = collection['m_name']
+        ret = kodi_dialog_yesno('Collection "{}" has {} ROMs. '.format(collection_name, num_roms) +
+            'Are you sure you want to delete it?')
+        if not ret: return
+
+        # --- Remove JSON file and delete collection object ---
+        collection_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        log.debug('Removing Collection JSON "{}"'.format(collection_file_path.getOriginalPath()))
+        try:
+            if collection_file_path.exists(): collection_file_path.unlink()
+        except OSError:
+            log.error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(
+                collection_file_path.getOriginalPath()))
+            kodi_notify_warn('OSError exception deleting collection JSON')
+        COL['collections'].pop(launcherID)
+        kodi_notify('Deleted ROM Collection "{}"'.format(collection_name))
+
+        # TODO Remove assets in the collections asset directory.
+
+    # Save collection index and refresh view.
+    fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
+    kodi_refresh_container()
+
 def command_edit_launcher(self, categoryID, launcherID):
     # Shows a select box with the options to edit
     finished_str = 'Finished' if self.launchers[launcherID]['finished'] == True else 'Unfinished'
@@ -4870,310 +5186,6 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
             ('DELETE_ROM', 'Delete ROM'),
         ]
     return menu_list
-
-# Edits collection artwork
-def command_edit_collection(self, categoryID, launcherID):
-    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-    collection = COL['collections'][launcherID]
-
-    # --- Shows a select box with the options to edit ---
-    t = 'Select action for ROM Collection {}'.format(collection['m_name'])
-    mindex = KodiSelectDialog(t, [
-        'Edit Metadata...',
-        'Edit Assets/Artwork...',
-        'Choose default Assets/Artwork...',
-        'Export ROM Collection',
-        'Delete ROM Collection',
-    ]).executeDialog()
-    if mindex is None: return
-
-    # --- Edit category metadata ---
-    if mindex == 0:
-        NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
-        NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
-        sDialog = KodiSelectDialog('Edit Category Metadata', [
-            "Edit Title: '{}'".format(collection['m_name']),
-            "Edit Genre: '{}'".format(collection['m_genre']),
-            "Edit Rating: '{}'".format(collection['m_rating']),
-            "Edit Plot: '{}'".format(plot_str),
-            'Import NFO file (default, {})'.format(NFO_str),
-            'Import NFO file (browse NFO file)...',
-            'Save NFO file (default location)',
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-        if type2 < 0: return
-
-        # --- Edition of the collection name ---
-        if type2 == 0:
-            save_DB = aux_edit_str(collection, 'm_name', 'Collection Title')
-            if not save_DB: return
-
-        # --- Edition of the collection genre ---
-        elif type2 == 1:
-            save_DB = aux_edit_str(collection, 'm_genre', 'Collection Genre')
-            if not save_DB: return
-
-        # --- Edition of the collection rating ---
-        elif type2 == 2:
-            sDialog = KodiSelectDialog('Edit Category Rating')
-            sDialog.setRows([
-                'Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
-                'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10',
-            ])
-            rating = sDialog.executeDialog()
-            if rating is None:
-                kodi_notify('Category rating not changed')
-                return
-            elif rating == 0:
-                collection['m_rating'] = ''
-                kodi_notify('Collection Rating changed to Not Set')
-            elif rating >= 1 and rating <= 11:
-                collection['m_rating'] = '{}'.format(rating - 1)
-                kodi_notify('Collection Rating is now {}'.format(collection['m_rating']))
-
-        # --- Edition of the plot (description) ---
-        elif type2 == 3:
-            save_DB = aux_edit_str(collection, 'm_plot', 'Collection Plot')
-            if not save_DB: return
-
-        # --- Import collection metadata from NFO file (automatic) ---
-        elif type2 == 4:
-            # Returns True if changes were made
-            NFO_FN = fs_get_collection_NFO_name(self.settings, collection)
-            save_DB = fs_import_collection_NFO(NFO_FN, collections, launcherID)
-            if not save_DB: return
-            kodi_notify('Imported Collection NFO file {}'.format(NFO_FN.getPath()))
-
-        # --- Browse for collection NFO file ---
-        elif type2 == 5:
-            NFO_file_str = kodi_dialog_get_file('Select NFO description file', '.nfo')
-            log.debug('_command_edit_category() Dialog().browse returned "{}"'.format(NFO_file_str))
-            if not NFO_file_str: return
-            NFO_FN = utils.FileName(NFO_file_str)
-            if not NFO_FN.exists(): return
-            save_DB = fs_import_collection_NFO(NFO_FN, collections, launcherID)
-            if not save_DB: return
-            kodi_notify('Imported Collection NFO file {}'.format(NFO_FN.getPath()))
-
-        # --- Export collection metadata to NFO file ---
-        elif type2 == 6:
-            NFO_FN = fs_get_collection_NFO_name(self.settings, collection)
-            # Returns False if exception happened. If an Exception happened function notifies
-            # user, so display nothing to not overwrite error notification.
-            success = fs_export_collection_NFO(NFO_FN, collection)
-            if not success: return
-            kodi_notify('Exported Collection NFO file {}'.format(NFO_FN.getPath()))
-            return # No need to save categories/launchers
-
-    # --- Edit artwork ---
-    elif mindex == 1:
-        # Create label2 and image ListItem fields.
-        label2_icon      = collection['s_icon']      if collection['s_icon']      else 'Not set'
-        label2_fanart    = collection['s_fanart']    if collection['s_fanart']    else 'Not set'
-        label2_banner    = collection['s_banner']    if collection['s_banner']    else 'Not set'
-        label2_poster    = collection['s_poster']    if collection['s_poster']    else 'Not set'
-        label2_clearlogo = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'
-        label2_trailer   = collection['s_trailer']   if collection['s_trailer']   else 'Not set'
-
-        img_icon         = collection['s_icon']      if collection['s_icon']      else 'DefaultAddonNone.png'
-        img_fanart       = collection['s_fanart']    if collection['s_fanart']    else 'DefaultAddonNone.png'
-        img_banner       = collection['s_banner']    if collection['s_banner']    else 'DefaultAddonNone.png'
-        img_poster       = collection['s_poster']    if collection['s_poster']    else 'DefaultAddonNone.png'
-        img_clearlogo    = collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'
-        img_trailer      = 'DefaultAddonVideo.png'   if collection['s_trailer']   else 'DefaultAddonNone.png'
-
-        # Create ListItem objects for select dialog.
-        icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
-        fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
-        banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
-        poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
-        clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
-        trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
-        icon_listitem.setArt({'icon' : img_icon})
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        poster_listitem.setArt({'icon' : img_poster})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-        trailer_listitem.setArt({'icon' : img_trailer})
-
-        # Execute select dialog
-        sDialog = KodiSelectDialog('Edit Collection Assets/Artwork', useDetails = True)
-        sDialog.setRows([
-            icon_listitem,
-            fanart_listitem,
-            banner_listitem,
-            poster_listitem,
-            clearlogo_listitem,
-            trailer_listitem,
-        ])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-        asset_list = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID]
-        asset_kind = asset_list[mindex2]
-        save_DB = self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection)
-        if not save_DB: return
-
-    # --- Choose default Collection assets/artwork ---
-    elif mindex == 2:
-        # Label1 an label2
-        asset_icon_str = assets_get_asset_name_str(collection['default_icon'])
-        asset_fanart_str = assets_get_asset_name_str(collection['default_fanart'])
-        asset_banner_str = assets_get_asset_name_str(collection['default_banner'])
-        asset_poster_str = assets_get_asset_name_str(collection['default_poster'])
-        asset_clearlogo_str = assets_get_asset_name_str(collection['default_clearlogo'])
-
-        label_icon = 'Choose asset for Icon (currently {})'.format(asset_icon_str)
-        label_fanart = 'Choose asset for Fanart (currently {})'.format(asset_fanart_str)
-        label_banner = 'Choose asset for Banner (currently {})'.format(asset_banner_str)
-        label_poster = 'Choose asset for Poster (currently {})'.format(asset_poster_str)
-        label_clearlogo = 'Choose asset for Clearlogo (currently {})'.format(asset_clearlogo_str)
-
-        label2_icon = collection[collection['default_icon']] if collection[collection['default_icon']] else 'Not set'
-        label2_fanart = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'Not set'
-        label2_banner = collection[collection['default_banner']] if collection[collection['default_banner']] else 'Not set'
-        label2_poster = collection[collection['default_poster']] if collection[collection['default_poster']] else 'Not set'
-        label2_clearlogo = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'Not set'
-
-        icon_listitem = xbmcgui.ListItem(label = label_icon, label2 = label2_icon)
-        fanart_listitem = xbmcgui.ListItem(label = label_fanart, label2 = label2_fanart)
-        banner_listitem = xbmcgui.ListItem(label = label_banner, label2 = label2_banner)
-        poster_listitem = xbmcgui.ListItem(label = label_poster, label2 = label2_poster)
-        clearlogo_listitem = xbmcgui.ListItem(label = label_clearlogo, label2 = label2_clearlogo)
-
-        # Asset image
-        img_icon = collection[collection['default_icon']] if collection[collection['default_icon']] else 'DefaultAddonNone.png'
-        img_fanart = collection[collection['default_fanart']] if collection[collection['default_fanart']] else 'DefaultAddonNone.png'
-        img_banner = collection[collection['default_banner']] if collection[collection['default_banner']] else 'DefaultAddonNone.png'
-        img_poster = collection[collection['default_poster']] if collection[collection['default_poster']] else 'DefaultAddonNone.png'
-        img_clearlogo = collection[collection['default_clearlogo']] if collection[collection['default_clearlogo']] else 'DefaultAddonNone.png'
-        icon_listitem.setArt({'icon' : img_icon})
-        fanart_listitem.setArt({'icon' : img_fanart})
-        banner_listitem.setArt({'icon' : img_banner})
-        poster_listitem.setArt({'icon' : img_poster})
-        clearlogo_listitem.setArt({'icon' : img_clearlogo})
-
-        # Execute select dialog
-        sDialog = KodiSelectDialog('Edit Collection default Assets/Artwork', useDetails = True)
-        sDialog.setRows([icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem])
-        mindex2 = sDialog.executeDialog()
-        if mindex2 is None: return
-
-        # Build ListItem of assets that can be mapped.
-        LI_list = [
-            xbmcgui.ListItem(label = 'Icon', label2 = collection['s_icon'] if collection['s_icon'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Fanart', label2 = collection['s_fanart'] if collection['s_fanart'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Banner', label2 = collection['s_banner'] if collection['s_banner'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Poster', label2 = collection['s_poster'] if collection['s_poster'] else 'Not set'),
-            xbmcgui.ListItem(label = 'Clearlogo', label2 = collection['s_clearlogo'] if collection['s_clearlogo'] else 'Not set'),
-        ]
-        LI_list[0].setArt({'icon' : collection['s_icon'] if collection['s_icon'] else 'DefaultAddonNone.png'})
-        LI_list[1].setArt({'icon' : collection['s_fanart'] if collection['s_fanart'] else 'DefaultAddonNone.png'})
-        LI_list[2].setArt({'icon' : collection['s_banner'] if collection['s_banner'] else 'DefaultAddonNone.png'})
-        LI_list[3].setArt({'icon' : collection['s_poster'] if collection['s_poster'] else 'DefaultAddonNone.png'})
-        LI_list[4].setArt({'icon' : collection['s_clearlogo'] if collection['s_clearlogo'] else 'DefaultAddonNone.png'})
-
-        # Krypton feature: User preselected item in select() dialog.
-        if mindex2 == 0:
-            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_icon')
-            sDialog = KodiSelectDialog('Choose Collection default asset for Icon', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(collection, 'default_icon', type_s)
-            asset_name = assets_get_asset_name_str(collection['default_icon'])
-            kodi_notify('ROM Collection Icon mapped to {}'.format(asset_name))
-        elif mindex2 == 1:
-            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_fanart')
-            sDialog = KodiSelectDialog('Choose Collection default asset for Fanart', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(collection, 'default_fanart', type_s)
-            asset_name = assets_get_asset_name_str(collection['default_fanart'])
-            kodi_notify('ROM Collection Fanart mapped to {}'.format(asset_name))
-        elif mindex2 == 2:
-            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_banner')
-            sDialog = KodiSelectDialog('Choose Collection default asset for Banner', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(collection, 'default_banner', type_s)
-            asset_name = assets_get_asset_name_str(collection['default_banner'])
-            kodi_notify('ROM Collection Banner mapped to {}'.format(asset_name))
-        elif mindex2 == 3:
-            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_poster')
-            sDialog = KodiSelectDialog('Choose Collection default asset for Poster', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(collection, 'default_poster', type_s)
-            asset_name = assets_get_asset_name_str(collection['default_poster'])
-            kodi_notify('ROM Collection Poster mapped to {}'.format(asset_name))
-        elif mindex2 == 4:
-            p_idx = assets_get_Category_mapped_asset_idx(collection, 'default_clearlogo')
-            sDialog = KodiSelectDialog('Choose Collection default asset for Clearlogo', LI_list, p_idx, True)
-            type_s = sDialog.executeDialog()
-            if type_s is None: return
-            assets_choose_Category_mapped_artwork(collection, 'default_clearlogo', type_s)
-            asset_name = assets_get_asset_name_str(collection['default_clearlogo'])
-            kodi_notify('ROM Collection Clearlogo mapped to {}'.format(asset_name))
-
-    # --- Export ROM Collection ---
-    elif mindex == 3:
-        collections_asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
-
-        # --- Choose output directory ---
-        output_dir = kodi_dialog_get_wdirectory('Select Collection output directory')
-        if not output_dir: return
-        out_dir_FN = utils.FileName(output_dir)
-
-        # --- Load collection ROMs ---
-        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
-        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-        if not rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first.')
-            return
-
-        # --- Export collection metadata and assets ---
-        output_FN = out_dir_FN.pjoin(collection['m_name'] + '.json')
-        fs_export_ROM_collection(output_FN, collection, rom_list)
-        fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, collections_asset_dir_FN)
-
-        # --- User info ---
-        kodi_notify('Exported ROM Collection {} metadata and assets.'.format(collection['m_name']))
-
-    # --- Delete ROM Collection ---
-    elif mindex == 4:
-        # --- Load collection index and ROMs ---
-        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
-        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-
-        # --- Confirm deletion ---
-        num_roms = len(collection_rom_list)
-        collection_name = collection['m_name']
-        ret = kodi_dialog_yesno('Collection "{}" has {} ROMs. '.format(collection_name, num_roms) +
-            'Are you sure you want to delete it?')
-        if not ret: return
-
-        # --- Remove JSON file and delete collection object ---
-        collection_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        log.debug('Removing Collection JSON "{}"'.format(collection_file_path.getOriginalPath()))
-        try:
-            if collection_file_path.exists(): collection_file_path.unlink()
-        except OSError:
-            log.error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(
-                collection_file_path.getOriginalPath()))
-            kodi_notify_warn('OSError exception deleting collection JSON')
-        COL['collections'].pop(launcherID)
-        kodi_notify('Deleted ROM Collection "{}"'.format(collection_name))
-
-        # TODO Remove assets in the collections asset directory.
-
-    # Save collection index and refresh view.
-    fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
-    kodi_refresh_container()
 
 # ------------------------------------------------------------------------------------------------
 # Edit menu auxiliar functions.
