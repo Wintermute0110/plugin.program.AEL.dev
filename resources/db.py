@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2022 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -624,7 +624,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         cfg.roms = audit.load_OfflineScraper_XML(cfg.roms_FN.getPath())
 
     else:
-        raise TypeError
+        raise RuntimeError
 
 # This function never fails.
 def load_ROMs_Favourite_set(cfg):
@@ -636,12 +636,59 @@ def load_ROMs_Favourite_set(cfg):
         return
     cfg.roms_fav_set = set(roms_fav.keys())
 
-def save_ROMs(cfg, st):
-    pass
+# Old code from main.command_edit_rom()
+def save_ROMs(cfg, st, categoryID, launcherID):
+    log.debug('save_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
 
+    # Actual ROM Launcher ------------------------------------------------------------------------
+    if cfg.launcher_is_standard:
+        # Save categories/launchers to update main timestamp.
+        # Also update changed launcher timestamp.
+        cfg.launchers[launcherID]['num_roms'] = len(roms)
+        cfg.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
+        pDialog = KodiProgressDialog()
+        pDialog.startProgress('Saving ROM JSON database...')
+        # Move code of this function here?
+        write_ROMs_JSON(cfg.ROMS_DIR, cfg.launchers[launcherID], roms)
+        pDialog.updateProgress(90)
+        write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
+        pDialog.endProgress()
 
+        # If launcher is audited then synchronise the edit ROM in the list of parents.
+        if launcher['audit_state'] == AUDIT_STATE_ON:
+            log.debug('Updating ROM in Parents JSON')
+            pDialog.startProgress('Loading Parents JSON...')
+            json_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents.json')
+            parent_roms = utils.load_JSON_file(json_FN.getPath())
+            # Only edit if ROM is in parent list
+            if romID in parent_roms:
+                log.debug('romID in Parent JSON. Updating...')
+                parent_roms[romID] = roms[romID]
+            pDialog.updateProgress(10, 'Saving Parents JSON...')
+            utils.write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, parent_roms)
+            pDialog.endProgress()
 
+    # Virtual launchers --------------------------------------------------------------------------
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        control_dic = {
+            'control' : 'Advanced Emulator Launcher Favourite ROMs',
+            'version' : const.AEL_STORAGE_FORMAT,
+        }
+        utils.write_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath(), [control_dic, cfg.roms])
 
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
+        # Convert back the OrderedDict into a list and save Collection
+        collection_rom_list = [roms[key] for key in roms]
+        json_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        # write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
+        control_dic = {
+            'control' : 'Advanced Emulator Launcher Collection ROMs',
+            'version' : AEL_STORAGE_FORMAT,
+        }
+        utils.write_JSON_file(json_file_path.getPath(), [control_dic, roms])
+
+    else:
+        raise RuntimeError
 
 
 
@@ -989,21 +1036,6 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     utils.write_JSON_file(roms_json_file.getPath(), roms)
 
 # ------------------------------------------------------------------------------------------------
-# Favourite ROMs
-# ------------------------------------------------------------------------------------------------
-# Save Favourites JSON file. roms is a dictionary of dictionaries.
-def write_Favourites_JSON(roms_json_file, roms):
-    log.info('write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
-
-    # --- Create JSON data structure, including version number ---
-    control_dic = {
-        'control' : 'Advanced Emulator Launcher Favourite ROMs',
-        'version' : AEL_STORAGE_FORMAT
-    }
-    raw_data = [control_dic, roms]
-    utils_write_JSON_file(roms_json_file.getPath(), raw_data)
-
-# ------------------------------------------------------------------------------------------------
 # ROM Collections
 # ------------------------------------------------------------------------------------------------
 def write_Collection_index_XML(xml_fname, collections):
@@ -1068,15 +1100,6 @@ def load_Collection_index_XML(xml_fname):
                 collection[xml_tag] = text_XML
             ret['collections'][collection['id']] = collection
     return ret
-
-def write_Collection_ROMs_JSON(roms_json_FN, roms):
-    log.debug('write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
-    control_dic = {
-        'control' : 'Advanced Emulator Launcher Collection ROMs',
-        'version' : AEL_STORAGE_FORMAT,
-    }
-    raw_data = [control_dic, roms]
-    utils_write_JSON_file(roms_json_FN.getPath(), raw_data)
 
 # Exports a collection in human-readable JSON.
 # Filenames of artwork/assets must be converted to relative paths, see

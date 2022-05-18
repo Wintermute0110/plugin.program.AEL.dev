@@ -4780,7 +4780,7 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
         if save_DB_flag:
             log.debug('command_edit_rom() Saving ROMs database...')
             st = kodi.new_status_dic()
-            db.save_ROMs(cfg, st)
+            db.save_ROMs(cfg, st, categoryID, launcherID)
         log.debug('command_edit_rom() End of loop...')
     kodi.notify('Finish Edit ROM')
     utils.refresh_container()
@@ -4870,45 +4870,6 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
             ('DELETE_ROM', 'Delete ROM'),
         ]
     return menu_list
-
-# MAKE THIS FUNCTION DISSAPEAR ASAP.
-def command_edit_rom_OLD(self, categoryID, launcherID, romID):
-    # -----------------------> TODO Move this stuff to db.save_ROMs() <---------------------------
-    # Always save if we reach this point of the function
-    if launcherID == VLAUNCHER_FAVOURITES_ID:
-        fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms)
-    elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        # Convert back the OrderedDict into a list and save Collection
-        collection_rom_list = []
-        for key in roms:
-            collection_rom_list.append(roms[key])
-        json_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
-    else:
-        # Save categories/launchers to update main timestamp.
-        # Also update changed launcher timestamp.
-        self.launchers[launcherID]['num_roms'] = len(roms)
-        self.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
-        pDialog = KodiProgressDialog()
-        pDialog.startProgress('Saving ROM JSON database...')
-        fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID], roms)
-        pDialog.updateProgress(90)
-        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        pDialog.endProgress()
-
-        # If launcher is audited then synchronise the edit ROM in the list of parents.
-        if launcher['audit_state'] == AUDIT_STATE_ON:
-            log.debug('Updating ROM in Parents JSON')
-            pDialog.startProgress('Loading Parents JSON...')
-            json_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents.json')
-            parent_roms = utils_load_JSON_file(json_FN.getPath())
-            # Only edit if ROM is in parent list
-            if romID in parent_roms:
-                log.debug('romID in Parent JSON. Updating...')
-                parent_roms[romID] = roms[romID]
-            pDialog.updateProgress(10, 'Saving Parents JSON...')
-            fs_write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, parent_roms)
-            pDialog.endProgress()
 
 # Edits collection artwork
 def command_edit_collection(self, categoryID, launcherID):

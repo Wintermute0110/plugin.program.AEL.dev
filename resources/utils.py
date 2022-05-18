@@ -364,40 +364,40 @@ def write_JSON_file(json_filename, json_data, verbose = True, pprint = False):
 
     # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
     # Choose JSON iterative encoder or normal encoder.
-    if OPTION_LOWMEM_WRITE_JSON:
+    if const.OPTION_LOWMEM_WRITE_JSON:
         if verbose: log.debug('write_JSON_file() Using OPTION_LOWMEM_WRITE_JSON option')
         if pprint:
             jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
-                indent = JSON_INDENT, separators = JSON_SEP)
+                indent = const.JSON_INDENT, separators = const.JSON_SEP)
         else:
-            if OPTION_COMPACT_JSON:
+            if const.OPTION_COMPACT_JSON:
                 jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True)
             else:
                 jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
-                    indent = JSON_INDENT, separators = JSON_SEP)
+                    indent = const.JSON_INDENT, separators = const.JSON_SEP)
     else:
         if pprint:
             jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                indent = JSON_INDENT, separators = JSON_SEP)
+                indent = const.JSON_INDENT, separators = const.JSON_SEP)
         else:
-            if OPTION_COMPACT_JSON:
+            if const.OPTION_COMPACT_JSON:
                 jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True)
             else:
                 jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                    indent = JSON_INDENT, separators = JSON_SEP)
+                    indent = const.JSON_INDENT, separators = const.JSON_SEP)
 
     # Write JSON to disk
     try:
         with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
-            if OPTION_LOWMEM_WRITE_JSON:
+            if const.OPTION_LOWMEM_WRITE_JSON:
                 for chunk in jobj.iterencode(json_data):
                     file.write(chunk)
             else:
                 file.write(jdata)
     except OSError:
-        kodi_notify(ADDON_LONG_NAME, 'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(const.ADDON_LONG_NAME, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify(ADDON_LONG_NAME, 'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(const.ADDON_LONG_NAME, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
