@@ -478,6 +478,13 @@ DEFAULTABLE_ASSET_DB_DIC = {
         ASSET_POSTER_ID : 'default_poster',
         ASSET_CLEARLOGO_ID : 'default_clearlogo',
     },
+    OBJECT_COLLECTION_ID : {
+        ASSET_ICON_ID : 'default_icon',
+        ASSET_FANART_ID : 'default_fanart',
+        ASSET_BANNER_ID : 'default_banner',
+        ASSET_POSTER_ID : 'default_poster',
+        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+    },
     OBJECT_LAUNCHER_ID : {
         ASSET_ICON_ID : 'default_icon',
         ASSET_FANART_ID : 'default_fanart',
@@ -499,6 +506,13 @@ DEFAULTABLE_ASSET_DB_DIC = {
 # List of assets that can be mapped to a defaultable asset.
 MAPPABLE_ASSETS = {
     OBJECT_CATEGORY_ID : [
+        ASSET_ICON_ID,
+        ASSET_FANART_ID,
+        ASSET_BANNER_ID,
+        ASSET_POSTER_ID,
+        ASSET_CLEARLOGO_ID,
+    ],
+    OBJECT_COLLECTION_ID : [
         ASSET_ICON_ID,
         ASSET_FANART_ID,
         ASSET_BANNER_ID,
