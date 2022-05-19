@@ -384,9 +384,10 @@ def get_collection_ROMs_basename(collection_name, collectionID):
 # ROM database high-level IO functions
 # ------------------------------------------------------------------------------------------------
 # * This function must be called first to update cfg object fields that will be 
-#   used in many other functions.
+#   used by other functions.
 # * Include here all possible launcher information needed anywhere in the addon.
-def get_launcher_info(cfg, categoryID, launcherID):
+# * For virtual launchers this function preloads the catalog.
+def get_launcher_info(cfg, st, categoryID, launcherID):
     cfg.launcher_is_vlauncher = launcherID in const.VLAUNCHER_ID_LIST
     cfg.launcher_is_vcategory = categoryID in const.VCATEGORY_ID_LIST
     cfg.launcher_is_browse_by = categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST
@@ -418,8 +419,10 @@ def get_launcher_info(cfg, categoryID, launcherID):
         cfg.launcher_label = 'Most Played ROM'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
-        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
+        # Move function code here???
+        # Better to keep it in the function as it is?
+        cfg.collections_index = load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
+        collection = cfg.collections_index['collections'][launcherID]
         cfg.roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         cfg.window_title = 'Collection ROM data'
         cfg.launcher_label = 'Collection'
@@ -636,10 +639,21 @@ def load_ROMs_Favourite_set(cfg):
         return
     cfg.roms_fav_set = set(roms_fav.keys())
 
+# [TODO] xxxxxx
+def save_vlauncher_index(cfg, st, categoryID, launcherID):
+    log.debug('save_vlauncher_index() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
+    if cfg.launcher_is_standard:
+        log.debug('save_vlauncher_index() Nothing to do')
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+        write_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH, cfg.collections_index['collections'])
+
+    else:
+        raise RuntimeError
+
 # Old code from main.command_edit_rom()
 def save_ROMs(cfg, st, categoryID, launcherID):
     log.debug('save_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-
     # Actual ROM Launcher ------------------------------------------------------------------------
     if cfg.launcher_is_standard:
         # Save categories/launchers to update main timestamp.
@@ -676,10 +690,10 @@ def save_ROMs(cfg, st, categoryID, launcherID):
         }
         utils.write_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath(), [control_dic, cfg.roms])
 
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         # Convert back the OrderedDict into a list and save Collection
-        collection_rom_list = [roms[key] for key in roms]
-        json_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        collection_rom_list = [cfg.roms[key] for key in cfg.roms]
+        json_file_path = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         # write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
         control_dic = {
             'control' : 'Advanced Emulator Launcher Collection ROMs',
@@ -689,13 +703,6 @@ def save_ROMs(cfg, st, categoryID, launcherID):
 
     else:
         raise RuntimeError
-
-
-
-
-
-
-
 
 # ------------------------------------------------------------------------------------------------
 # Categories/Launchers
@@ -710,9 +717,10 @@ def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0
     # However, this method is very slow because string has to be reallocated every time is grown.
     # It is much faster to create a list of string and them join them!
     # See https://waymoot.org/home/python_string/
-    sl = []
-    sl.append('<?xml version="1.0" encoding="utf-8"?>')
-    sl.append('<advanced_emulator_launcher version="{}">'.format(const.AEL_STORAGE_FORMAT))
+    sl = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<advanced_emulator_launcher version="{}">'.format(const.AEL_STORAGE_FORMAT),
+    ]
 
     # --- Control information ---
     # time.time() returns a float. Usually precision is much better than a second, but not always.
@@ -1022,12 +1030,12 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     sl.append('<?xml version="1.0" encoding="utf-8"?>')
     sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
     sl.append('<launcher>')
-    sl.append(text_XML('id', launcher['id']))
-    sl.append(text_XML('m_name', launcher['m_name']))
-    sl.append(text_XML('categoryID', launcher['categoryID']))
-    sl.append(text_XML('platform', launcher['platform']))
-    sl.append(text_XML('rompath', launcher['rompath']))
-    sl.append(text_XML('romext', launcher['romext']))
+    sl.append(misc.XML('id', launcher['id']))
+    sl.append(misc.XML('m_name', launcher['m_name']))
+    sl.append(misc.XML('categoryID', launcher['categoryID']))
+    sl.append(misc.XML('platform', launcher['platform']))
+    sl.append(misc.XML('rompath', launcher['rompath']))
+    sl.append(misc.XML('romext', launcher['romext']))
     sl.append('</launcher>')
     sl.append('</advanced_emulator_launcher_ROMs>')
 
@@ -1038,16 +1046,15 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
 # ------------------------------------------------------------------------------------------------
 # ROM Collections
 # ------------------------------------------------------------------------------------------------
-def write_Collection_index_XML(xml_fname, collections):
-    log.info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
-    sl = []
-    sl.append('<?xml version="1.0" encoding="utf-8"?>')
-    sl.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(const.AEL_STORAGE_FORMAT))
-    # Control information.
-    sl.append('<control>')
-    sl.append(misc.XML('update_timestamp', const.text_type(time.time())))
-    sl.append('</control>')
-    # Virtual Launchers.
+def write_Collection_index_XML(xml_FN, collections):
+    log.info('write_Collection_index_XML() File {}'.format(xml_FN.getOriginalPath()))
+    sl = [
+        '<?xml version="1.0" encoding="utf-8"?>',
+        '<advanced_emulator_launcher_Collection_index version="{}">'.format(const.AEL_STORAGE_FORMAT),
+        '<control>',
+        misc.XML('update_timestamp', const.text_type(time.time())),
+        '</control>',
+    ]
     for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
         collection = collections[collection_id]
         sl.append('<Collection>')
@@ -1056,31 +1063,27 @@ def write_Collection_index_XML(xml_fname, collections):
         sl.append(misc.XML('m_genre', collection['m_genre']))
         sl.append(misc.XML('m_rating', collection['m_rating']))
         sl.append(misc.XML('m_plot', collection['m_plot']))
-        sl.append(text_XML('roms_base_noext', collection['roms_base_noext']))
-        sl.append(text_XML('default_icon', collection['default_icon']))
-        sl.append(text_XML('default_fanart', collection['default_fanart']))
-        sl.append(text_XML('default_banner', collection['default_banner']))
-        sl.append(text_XML('default_poster', collection['default_poster']))
-        sl.append(text_XML('default_clearlogo', collection['default_clearlogo']))
-        sl.append(text_XML('s_icon', collection['s_icon']))
-        sl.append(text_XML('s_fanart', collection['s_fanart']))
-        sl.append(text_XML('s_banner', collection['s_banner']))
-        sl.append(text_XML('s_poster', collection['s_poster']))
-        sl.append(text_XML('s_clearlogo', collection['s_clearlogo']))
-        sl.append(text_XML('s_trailer', collection['s_trailer']))
+        sl.append(misc.XML('roms_base_noext', collection['roms_base_noext']))
+        sl.append(misc.XML('default_icon', collection['default_icon']))
+        sl.append(misc.XML('default_fanart', collection['default_fanart']))
+        sl.append(misc.XML('default_banner', collection['default_banner']))
+        sl.append(misc.XML('default_poster', collection['default_poster']))
+        sl.append(misc.XML('default_clearlogo', collection['default_clearlogo']))
+        sl.append(misc.XML('s_icon', collection['s_icon']))
+        sl.append(misc.XML('s_fanart', collection['s_fanart']))
+        sl.append(misc.XML('s_banner', collection['s_banner']))
+        sl.append(misc.XML('s_poster', collection['s_poster']))
+        sl.append(misc.XML('s_clearlogo', collection['s_clearlogo']))
+        sl.append(misc.XML('s_trailer', collection['s_trailer']))
         sl.append('</Collection>')
     sl.append('</advanced_emulator_launcher_Collection_index>')
-    utils.write_slist_to_file(xml_fname.getPath(), sl)
+    utils.write_slist_to_file(xml_FN.getPath(), sl)
 
-def load_Collection_index_XML(xml_fname):
+def load_Collection_index_XML(xml_FN):
+    log.debug('load_Collection_index_XML() Loading XML file {}'.format(xml_FN.getOriginalPath()))
     __debug_xml_parser = False
-    ret = {
-        'timestamp' : 0.0,
-        'collections' : {},
-    }
-
-    log.debug('load_Collection_index_XML() Loading XML file {}'.format(xml_fname.getOriginalPath()))
-    xml_tree = utils.load_XML_to_ET(xml_fname.getPath())
+    ret = {'timestamp' : 0.0, 'collections' : {}}
+    xml_tree = utils.load_XML_to_ET(xml_FN.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
@@ -1199,11 +1202,11 @@ def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN)
             shutil.copy(source_path, dest_path)
         except OSError:
             log.error('export_ROM_collection_assets() OSError exception copying image')
-            kodi_notify_warn('OSError exception copying image')
+            kodi.notify_warn('OSError exception copying image')
             return
         except IOError:
             log.error('export_ROM_collection_assets() IOError exception copying image')
-            kodi_notify_warn('IOError exception copying image')
+            kodi.notify_warn('IOError exception copying image')
             return
 
     # --- Export Collection ROM assets ---
@@ -1241,11 +1244,11 @@ def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN)
                 utils_copy_file(asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
                 log.error('export_ROM_collection_assets() OSError exception copying image')
-                kodi_notify_warn('OSError exception copying image')
+                kodi.notify_warn('OSError exception copying image')
                 return
             except IOError:
                 log.error('export_ROM_collection_assets() IOError exception copying image')
-                kodi_notify_warn('IOError exception copying image')
+                kodi.notify_warn('IOError exception copying image')
                 return
 
 # See fs_export_ROM_collection() function.
@@ -1369,6 +1372,26 @@ def load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 # -------------------------------------------------------------------------------------------------
 # NFO files
 # -------------------------------------------------------------------------------------------------
+# [TODO] Finish this function.
+def get_NFO_FileName(cfg, obj_ID, obj_dic):
+    if obj_ID == const.OBJECT_CATEGORY_ID:
+        category_name = obj_dic['m_name']
+        nfo_dir = cfg.settings['categories_asset_dir']
+        return utils.FileName(os.path.join(nfo_dir, category_name + '.nfo'))
+    elif obj_ID == const.OBJECT_COLLECTION_ID:
+        collection_name = obj_dic['m_name']
+        nfo_dir = cfg.settings['collections_asset_dir']
+        return utils.FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
+    elif obj_ID == const.OBJECT_LAUNCHER_ID:
+        launcher_name = obj_dic['m_name']
+        nfo_dir = cfg.settings['launchers_asset_dir']
+        return utils.FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
+    elif obj_ID == const.OBJECT_ROM_ID:
+        ROM_FN = utils.FileName(obj_dic['filename'])
+        return utils.FileName(ROM_FN.getPathNoExt() + '.nfo')
+    else:
+        raise RuntimeError
+
 # Updates a dictionary with the contents of a XML tag.
 # Dictionary field is updated by reference.
 # Regular expressions are greedy by default.
@@ -1434,7 +1457,7 @@ def import_ROM_NFO(roms, romID, verbose = True):
     # Check if file exists.
     if not os.path.isfile(nfo_file_path):
         if verbose:
-            kodi_notify_warn('NFO file not found {}'.format(nfo_file_path))
+            kodi.notify_warn('NFO file not found {}'.format(nfo_file_path))
         log.debug("import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
@@ -1487,11 +1510,6 @@ def import_ROM_NFO_file_scanner(NFO_FN):
 
     return nfo_dic
 
-# Returns a FileName object
-def get_ROM_NFO_name(rom):
-    ROM_FN = utils.FileName(rom['filename'])
-    return utils.FileName(ROM_FN.getPathNoExt() + '.nfo')
-
 # Standalone launchers: NFO files are stored in self.settings["launchers_nfo_dir"] if not empty.
 # If empty, it defaults to DEFAULT_LAUN_NFO_DIR.
 # ROM launchers: Same as standalone launchers.
@@ -1524,7 +1542,7 @@ def import_launcher_NFO(nfo_FN, launchers, launcherID):
 
     log.debug('import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
+        kodi.notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
         log.info("import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
         return False
 
@@ -1550,7 +1568,7 @@ def read_launcher_NFO(nfo_FN):
 
     log.debug('read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
+        kodi.notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
         log.info('read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
         return nfo_dic
 
@@ -1562,13 +1580,6 @@ def read_launcher_NFO(nfo_FN):
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'plot')
     return nfo_dic
-
-# Returns a FileName object
-def get_launcher_NFO_name(settings, launcher):
-    launcher_name = launcher['m_name']
-    nfo_dir = settings['launchers_asset_dir']
-    nfo_FN = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
-    return nfo_FN
 
 # Look at the Launcher NFO files for a reference implementation.
 def export_category_NFO(NFO_FN, category):
@@ -1602,12 +1613,6 @@ def import_category_NFO(NFO_FN, edict):
     update_dic_with_NFO_str(nfo_str, 'plot', edict, 'm_plot')
     return True
 
-# Returns a FileName object.
-def get_category_NFO_name(cfg, category):
-    category_name = category['m_name']
-    nfo_dir = cfg.settings['categories_asset_dir']
-    return utils.FileName(os.path.join(nfo_dir, category_name + '.nfo'))
-
 # Collection NFO files. Same as Category NFO files.
 def export_collection_NFO(nfo_FileName, collection):
     log.debug('export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
@@ -1622,7 +1627,7 @@ def export_collection_NFO(nfo_FileName, collection):
         misc.XML('plot', collection['m_plot']),
         '</collection>\n', # End file in newline
     ]
-    utils_write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
+    utils.write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
     return True
 
 # Notifies errors in Kodi GUI. Success is notified in the caller.
@@ -1630,7 +1635,7 @@ def export_collection_NFO(nfo_FileName, collection):
 def import_collection_NFO(nfo_FN, collections, launcherID):
     log.debug('import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getOriginalPath())))
+        kodi.notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getOriginalPath())))
         log.error("import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
 
@@ -1639,9 +1644,3 @@ def import_collection_NFO(nfo_FN, collections, launcherID):
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
     return True
-
-def get_collection_NFO_name(settings, collection):
-    collection_name = collection['m_name']
-    nfo_dir = settings['collections_asset_dir']
-    nfo_FN = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
-    return nfo_FN

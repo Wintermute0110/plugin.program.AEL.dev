@@ -695,15 +695,15 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         log.info('get_asset_info() Category ID {}'.format(edict['id']))
 
     elif object_ID == const.OBJECT_COLLECTION_ID:
-        afn['name'] = 'Collection'
-        afn['asset_dir'] = utils.FileName(self.settings['collections_asset_dir'])
+        afn['name'] = 'ROM Collection'
+        afn['asset_dir'] = utils.FileName(cfg.settings['collections_asset_dir'])
         afn['asset_path_noext'] = get_path_noext_SUFIX(AInfo, afn['asset_dir'], edict['m_name'], edict['id'])
         log.info('get_asset_info() Collection "{}"'.format(AInfo.name))
         log.info('get_asset_info() Collection ID {}'.format(edict['id']))
 
     elif object_ID == const.OBJECT_LAUNCHER_ID:
         afn['name'] = 'Launcher'
-        afn['asset_dir'] = utils.FileName(self.settings['launchers_asset_dir'])
+        afn['asset_dir'] = utils.FileName(cfg.settings['launchers_asset_dir'])
         afn['asset_path_noext'] = get_path_noext_SUFIX(AInfo, afn['asset_dir'], edict['m_name'], edict['id'])
         log.info('get_asset_info() Launcher "{}"'.format(AInfo.name))
         log.info('get_asset_info() Launcher ID {}'.format(edict['id']))
@@ -714,7 +714,7 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         afn['name'] = 'ROM'
         ROM_FN = utils.FileName(edict['filename'])
         platform = object_dic['platform']
-        asset_dir_FN = utils.FileName(self.settings['favourites_asset_dir'])
+        asset_dir_FN = utils.FileName(cfg.settings['favourites_asset_dir'])
         asset_path_noext_FN = get_path_noext_SUFIX(AInfo, asset_dir_FN, ROM_FN.getBaseNoExt(), object_dic['id'])
         log.info('get_asset_info() ROM "{}"'.format(AInfo.name))
         log.info('get_asset_info() ROM ID {}'.format(object_dic['id']))
@@ -725,7 +725,7 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         afn['name'] = 'ROM'
         ROM_FN = utils.FileName(edict['filename'])
         platform = object_dic['platform']
-        asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
+        asset_dir_FN = utils.FileName(cfg.settings['collections_asset_dir'])
         new_asset_basename = get_collection_asset_basename(AInfo, ROM_FN.getBaseNoExt(), platform, '.png')
         new_asset_basename_FN = utils.FileName(new_asset_basename)
         asset_path_noext_FN = asset_dir_FN.pjoin(new_asset_basename_FN.getBaseNoExt())
@@ -737,7 +737,7 @@ def get_asset_info(cfg, object_ID, edict, AInfo):
         log.info('get_asset_info() ROM is in Launcher id {}'.format(launcherID))
         afn['name'] = 'ROM'
         ROM_FN = utils.FileName(edict['filename'])
-        launcher = self.launchers[launcherID]
+        launcher = cfg.launchers[launcherID]
         platform = launcher['platform']
         asset_dir_FN = utils.FileName(launcher[AInfo.path_key])
         asset_path_noext_FN = get_path_noext_DIR(AInfo, asset_dir_FN, ROM_FN)

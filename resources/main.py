@@ -270,6 +270,9 @@ def run_plugin(addon_argv):
     cfg.kiosk_mode_disabled = xbmc.getCondVisibility('!Skin.HasSetting(KioskMode.Enabled)')
 
     # --- Addon data paths creation ---
+    #
+    # [TODO] Simplify this. Create one directory for all vlauncher ROM databases.
+    #
     if not cfg.ADDON_DATA_DIR.exists(): cfg.ADDON_DATA_DIR.makedirs()
     if not cfg.SCRAPER_CACHE_DIR.exists(): cfg.SCRAPER_CACHE_DIR.makedirs()
     if not cfg.DEFAULT_CAT_ASSET_DIR.exists(): cfg.DEFAULT_CAT_ASSET_DIR.makedirs()
@@ -1397,17 +1400,12 @@ def render_vlaunchers_ROM_Collection(cfg):
             'trailer' : collection['s_trailer'],
             'overlay' : kodi.KODI_ICON_OVERLAY_UNWATCHED,
         })
-        icon_path      = assets.get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
-        fanart_path    = assets.get_default_asset_Category(collection, 'default_fanart')
-        banner_path    = assets.get_default_asset_Category(collection, 'default_banner')
-        poster_path    = assets.get_default_asset_Category(collection, 'default_poster')
-        clearlogo_path = assets.get_default_asset_Category(collection, 'default_clearlogo')
         listitem.setArt({
-            'icon'   : icon_path,
-            'fanart' : fanart_path,
-            'banner' : banner_path,
-            'poster' : poster_path,
-            'clearlogo' : clearlogo_path,
+            'icon'   : assets.get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png'),
+            'fanart' : assets.get_default_asset_Category(collection, 'default_fanart'),
+            'banner' : assets.get_default_asset_Category(collection, 'default_banner'),
+            'poster' : assets.get_default_asset_Category(collection, 'default_poster'),
+            'clearlogo' : assets.get_default_asset_Category(collection, 'default_clearlogo'),
         })
 
         # --- Create context menu ---
@@ -1423,7 +1421,7 @@ def render_vlaunchers_ROM_Collection(cfg):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add ROM Collection ---
-        url_str = aux_url('SHOW_COLLECTION_ROMS', const.VCATEGORY_ROM_COLLECTION_ID, collection_id)
+        url_str = aux_url('SHOW_ROMS', const.VCATEGORY_ROM_COLLECTION_ID, collection_id)
         xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, True)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1856,7 +1854,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Set st dictionary to notify if no ROMs to render.
     loading_ticks_start = time.time()
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, categoryID, launcherID)
+    db.get_launcher_info(cfg, st, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
     if kodi.is_error_status(st):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
@@ -2255,7 +2253,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
 
             # Favourite status flag.
-            if self.settings['display_fav_status']:
+            if cfg.settings['display_fav_status']:
                 if rom['fav_status'] == 'OK':
                     rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
                     AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_OK
@@ -2932,7 +2930,7 @@ def command_edit_category(cfg, categoryID):
         elif mdic['command'] == 'EDIT_METADATA_DEVELOPER':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_developer', 'Category Developer')
         elif mdic['command'] == 'EDIT_METADATA_RATING':
-            save_DB_flag = mgui_edit_rating(category, 'm_rating', 'Category Rating')
+            save_DB_flag = mgui_edit_metadata_rating(category, 'm_rating', 'Category Rating')
         elif mdic['command'] == 'EDIT_METADATA_PLOT':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_plot', 'Category Plot')
         elif mdic['command'] == 'IMPORT_NFO_FILE_DEFAULT':
@@ -3028,33 +3026,34 @@ def command_edit_category_build_menu(cfg, categoryID):
 # New generation context menu implementation. Avoid recursive implementation.
 # Reference implementation is command_edit_category()
 def command_edit_collection(cfg, categoryID, launcherID):
-    # Load Collection.
-    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-    collection = COL['collections'][launcherID]
+    # db.get_launcher_info() load the collection index, not necessary to load the collection ROMs.
+    st = kodi.new_status_dic()
+    db.get_launcher_info(cfg, st, categoryID, launcherID)
 
     # Edit ROM context menu menu logic.
     mdic = mgui_initialise_menu_dictionary()
     while mdic['execute_menu']:
         log.debug('command_edit_collection() Beginning of loop...')
-        mdic['menu'] = command_edit_category_build_menu(cfg, categoryID)
+        mdic['menu'] = command_edit_collection_build_menu(cfg, categoryID, launcherID)
         mgui_render_menu(mdic)
         if mdic['continue_flag']: continue
 
         # Execute command.
         log.debug('Executing command "{}"'.format(mdic['command']))
-        collection = cfg.categories[categoryID]
+        collection = cfg.collections_index['collections'][launcherID]
         save_DB_flag = False
+        # --- Edit metadata --------------------------------------------------
         if mdic['command'] == 'EDIT_METADATA_TITLE':
-            save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'ROM Collection Title')
+            save_DB_flag = mgui_edit_metadata_str(collection, 'm_name', 'ROM Collection Title')
         elif mdic['command'] == 'EDIT_METADATA_GENRE':
-            save_DB_flag = mgui_edit_metadata_str(category, 'm_genre', 'ROM Collection Genre')
+            save_DB_flag = mgui_edit_metadata_str(collection, 'm_genre', 'ROM Collection Genre')
         elif mdic['command'] == 'EDIT_METADATA_RATING':
-            save_DB_flag = mgui_edit_rating(category, 'm_rating', 'ROM Collection Rating')
+            save_DB_flag = mgui_edit_metadata_rating(collection, 'm_rating', 'ROM Collection Rating')
         elif mdic['command'] == 'EDIT_METADATA_PLOT':
-            save_DB_flag = mgui_edit_metadata_str(category, 'm_plot', 'Category Plot')
+            save_DB_flag = mgui_edit_metadata_str(collection, 'm_plot', 'ROM Collection Plot')
         elif mdic['command'] == 'IMPORT_NFO_FILE_DEFAULT':
-            NFO_FN = db.fs_get_collection_NFO_name(cfg, collection)
-            save_DB_flag = db.fs_import_collection_NFO(NFO_FN, collection, launcherID)
+            NFO_FN = db.get_NFO_FileName(cfg, const.OBJECT_COLLECTION_ID, collection)
+            save_DB_flag = db.import_collection_NFO(NFO_FN, collection, launcherID)
             if save_DB_flag:
                 kodi.notify('Imported ROM Collection NFO file {}'.format(NFO_FN.getPath()))
         elif mdic['command'] == 'IMPORT_NFO_FILE_BROWSE':
@@ -3063,28 +3062,25 @@ def command_edit_collection(cfg, categoryID, launcherID):
             if not NFO_file_str: continue
             NFO_FN = utils.FileName(NFO_file_str)
             if not NFO_FN.exists(): continue
-            save_DB_flag = db.fs_import_collection_NFO(NFO_FN, collections, launcherID)
+            save_DB_flag = db.import_collection_NFO(NFO_FN, collections, launcherID)
             if save_DB_flag:
                 kodi.notify('Imported ROM Collection NFO file {}'.format(NFO_FN.getPath()))
         elif mdic['command'] == 'SAVE_NFO_FILE_DEFAULT':
-            NFO_FN = db.fs_get_collection_NFO_name(cfg, collection)
-            success_flag = db.fs_export_collection_NFO(NFO_FN, cfg.categories[categoryID])
+            NFO_FN = db.get_NFO_FileName(cfg, const.OBJECT_COLLECTION_ID, collection)
+            success_flag = db.export_collection_NFO(NFO_FN, collection)
             if not success_flag: continue
             kodi.notify('Exported ROM Collection NFO file {}'.format(NFO_FN.getPath()))
-
+        # --- Edit assets ----------------------------------------------------
         elif mdic['command'] == 'EDIT_ASSETS':
-            save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_COLLECTION_ID, category)
+            save_DB_flag = mgui_edit_object_assets(cfg, const.OBJECT_COLLECTION_ID, collection)
         elif mdic['command'] == 'EDIT_DEFAULT_ASSETS':
-            save_DB_flag = mgui_edit_object_default_assets(cfg, const.OBJECT_COLLECTION_ID, category)
-
-        elif mdic['command'] == 'EXPORT_COLLECTION_XML':
-            mgui_export_object_XML(cfg, const.OBJECT_COLLECTION_ID, category)
-
-        elif mdic['command'] == 'DELETE_COLLECTION':
-            if mgui_delete_category(cfg, category):
+            save_DB_flag = mgui_edit_object_default_assets(cfg, const.OBJECT_COLLECTION_ID, collection)
+        elif mdic['command'] == 'EXPORT_ROM_COLLECTION_XML':
+            mgui_export_ROM_Collection(cfg, collection)
+        elif mdic['command'] == 'DELETE_ROM_COLLECTION':
+            if mgui_delete_ROM_Collection(cfg, collection):
                 save_DB_flag = True
                 mdic['execute_menu'] = False
-
         else:
             log.error('command_edit_collection() Unsupported command "{}"'.format(mdic['command']))
             kodi.dialog_OK('command_edit_collection() Unknown command {}. '.format(mdic['command']) +
@@ -3094,26 +3090,25 @@ def command_edit_collection(cfg, categoryID, launcherID):
         # Save the database if requested.
         if save_DB_flag:
             log.debug('command_edit_collection() Saving ROM Collection database...')
-            # db.write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
-            fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
-            raise RuntimeError('Implement me!')
+            st = kodi.new_status_dic()
+            db.save_vlauncher_index(cfg, st, categoryID, launcherID)
         log.debug('command_edit_collection() End of loop...')
     kodi.notify('Finish Edit ROM Collection')
     utils.refresh_container()
 
 def command_edit_collection_build_menu(cfg, categoryID, launcherID):
     log.debug('command_edit_collection_build_menu() Building menu...')
-    # collection = cfg.xxxxx
-    NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
-    NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-    plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
+    collection = cfg.collections_index['collections'][launcherID]
+    NFO_FN = db.get_NFO_FileName(cfg, const.OBJECT_COLLECTION_ID, collection)
+    NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
+    plot_str = misc.limit_string(collection['m_plot'], const.PLOT_STR_MAXSIZE)
     return [
-        'Select action for ROM Collection [COLOR orange]{}[/COLOR]'.format(cat['m_name'])
+        'Select action for ROM Collection [COLOR orange]{}[/COLOR]'.format(collection['m_name']),
         ('EDIT_METADATA', 'Edit Metadata...', [
             'Edit ROM Collection metadata',
-            ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(cat['m_name'])),
-            ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(cat['m_genre'])),
-            ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(cat['m_rating'])),
+            ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(collection['m_name'])),
+            ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(collection['m_genre'])),
+            ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(collection['m_rating'])),
             ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
             ('IMPORT_NFO_FILE_DEFAULT', 'Import NFO file (default location, {})'.format(NFO_str)),
             ('IMPORT_NFO_FILE_BROWSE', 'Import NFO file (browse NFO file)...'),
@@ -3121,8 +3116,8 @@ def command_edit_collection_build_menu(cfg, categoryID, launcherID):
         ]),
         ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
         ('EDIT_DEFAULT_ASSETS', 'Choose default Assets/Artwork...'),
-        ('EXPORT_COLLECTION_XML', 'Export ROM Collection'),
-        ('DELETE_COLLECTION', 'Delete ROM Collection'),
+        ('EXPORT_ROM_COLLECTION_XML', 'Export ROM Collection'),
+        ('DELETE_ROM_COLLECTION', 'Delete ROM Collection'),
     ]
 
 def command_edit_launcher(self, categoryID, launcherID):
@@ -4499,7 +4494,7 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
 
     # Load ROMs.
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, categoryID, launcherID)
+    db.get_launcher_info(cfg, st, categoryID, launcherID)
     db.load_ROMs(cfg, st, categoryID, launcherID)
 
     # Edit ROM context menu menu logic.
@@ -4533,7 +4528,7 @@ def command_edit_rom(cfg, categoryID, launcherID, romID):
 
 
         elif mdic['command'] == 'EDIT_METADATA_RATING':
-            save_DB_flag = mgui_edit_rating(rom, 'm_rating', 'ROM Rating')
+            save_DB_flag = mgui_edit_metadata_rating(rom, 'm_rating', 'ROM Rating')
         elif mdic['command'] == 'EDIT_METADATA_PLOT':
             save_DB_flag = mgui_edit_metadata_str(rom, 'm_plot', 'ROM Plot')
 
@@ -4892,7 +4887,8 @@ def command_edit_rom_build_menu(cfg, categoryID, launcherID, romID):
     rom = cfg.roms[romID]
     root_dialog_title = 'Select action for ROM [COLOR orange]{}[/COLOR]'.format(rom['m_name'])
     finished_str = 'Finished' if rom['finished'] == True else 'Unfinished'
-    NFO_found_str = 'NFO found' if db.get_ROM_NFO_name(rom).exists() else 'NFO not found'
+    NFO_FN = db.get_NFO_FileName(cfg, const.OBJECT_ROM_ID, rom)
+    NFO_found_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
     plot_str = misc.limit_string(rom['m_plot'], const.PLOT_STR_MAXSIZE)
     # Make a menu list of available metadata scrapers.
     scraper_menu_list = cfg.s_factory.get_metadata_scraper_menu_list()
@@ -5151,7 +5147,7 @@ def mgui_edit_metadata_rating(edict, dic_field, prop_name):
     else:
         raise RuntimeError('Logical error.')
     edict[dic_field] = current_rating_str
-    kodi_notify('{} is now {}'.format(prop_name, current_rating_str))
+    kodi.notify('{} is now {}'.format(prop_name, current_rating_str))
     return True
 
 # This code is based on AEL old master branch.
@@ -5191,28 +5187,32 @@ def mgui_export_object_XML(cfg, object_ID, edict):
     else:
         kodi.notify('Exported {} "{}" XML config'.format(object_name, edict['m_name']))
 
-def mgui_export_Collection(cfg):
+def mgui_export_ROM_Collection(cfg, collection):
     collections_asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
 
     # --- Choose output directory ---
-    output_dir = kodi_dialog_get_wdirectory('Select Collection output directory')
+    output_dir = kodi.dialog_get_wdirectory('Select Collection output directory')
     if not output_dir: return
     out_dir_FN = utils.FileName(output_dir)
 
-    # --- Load collection ROMs ---
+    # Load collection ROMs. Collection indices have been already loaded.
     COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
     collection = COL['collections'][launcherID]
     roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
     rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+    
+    st = kodi.new_status_dic()
+    db.load_ROMs(categoryID, launcherID)
+    
     if not rom_list:
         kodi_notify('Collection is empty. Add ROMs to this collection first.')
         return
 
     # --- Export collection metadata and assets ---
     output_FN = out_dir_FN.pjoin(collection['m_name'] + '.json')
-    fs_export_ROM_collection(output_FN, collection, rom_list)
-    fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, collections_asset_dir_FN)
-    kodi_notify('Exported ROM Collection {} metadata and assets.'.format(collection['m_name']))
+    db.export_ROM_collection(output_FN, collection, rom_list)
+    db.export_ROM_collection_assets(out_dir_FN, collection, rom_list, collections_asset_dir_FN)
+    kodi.notify('Exported ROM Collection {} metadata and assets.'.format(collection['m_name']))
 
 # Open the subcontextmenu "Edit Assets/Artwork" 
 # --- Return value ---
@@ -5619,7 +5619,7 @@ def mgui_delete_category(cfg, category):
     kodi.notify('Deleted category {}'.format(cat_name))
     return True
 
-def mgui_delete_Collection(cfg):
+def mgui_delete_ROM_Collection(cfg):
     # --- Load collection index and ROMs ---
     COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
     collection = COL['collections'][launcherID]
@@ -6641,8 +6641,7 @@ def command_view_menu(cfg, categoryID, launcherID, romID):
         category = cfg.categories[categoryID]
         sl = ['[COLOR orange]Category information[/COLOR]']
         misc_ael.print_Category_slist(category, sl)
-        window_title = 'Category data'
-        kodi.display_text_window_mono(window_title, '\n'.join(sl))
+        kodi.display_text_window_mono('Category data', '\n'.join(sl))
 
     elif action == ACTION_VIEW_LAUNCHER:
         category = None if categoryID == const.CATEGORY_ADDONROOT_ID else cfg.categories[categoryID]
@@ -6652,20 +6651,19 @@ def command_view_menu(cfg, categoryID, launcherID, romID):
         if category:
             sl.append('\n[COLOR orange]Category information[/COLOR]')
             misc_ael.print_Category_slist(category, sl)
-        window_title = 'Launcher data'
-        kodi.display_text_window_mono(window_title, '\n'.join(sl))
+        kodi.display_text_window_mono('Launcher data', '\n'.join(sl))
 
     elif action == ACTION_VIEW_COLLECTION:
-        COL = db.load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
+        st = kodi.new_status_dic()
+        db.get_launcher_info(cfg, st, categoryID, launcherID)
+        collection = cfg.collections_index['collections'][launcherID]
         sl = ['[COLOR orange]ROM Collection information[/COLOR]']
-        misc_ael.print_Collection_slist(collection)
-        window_title = 'ROM Collection data'
-        kodi.display_text_window_mono(window_title, '\n'.join(sl))
+        misc_ael.print_Collection_slist(collection, sl)
+        kodi.display_text_window_mono('ROM Collection data', '\n'.join(sl))
 
     elif action == ACTION_VIEW_ROM:
         st = kodi.new_status_dic()
-        db.get_launcher_info(cfg, categoryID, launcherID)
+        db.get_launcher_info(cfg, st, categoryID, launcherID)
         db.load_ROMs(cfg, st, categoryID, launcherID)
         rom = cfg.roms[romID]
 
