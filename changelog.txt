@@ -96,12 +96,9 @@ DONE     [CORE] New ROM rendering engine. Copy feature from AML.
 
 WIP NOW  [CORE] Improved context menu handling.
          -> [DONE] Start with the Edit Category context menu (easiest). This is a fixed menu (never changes).
-         -> [WIP NOW] Then Edit Collection. This is a fixed menu (never changes).
-         
-         -> [WIP] Then Edit ROM.
-            This is a dynamic menu (changes for standard ROMs, Favourite ROMs, etc.)
-         -> Finally Edit Launcher (most complicated).
-            This is a dynamic menu?
+         -> [DONE] Then Edit Collection. This is a fixed menu (never changes).
+         -> [DONE] Then Edit ROM. This is a dynamic menu (changes for standard ROMs, Favourite ROMs, etc.)
+         -> [WIP] Finally Edit Launcher (most complicated). This is a dynamic menu.
          Copy feature from branch `old-master-chrisism-python2` or create a new non-recursive implementation.
 
 WIP      [CORE] Improved FileName class. All IO must be done using the FileName class.
