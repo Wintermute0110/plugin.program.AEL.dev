@@ -428,44 +428,60 @@ def get_launcher_info(cfg, st, categoryID, launcherID):
         cfg.launcher_label = 'Collection'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_TITLE_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_TITLE_DIR
         cfg.window_title = 'Virtual Launcher Title ROM data'
         cfg.launcher_label = 'Virtual Launcher Title'
+        cfg.vcategory_db_filename = cfg.VCAT_TITLE_FILE_PATH
+        cfg.vcategory_field_name  = 'm_name'
+        cfg.vcategory_name        = 'Titles'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_YEARS_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_YEARS_DIR
         cfg.window_title = 'Virtual Launcher Year ROM data'
         cfg.launcher_label = 'Virtual Launcher Year'
+        cfg.vcategory_db_filename = cfg.VCAT_YEARS_FILE_PATH
+        cfg.vcategory_field_name  = 'm_year'
+        cfg.vcategory_name        = 'Years'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_GENRE_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_GENRE_DIR
         cfg.window_title = 'Virtual Launcher Genre ROM data'
         cfg.launcher_label = 'Virtual Launcher Genre'
+        cfg.vcategory_db_filename = cfg.VCAT_GENRE_FILE_PATH
+        cfg.vcategory_field_name  = 'm_genre'
+        cfg.vcategory_name        = 'Genres'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_DEVELOPER_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_DEVELOPER_DIR
         cfg.window_title = 'Virtual Launcher Studio ROM data'
         cfg.launcher_label = 'Virtual Launcher Studio'
+        cfg.vcategory_db_filename = cfg.VCAT_DEVELOPER_FILE_PATH
+        cfg.vcategory_field_name  = 'm_developer'
+        cfg.vcategory_name        = 'Developers'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_NPLAYERS_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_NPLAYERS_DIR
         cfg.window_title = 'Virtual Launcher NPlayer ROM data'
         cfg.launcher_label = 'Virtual Launcher NPlayer'
+        cfg.vcategory_db_filename = cfg.VCAT_NPLAYERS_FILE_PATH
+        cfg.vcategory_field_name  = 'm_nplayers'
+        cfg.vcategory_name        = 'NPlayers'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_ESRB_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_ESRB_DIR
         cfg.window_title = 'Virtual Launcher ESRB ROM data'
         cfg.launcher_label = 'Virtual Launcher ESRB'
+        cfg.vcategory_db_filename = cfg.VCAT_ESRB_FILE_PATH
+        cfg.vcategory_field_name  = 'm_esrb'
+        cfg.vcategory_name        = 'ESRB'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_RATING_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_RATING_DIR
         cfg.window_title = 'Virtual Launcher Rating ROM data'
         cfg.launcher_label = 'Virtual Launcher Rating'
+        cfg.vcategory_db_filename = cfg.VCAT_RATING_FILE_PATH
+        cfg.vcategory_field_name  = 'm_rating'
+        cfg.vcategory_name        = 'Rating'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_CATEGORY_ID:
-        cfg.vcategory_db_dir = cfg.VIRTUAL_CAT_CATEGORY_DIR
         cfg.window_title = 'Virtual Launcher Category ROM data'
         cfg.launcher_label = 'Virtual Launcher Category'
+        cfg.vcategory_db_filename = cfg.VCAT_CATEGORY_FILE_PATH
+        cfg.vcategory_field_name  = ''
+        cfg.vcategory_name        = 'Categories'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
         platform = launcherID
