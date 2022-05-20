@@ -15,6 +15,9 @@
 # This module has no external dependencies.
 # This module does no use print() or log functions.
 
+# --- Python Standard Library ---
+import collections
+
 # --- Transitional code from Python 2 to Python 3 ---
 # See https://github.com/benjaminp/six/blob/master/six.py
 import sys
@@ -27,7 +30,7 @@ elif ADDON_RUNNING_PYTHON_2:
     text_type = unicode
     binary_type = str
 else:
-    raise TypeError('Unknown Python runtime version')
+    raise RuntimeError('Unknown Python runtime version')
 
 # --- Determine interpreter running platform ---
 # Cache all possible platform values in global variables for maximum speed.
@@ -149,8 +152,19 @@ PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
 
+
 # Special Category/Launcher IDs.
 CATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
+
+
+# Launcher types.
+# [TODO] Use a set of consistent labels in the addon for the different types of launchers.
+#        Maybe use a database field to set the launcher type???
+LAUNCHER_STANDALONE      = 'LAUNCHER_STANDALONE'
+LAUNCHER_ROM_STANDARD    = 'LAUNCHER_ROM_STANDARD'
+LAUNCHER_ROM_RETROPLAYER = 'LAUNCHER_ROM_RETROPLAYER'
+LAUNCHER_ROM_LNK         = 'LAUNCHER_ROM_LNK'
+
 
 # Favourites, Most Played and Recently Played belong to VCATEGORY_SPECIAL_ID category.
 # However, having an empty category in URLs for these virtual launchers is OK.
@@ -460,85 +474,86 @@ OBJECT_ASSETS = {
     OBJECT_ROM_ID : ROM_ASSET_ID_LIST,
 }
 
-# List of Kodi default assets that can be default to another assets.
-DEFAULTABLE_ASSET_ID_LIST = [
-    ASSET_ICON_ID,
-    ASSET_FANART_ID,
-    ASSET_BANNER_ID,
-    ASSET_POSTER_ID,
-    ASSET_CLEARLOGO_ID,
-]
+# Auxiliar constants.
+DEFAULT_ODIC_ID = 'DEFAULT_ODIC_ID'
+ASSET_LIST_ID   = 'ASSET_LIST_ID'
 
 # Database fields for the defaultable assets.
-DEFAULTABLE_ASSET_DB_DIC = {
+DEFAULT_ASSET_DB = {
     OBJECT_CATEGORY_ID : {
-        ASSET_ICON_ID : 'default_icon',
-        ASSET_FANART_ID : 'default_fanart',
-        ASSET_BANNER_ID : 'default_banner',
-        ASSET_POSTER_ID : 'default_poster',
-        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+        # These are the assets that can be mapped and the database fields to store the mapping.
+        DEFAULT_ODIC_ID : collections.OrderedDict([
+            (ASSET_ICON_ID, 'default_icon'),
+            (ASSET_FANART_ID, 'default_fanart'),
+            (ASSET_BANNER_ID, 'default_banner'),
+            (ASSET_POSTER_ID, 'default_poster'),
+            (ASSET_CLEARLOGO_ID, 'default_clearlogo'),
+        ]),
+        # This is the list of assets that can be choosed for the mapping.
+        ASSET_LIST_ID : [
+            ASSET_ICON_ID,
+            ASSET_FANART_ID,
+            ASSET_BANNER_ID,
+            ASSET_POSTER_ID,
+            ASSET_CLEARLOGO_ID,
+        ],
     },
     OBJECT_COLLECTION_ID : {
-        ASSET_ICON_ID : 'default_icon',
-        ASSET_FANART_ID : 'default_fanart',
-        ASSET_BANNER_ID : 'default_banner',
-        ASSET_POSTER_ID : 'default_poster',
-        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+        DEFAULT_ODIC_ID : collections.OrderedDict([
+            (ASSET_ICON_ID, 'default_icon'),
+            (ASSET_FANART_ID, 'default_fanart'),
+            (ASSET_BANNER_ID, 'default_banner'),
+            (ASSET_POSTER_ID, 'default_poster'),
+            (ASSET_CLEARLOGO_ID, 'default_clearlogo'),
+        ]),
+        ASSET_LIST_ID : [
+            ASSET_ICON_ID,
+            ASSET_FANART_ID,
+            ASSET_BANNER_ID,
+            ASSET_POSTER_ID,
+            ASSET_CLEARLOGO_ID,
+        ],
     },
     OBJECT_LAUNCHER_ID : {
-        ASSET_ICON_ID : 'default_icon',
-        ASSET_FANART_ID : 'default_fanart',
-        ASSET_BANNER_ID : 'default_banner',
-        ASSET_POSTER_ID : 'default_poster',
-        ASSET_CLEARLOGO_ID : 'default_clearlogo',
+        DEFAULT_ODIC_ID : collections.OrderedDict([
+            (ASSET_ICON_ID, 'default_icon'),
+            (ASSET_FANART_ID, 'default_fanart'),
+            (ASSET_BANNER_ID, 'default_banner'),
+            (ASSET_POSTER_ID, 'default_poster'),
+            (ASSET_CLEARLOGO_ID, 'default_clearlogo'),
+        ]),
+        ASSET_LIST_ID : [
+            ASSET_ICON_ID,
+            ASSET_FANART_ID,
+            ASSET_BANNER_ID,
+            ASSET_POSTER_ID,
+            ASSET_CLEARLOGO_ID,
+            ASSET_CONTROLLER_ID,
+        ],
     },
     # Edition of ROMs default assets in a ROM Launcher.
     # Edition of Favourite ROM default assets.
     OBJECT_ROM_ID : {
-        ASSET_ICON_ID : 'roms_default_icon',
-        ASSET_FANART_ID : 'roms_default_fanart',
-        ASSET_BANNER_ID : 'roms_default_banner',
-        ASSET_POSTER_ID : 'roms_default_poster',
-        ASSET_CLEARLOGO_ID : 'roms_default_clearlogo',
+        DEFAULT_ODIC_ID : collections.OrderedDict([
+            (ASSET_ICON_ID, 'roms_default_icon'),
+            (ASSET_FANART_ID, 'roms_default_fanart'),
+            (ASSET_BANNER_ID, 'roms_default_banner'),
+            (ASSET_POSTER_ID, 'roms_default_poster'),
+            (ASSET_CLEARLOGO_ID, 'roms_default_clearlogo'),
+        ]),
+        ASSET_LIST_ID : [
+            ASSET_TITLE_ID,
+            ASSET_SNAP_ID,
+            ASSET_BOXFRONT_ID,
+            ASSET_BOXBACK_ID,
+            ASSET_CARTRIDGE_ID,
+            ASSET_FANART_ID,
+            ASSET_BANNER_ID,
+            ASSET_CLEARLOGO_ID,
+            ASSET_FLYER_ID,
+            ASSET_MAP_ID,
+        ],
     },
-}
-
-# List of assets that can be mapped to a defaultable asset.
-MAPPABLE_ASSETS = {
-    OBJECT_CATEGORY_ID : [
-        ASSET_ICON_ID,
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_POSTER_ID,
-        ASSET_CLEARLOGO_ID,
-    ],
-    OBJECT_COLLECTION_ID : [
-        ASSET_ICON_ID,
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_POSTER_ID,
-        ASSET_CLEARLOGO_ID,
-    ],
-    OBJECT_LAUNCHER_ID : [
-        ASSET_ICON_ID,
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_POSTER_ID,
-        ASSET_CLEARLOGO_ID,
-        ASSET_CONTROLLER_ID,
-    ],
-    OBJECT_ROM_ID : [
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID,
-        ASSET_CARTRIDGE_ID,
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_CLEARLOGO_ID,
-        ASSET_FLYER_ID,
-        ASSET_MAP_ID,
-    ],
 }
 
 # --- Addon will search these file extensions for assets ---

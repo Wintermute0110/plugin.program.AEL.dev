@@ -2992,20 +2992,20 @@ def command_edit_category(cfg, categoryID):
 # The menu is dynamic because the category being edited may change.
 def command_edit_category_build_menu(cfg, categoryID):
     log.debug('command_edit_category_build_menu() Building menu...')
-    cat = cfg.categories[categoryID]
-    finished_str = 'Finished' if cat['finished'] == True else 'Unfinished'
-    NFO_FN = db.get_category_NFO_name(cfg, cat)
+    category = cfg.categories[categoryID]
+    finished_str = 'Finished' if category['finished'] else 'Unfinished'
+    NFO_FN = db.get_NFO_FileName(cfg, const.OBJECT_CATEGORY_ID, category)
     NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
-    plot_str = misc.limit_string(cat['m_plot'], const.PLOT_STR_MAXSIZE)
+    plot_str = misc.limit_string(category['m_plot'], const.PLOT_STR_MAXSIZE)
     return [
-        'Select action for Category [COLOR orange]{}[/COLOR]'.format(cat['m_name'])
+        'Select action for Category [COLOR orange]{}[/COLOR]'.format(category['m_name']),
         ('EDIT_METADATA', 'Edit Metadata...', [
             'Edit Category metadata',
-            ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(cat['m_name'])),
-            ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(cat['m_year'])),
-            ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(cat['m_genre'])),
-            ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(cat['m_developer'])),
-            ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(cat['m_rating'])),
+            ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(category['m_name'])),
+            ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(category['m_year'])),
+            ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(category['m_genre'])),
+            ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(category['m_developer'])),
+            ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(category['m_rating'])),
             ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
             ('IMPORT_NFO_FILE_DEFAULT', 'Import NFO file (default location, {})'.format(NFO_str)),
             ('IMPORT_NFO_FILE_BROWSE', 'Import NFO file (browse NFO file)...'),
@@ -4683,12 +4683,11 @@ def mgui_edit_object_default_assets(cfg, object_ID, edict):
     execute_menu, save_DB_flag, pre_select_idx = True, False, 0
     while execute_menu:
         # --- Build kodi.SelectDialog() list ---
-        default_assets_odict = assets.get_asset_info_list_from_IDs(const.DEFAULTABLE_ASSET_ID_LIST)
         list_items = []
         asset_info_list = [] # List to easily pick the selected AssetInfo() object
-        for ainfo_t in default_assets_odict:
+        for asset_id_t, default_db_key in const.DEFAULT_ASSET_DB[object_ID][const.DEFAULT_ODIC_ID].items():
             # Get mapped asset for asset_ID, AssetInfo Object and filename.
-            default_db_key = const.DEFAULTABLE_ASSET_DB_DIC[object_ID][ainfo_t.id]
+            ainfo_t = assets.ASSET_INFO_DICT[asset_id_t]
             mapped_asset_key = edict[default_db_key]
             mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
             mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
@@ -4725,28 +4724,26 @@ def mgui_edit_default_asset(cfg, object_ID, edict, edit_ainfo):
     log.debug('mgui_edit_default_asset() Editing "{}"'.format(edit_ainfo.name))
     obj_info = assets.OBJECT_INFO_DICT[object_ID]
     # Get mapped asset for asset_ID, AssetInfo Object and filename.
-    default_db_key = const.DEFAULTABLE_ASSET_DB_DIC[object_ID][edit_ainfo.id]
+    default_db_key = const.DEFAULT_ASSET_DB[object_ID][const.DEFAULT_ODIC_ID][edit_ainfo.id]
     mapped_asset_key = edict[default_db_key]
     mapped_ainfo = assets.ASSET_INFO_KEY_DICT[mapped_asset_key]
-    # mapped_asset_str = edict[mapped_ainfo.key] if edict[mapped_ainfo.key] else ''
     # Execute select menu logic.
     execute_menu, save_DB_flag, pre_select_idx = True, False, 0
     while execute_menu:
         list_items = []
         asset_info_list = []
-        for a_id_t in const.MAPPABLE_ASSETS[object_ID]:
-            ainfo_t = assets.ASSET_INFO_DICT[a_id_t]
-            mapped_asset_str = edict[ainfo_t.key] if ainfo_t.key in edict else ''
+        for asset_id_t in const.DEFAULT_ASSET_DB[object_ID][const.ASSET_LIST_ID]:
+            ainfo_t = assets.ASSET_INFO_DICT[asset_id_t]
+            mapped_asset_str_t = edict[ainfo_t.key] if ainfo_t.key in edict else ''
             # Label1 is the asset name (Icon, Fanart, etc.)
             # Label2 is the asset filename str as in the database or 'Not set'
             if mapped_ainfo == ainfo_t:
                 label1_str = 'Map {} to {} (Current)'.format(edit_ainfo.name, ainfo_t.name)
             else:
                 label1_str = 'Map {} to {}'.format(edit_ainfo.name, ainfo_t.name)
-            label2_stt = mapped_asset_str if mapped_asset_str else 'Not set'
+            label2_stt = mapped_asset_str_t if mapped_asset_str_t else 'Not set'
             list_item = xbmcgui.ListItem(label1_str, label2_stt)
-            item_img = assets.get_listitem_asset_filename(mapped_asset_str)
-            list_item.setArt({'icon' : item_img})
+            list_item.setArt({'icon' : assets.get_listitem_asset_filename(mapped_asset_str_t)})
             list_items.append(list_item)
             asset_info_list.append(ainfo_t)
             # Preselect the current mapped asset.
