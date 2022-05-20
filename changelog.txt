@@ -70,7 +70,7 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
 
-[B]Advanced Emulator Launcher | version 0.11.0 | xx March 2022[/B]
+[B]Advanced Emulator Launcher | version 0.11.0 | xx August 2022[/B]
 
 NOTE     Implement these features in master branch for Python 3.
 
@@ -95,11 +95,11 @@ DONE     [CORE] New ROM rendering engine. Copy feature from AML.
          Functions render_ROMs(), render_ROMs_filter(), render_ROMs_process(), render_ROMs_commit().
 
 WIP NOW  [CORE] Improved context menu handling.
+         Copy feature from branch `old-master-chrisism-python2` or create a new non-recursive implementation.
          -> [DONE] Start with the Edit Category context menu (easiest). This is a fixed menu (never changes).
          -> [DONE] Then Edit Collection. This is a fixed menu (never changes).
          -> [DONE] Then Edit ROM. This is a dynamic menu (changes for standard ROMs, Favourite ROMs, etc.)
          -> [WIP] Finally Edit Launcher (most complicated). This is a dynamic menu.
-         Copy feature from branch `old-master-chrisism-python2` or create a new non-recursive implementation.
 
 WIP      [CORE] Improved FileName class. All IO must be done using the FileName class.
          Copy feature from branch `old-master-chrisism-python2`
