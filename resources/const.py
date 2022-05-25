@@ -194,9 +194,9 @@ VCATEGORY_BROWSE_BY_ID_LIST = [
 VCATEGORY_ID_LIST = [
     VCATEGORY_SPECIAL_ID,
     VCATEGORY_ROM_COLLECTION_ID,
+] + VCATEGORY_BROWSE_BY_ID_LIST + [
     VCATEGORY_AOS_ID,
-] + VCATEGORY_BROWSE_BY_ID_LIST
-
+]
 
 # IMPORTANT
 # In many parts of the addon it is important to differentiate the type of launcher.

@@ -124,20 +124,7 @@ class Configuration:
         self.DEFAULT_COL_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-collections')
         self.DEFAULT_LAUN_ASSET_DIR    = self.ADDON_DATA_DIR.pjoin('asset-launchers')
         self.DEFAULT_FAV_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-favourites')
-
-        # New.
         self.VIRTUAL_ROMS_DIR          = self.ADDON_DATA_DIR.pjoin('db_browse_by')
-
-        # Deprecated.
-        self.VIRTUAL_CAT_TITLE_DIR     = self.ADDON_DATA_DIR.pjoin('db_title')
-        self.VIRTUAL_CAT_YEARS_DIR     = self.ADDON_DATA_DIR.pjoin('db_year')
-        self.VIRTUAL_CAT_GENRE_DIR     = self.ADDON_DATA_DIR.pjoin('db_genre')
-        self.VIRTUAL_CAT_DEVELOPER_DIR = self.ADDON_DATA_DIR.pjoin('db_developer')
-        self.VIRTUAL_CAT_NPLAYERS_DIR  = self.ADDON_DATA_DIR.pjoin('db_nplayer')
-        self.VIRTUAL_CAT_ESRB_DIR      = self.ADDON_DATA_DIR.pjoin('db_esrb')
-        self.VIRTUAL_CAT_RATING_DIR    = self.ADDON_DATA_DIR.pjoin('db_rating')
-        self.VIRTUAL_CAT_CATEGORY_DIR  = self.ADDON_DATA_DIR.pjoin('db_category')
-        
         self.ROMS_DIR                  = self.ADDON_DATA_DIR.pjoin('db_ROMs')
         self.COLLECTIONS_DIR           = self.ADDON_DATA_DIR.pjoin('db_Collections')
         self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports')
@@ -276,29 +263,13 @@ def run_plugin(addon_argv):
     cfg.kiosk_mode_disabled = xbmc.getCondVisibility('!Skin.HasSetting(KioskMode.Enabled)')
 
     # --- Addon data paths creation ---
-    #
-    # [TODO] Simplify this. Create one directory for all vlauncher ROM databases.
-    #
     if not cfg.ADDON_DATA_DIR.exists(): cfg.ADDON_DATA_DIR.makedirs()
     if not cfg.SCRAPER_CACHE_DIR.exists(): cfg.SCRAPER_CACHE_DIR.makedirs()
     if not cfg.DEFAULT_CAT_ASSET_DIR.exists(): cfg.DEFAULT_CAT_ASSET_DIR.makedirs()
     if not cfg.DEFAULT_COL_ASSET_DIR.exists(): cfg.DEFAULT_COL_ASSET_DIR.makedirs()
     if not cfg.DEFAULT_LAUN_ASSET_DIR.exists(): cfg.DEFAULT_LAUN_ASSET_DIR.makedirs()
     if not cfg.DEFAULT_FAV_ASSET_DIR.exists(): cfg.DEFAULT_FAV_ASSET_DIR.makedirs()
-
-    # New
     if not cfg.VIRTUAL_ROMS_DIR.exists(): cfg.VIRTUAL_ROMS_DIR.makedirs()
-
-    # Deprecated
-    if not cfg.VIRTUAL_CAT_TITLE_DIR.exists(): cfg.VIRTUAL_CAT_TITLE_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_YEARS_DIR.exists(): cfg.VIRTUAL_CAT_YEARS_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_GENRE_DIR.exists(): cfg.VIRTUAL_CAT_GENRE_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_DEVELOPER_DIR.exists(): cfg.VIRTUAL_CAT_DEVELOPER_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_NPLAYERS_DIR.exists(): cfg.VIRTUAL_CAT_NPLAYERS_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_ESRB_DIR.exists(): cfg.VIRTUAL_CAT_ESRB_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_RATING_DIR.exists(): cfg.VIRTUAL_CAT_RATING_DIR.makedirs()
-    if not cfg.VIRTUAL_CAT_CATEGORY_DIR.exists(): cfg.VIRTUAL_CAT_CATEGORY_DIR.makedirs()
-    
     if not cfg.ROMS_DIR.exists(): cfg.ROMS_DIR.makedirs()
     if not cfg.COLLECTIONS_DIR.exists(): cfg.COLLECTIONS_DIR.makedirs()
     if not cfg.REPORTS_DIR.exists(): cfg.REPORTS_DIR.makedirs()
@@ -683,8 +654,9 @@ def aux_url_search(command, categoryID, launcherID, search_type, search_string):
 # ------------------------------------------------------------------------------------------------
 # Miscellaneous/utility functions
 # ------------------------------------------------------------------------------------------------
-# Returns a dictionary of all ROMs in all ROM Launchers.
+# Returns a dictionary with all ROMs in all ROM Launchers.
 # Creates a progress dialog.
+# Should this function be in module db???
 def aux_get_all_ROMs(cfg):
     log.debug('aux_get_all_ROMs() Creating list of all ROMs in all Launchers')
     all_roms = {}
@@ -725,6 +697,26 @@ def aux_get_all_ROMs(cfg):
     log.debug('aux_get_all_ROMs() Number of ROMs Launchers = {}'.format(len(cfg.launchers)))
     log.debug('aux_get_all_ROMs() Number of ROMs = {}'.format(len(all_roms)))
     return all_roms
+
+# Progress dialog here???
+def aux_clean_browse_by_JSON_files(cfg, vcategory_name):
+    log.info('aux_clean_browse_by_JSON_files() Cleaning hashed database old XMLs')
+    glob_str = '{}_*.*'.format(vcategory_name)
+    log.info('aux_clean_browse_by_JSON_files() glob_str = "{}"'.format(glob_str))
+    for file_FN in cfg.VIRTUAL_ROMS_DIR.scanFilesInPathAsPaths(glob_str):
+        file_extension = file_FN.getExt()
+        if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
+            # There should be only XMLs or JSON in this directory
+            log.error('aux_clean_browse_by_JSON_files() Non XML/JSON file "{}"'.format(file_FN.getPath()))
+            log.error('aux_clean_browse_by_JSON_files() Skipping it from deletion')
+            continue
+        log.debug('aux_clean_browse_by_JSON_files() Deleting "{}"'.format(file_FN.getPath()))
+        try:
+            if file_FN.exists(): file_FN.unlink()
+        except Exception as ex:
+            log.error('aux_clean_browse_by_JSON_files() Excepcion deleting hashed DB XMLs')
+            log.error('aux_clean_browse_by_JSON_files() {}'.format(ex))
+            return
 
 # ------------------------------------------------------------------------------------------------
 # Really miscellaneous functions
@@ -5557,15 +5549,8 @@ def command_update_browse_by_db_all(cfg):
     # Pass all_roms dictionary to the database creation functions so this has not
     # to be recomputed for every virtual launcher.
     all_roms = aux_get_all_ROMs(cfg)
-    # [TODO] FOR LOOP HERE from a list in module const.
-    command_update_browse_by_db_single(const.VCATEGORY_TITLE_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_YEARS_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_GENRE_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_DEVELOPER_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_NPLAYERS_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_ESRB_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_RATING_ID, all_roms)
-    command_update_browse_by_db_single(const.VCATEGORY_CATEGORY_ID, all_roms)
+    for vcategory_id in const.VCATEGORY_BROWSE_BY_ID_LIST:
+        command_update_browse_by_db_single(cfg, vcategory_id, all_roms)
     kodi.notify('All virtual categories updated')
 
 # Makes a virtual category database.
@@ -5594,22 +5579,7 @@ def command_update_browse_by_db_single(cfg, virtual_categoryID, all_roms_externa
     db.get_launcher_info(cfg, st, virtual_categoryID, None)
 
     # --- Delete previous hashed database XMLs ---
-    log.info('command_update_browse_by_db_single() Cleaning hashed database old XMLs')
-    for the_file in vcategory_db_directory.scanFilesInPathAsPaths('*.*'):
-        file_extension = the_file.getExt()
-        if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
-            # There should be only XMLs or JSON in this directory
-            log.error('command_update_browse_by_db_single() Non XML/JSON file "{}"'.format(the_file.getPath()))
-            log.error('command_update_browse_by_db_single() Skipping it from deletion')
-            continue
-        log.debug('command_update_browse_by_db_single() Deleting "{}"'.format(the_file.getPath()))
-        try:
-            if the_file.exists():
-                the_file.unlink()
-        except Exception as e:
-            log.error('command_update_browse_by_db_single() Excepcion deleting hashed DB XMLs')
-            log.error('command_update_browse_by_db_single() {}'.format(e))
-            return
+    aux_clean_browse_by_JSON_files(cfg, cfg.vcategory_name)
 
     # --- Make a big dictionary will all the ROMs ---
     if all_roms_external:
@@ -5624,14 +5594,13 @@ def command_update_browse_by_db_single(cfg, virtual_categoryID, all_roms_externa
     # TODO It would be nice to have a progress dialog here...
     log.debug('command_update_browse_by_db_single() Creating hashed database')
     virtual_launchers = {}
-    for rom_id in all_roms:
-        rom = all_roms[rom_id]
-        if virtual_categoryID == VCATEGORY_TITLE_ID:
+    for rom_id, rom in all_roms.items():
+        if virtual_categoryID == const.VCATEGORY_BROWSE_BY_TITLE_ID:
             vcategory_key = rom['m_name'][0].upper()
-        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
+        elif virtual_categoryID == const.VCATEGORY_BROWSE_BY_CATEGORY_ID:
             vcategory_key = rom['category_name']
         else:
-            vcategory_key = rom[vcategory_field_name]
+            vcategory_key = rom[cfg.vcategory_field_name]
         # '' is a special case
         if vcategory_key == '': vcategory_key = '[ Not set ]'
         if vcategory_key in virtual_launchers:
@@ -5640,38 +5609,39 @@ def command_update_browse_by_db_single(cfg, virtual_categoryID, all_roms_externa
             virtual_launchers[vcategory_key] = {rom['id'] : rom}
 
     # --- Write hashed distributed database XML files ---
-    # TODO It would be nice to have a progress dialog here...
     log.debug('command_update_browse_by_db_single() Writing hashed database JSON files')
+    pdiag = kodi.ProgressDialog()
+    t = 'Writing {} hashed database ...'.format(cfg.vcategory_name)
+    pdiag.startProgress(t, len(virtual_launchers))
     vcategory_launchers = {}
-    pDialog = KodiProgressDialog()
-    pDialog.startProgress('Writing {} hashed database ...'.format(vcategory_name), len(virtual_launchers))
     for vlauncher_id in virtual_launchers:
-        pDialog.updateProgressInc()
-
+        pdiag.updateProgressInc()
         # Create VLauncher UUID
         vlauncher_id_md5 = hashlib.md5(vlauncher_id.encode('utf-8'))
         hashed_db_UUID = vlauncher_id_md5.hexdigest()
         log.debug('command_update_browse_by_db_single() vlauncher_id       "{}"'.format(vlauncher_id))
         log.debug('command_update_browse_by_db_single() hashed_db_UUID     "{}"'.format(hashed_db_UUID))
 
-        # Virtual launcher ROMs are like Favourite ROMs. They contain all required fields to launch
+        # Virtual launcher ROMs are Favourite ROMs. They contain all required fields to launch
         # the ROM, and also share filesystem I/O functions with Favourite ROMs.
         vlauncher_roms = virtual_launchers[vlauncher_id]
         log.debug('command_update_browse_by_db_single() Number of ROMs = {}'.format(len(vlauncher_roms)))
-        fs_write_VCategory_ROMs_JSON(vcategory_db_directory, hashed_db_UUID, vlauncher_roms)
+        vlauncher_basename = '{}_{}.json'.format(cfg.vcategory_name, hashed_db_UUID)
+        vlauncher_FN = cfg.VIRTUAL_ROMS_DIR.pjoin(vlauncher_basename)
+        utils.write_JSON_file(vlauncher_FN.getPath(), vlauncher_roms)
 
-        # Create virtual launcher
+        # Create virtual launcher index entry.
         vcategory_launchers[hashed_db_UUID] = {
             'id'              : hashed_db_UUID,
             'name'            : vlauncher_id,
-            'rom_count'       : text_type(len(vlauncher_roms)),
+            'rom_count'       : const.text_type(len(vlauncher_roms)),
             'roms_base_noext' : hashed_db_UUID,
         }
-    pDialog.endProgress()
 
-    # --- Write virtual launchers XML file ---
+    # Write virtual launchers XML index file.
     log.debug('command_update_browse_by_db_single() Writing virtual category XML index')
-    fs_write_VCategory_XML(vcategory_db_filename, vcategory_launchers)
+    db.write_VCategory_XML(cfg.vcategory_index_FN, vcategory_launchers)
+    pdiag.endProgress()
 
 # ------------------------------------------------------------------------------------------------
 # Edit menu auxiliar functions.
