@@ -383,11 +383,29 @@ def get_collection_ROMs_basename(collection_name, collectionID):
 # ------------------------------------------------------------------------------------------------
 # ROM database high-level IO functions
 # ------------------------------------------------------------------------------------------------
+# Caches to store virtual launcher indices.
+collections_index = {}
+vlaunchers_index = {}
+for vlauncher_ID in const.VCATEGORY_BROWSE_BY_ID_LIST: vlaunchers_index[vlauncher_ID] = {}
+
+def clear_vlauncher_index_cache():
+    global collections_index
+    global vlaunchers_index
+
+    collections_index = {}
+    for vlauncher_ID in const.VCATEGORY_BROWSE_BY_ID_LIST: vlaunchers_index[vlauncher_ID] = {}
+
 # * This function must be called first to update cfg object fields that will be 
 #   used by other functions.
 # * Include here all possible launcher information needed anywhere in the addon.
 # * For virtual launchers this function preloads the catalog.
+# * This function loads virtual launcher indice files and caches it.
+# * To force a reload of the cache set the cache to an empty object.
 def get_launcher_info(cfg, st, categoryID, launcherID):
+    global collections_index
+    global vlaunchers_index
+
+    log.debug('get_launcher_info() categoryID "{}" / launcherID "{}"'.format(categoryID, launcherID))
     cfg.launcher_is_vlauncher = launcherID in const.VLAUNCHER_ID_LIST
     cfg.launcher_is_vcategory = categoryID in const.VCATEGORY_ID_LIST
     cfg.launcher_is_browse_by = categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST
@@ -419,68 +437,155 @@ def get_launcher_info(cfg, st, categoryID, launcherID):
         cfg.launcher_label = 'Most Played ROM'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
-        # Move function code here???
-        # Better to keep it in the function as it is?
-        # Cache the collections index if loaded???
-        cfg.collections_index = load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
-        collection = cfg.collections_index['collections'][launcherID]
+        # Load Collection index and cache it.
+        if not collections_index:
+            log.debug('ROM Collection cache miss. Loading ROM Collection index.')
+            collections_index = load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
+        else:
+            log.debug('ROM Collection cache hit.')
+        cfg.COL_index = collections_index
+
+        # Collection database filename and Metadata.
+        collection = cfg.COL_index['collections'][launcherID]
         cfg.roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         cfg.window_title = 'Collection ROM data'
         cfg.launcher_label = 'Collection'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_TITLE_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_TITLE_FILE_PATH
+        # if not cfg.vcategory_index_FN.exists():
+        #     kodi.dialog_OK('Database not found. Update the virtual category database first.')
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_TITLE_ID]:
+            log.debug('get_launcher_info() VLauncher Title cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_TITLE_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Title cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_TITLE_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Title ROM data'
         cfg.launcher_label = 'Virtual Launcher Title'
-        cfg.vcategory_index_FN = cfg.VCAT_TITLE_FILE_PATH
         cfg.vcategory_field_name = 'm_name'
         cfg.vcategory_name = 'Titles'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_YEARS_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_YEARS_FILE_PATH        
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_YEARS_ID]:
+            log.debug('get_launcher_info() VLauncher Years cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_YEARS_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Years cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_YEARS_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Year ROM data'
         cfg.launcher_label = 'Virtual Launcher Year'
-        cfg.vcategory_index_FN = cfg.VCAT_YEARS_FILE_PATH
         cfg.vcategory_field_name = 'm_year'
         cfg.vcategory_name = 'Years'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_GENRE_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_GENRE_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_GENRE_ID]:
+            log.debug('get_launcher_info() VLauncher Genres cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_GENRE_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Genres cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_GENRE_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Genre ROM data'
         cfg.launcher_label = 'Virtual Launcher Genre'
-        cfg.vcategory_index_FN = cfg.VCAT_GENRE_FILE_PATH
         cfg.vcategory_field_name = 'm_genre'
         cfg.vcategory_name = 'Genres'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_DEVELOPER_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_DEVELOPER_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_DEVELOPER_ID]:
+            log.debug('get_launcher_info() VLauncher Developers cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_DEVELOPER_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Developers cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_DEVELOPER_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Studio ROM data'
         cfg.launcher_label = 'Virtual Launcher Studio'
-        cfg.vcategory_index_FN = cfg.VCAT_DEVELOPER_FILE_PATH
         cfg.vcategory_field_name = 'm_developer'
         cfg.vcategory_name = 'Developers'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_NPLAYERS_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_NPLAYERS_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_NPLAYERS_ID]:
+            log.debug('get_launcher_info() VLauncher NPlayers cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_NPLAYERS_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher NPlayers cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_NPLAYERS_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher NPlayer ROM data'
         cfg.launcher_label = 'Virtual Launcher NPlayer'
-        cfg.vcategory_index_FN = cfg.VCAT_NPLAYERS_FILE_PATH
         cfg.vcategory_field_name = 'm_nplayers'
         cfg.vcategory_name = 'NPlayers'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_ESRB_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_ESRB_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_ESRB_ID]:
+            log.debug('get_launcher_info() VLauncher ESRB cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_ESRB_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher ESRB cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_ESRB_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher ESRB ROM data'
         cfg.launcher_label = 'Virtual Launcher ESRB'
-        cfg.vcategory_index_FN = cfg.VCAT_ESRB_FILE_PATH
         cfg.vcategory_field_name = 'm_esrb'
         cfg.vcategory_name = 'ESRB'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_RATING_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_RATING_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_RATING_ID]:
+            log.debug('get_launcher_info() VLauncher Rating cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_RATING_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Rating cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_RATING_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Rating ROM data'
         cfg.launcher_label = 'Virtual Launcher Rating'
-        cfg.vcategory_index_FN = cfg.VCAT_RATING_FILE_PATH
         cfg.vcategory_field_name = 'm_rating'
         cfg.vcategory_name = 'Rating'
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_CATEGORY_ID:
+        # Load Virtual Launcher index file and cache it.
+        cfg.vcategory_index_FN = cfg.VCAT_CATEGORY_FILE_PATH
+        if not vlaunchers_index[const.VCATEGORY_BROWSE_BY_CATEGORY_ID]:
+            log.debug('get_launcher_info() VLauncher Categories cache miss. Loading VLauncher index.')
+            vlaunchers_index[const.VCATEGORY_BROWSE_BY_CATEGORY_ID] = load_VCategory_XML(cfg.vcategory_index_FN)
+        else:
+            log.debug('get_launcher_info() VLauncher Categories cache hit.')
+        cfg.VL_index = vlaunchers_index[const.VCATEGORY_BROWSE_BY_CATEGORY_ID]
+        cfg.outdated_vlauncher_flag = True if cfg.VL_index['timestamp'] < cfg.update_timestamp else False
+
+        # Virtual launcher metadata.
         cfg.window_title = 'Virtual Launcher Category ROM data'
         cfg.launcher_label = 'Virtual Launcher Category'
-        cfg.vcategory_index_FN = cfg.VCAT_CATEGORY_FILE_PATH
         cfg.vcategory_field_name = ''
         cfg.vcategory_name = 'Categories'
 
@@ -602,38 +707,20 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         cfg.roms = collections.OrderedDict()
         for r in raw_data[1]: cfg.roms[r['id']] = r
         if not cfg.roms:
-            kodi_set_st_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
+            kodi.set_st_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
             return
         else:
             cfg.control_str = raw_data[0]['control']
             cfg.version_int = raw_data[0]['version']
 
     elif cfg.launcher_is_browse_by:
-        # TODO Move the name generation code to db_get_launcher_fnames()
-        # vdic = {
-        #     const.VCATEGORY_TITLE_ID : cfg.VIRTUAL_CAT_TITLE_DIR,
-        #     const.VCATEGORY_YEARS_ID : cfg.VIRTUAL_CAT_YEARS_DIR,
-        #     const.VCATEGORY_GENRE_ID : cfg.VIRTUAL_CAT_GENRE_DIR,
-        #     const.VCATEGORY_DEVELOPER_ID : cfg.VIRTUAL_CAT_DEVELOPER_DIR,
-        #     const.VCATEGORY_NPLAYERS_ID : cfg.VIRTUAL_CAT_NPLAYERS_DIR,
-        #     const.VCATEGORY_ESRB_ID : cfg.VIRTUAL_CAT_ESRB_DIR,
-        #     const.VCATEGORY_RATING_ID : cfg.VIRTUAL_CAT_RATING_DIR,
-        #     const.VCATEGORY_CATEGORY_ID : cfg.VIRTUAL_CAT_CATEGORY_DIR,
-        # }
-        # try:
-        #     vcategory_db_dir = vdic[categoryID]
-        # except:
-        #     log.error('db_load_ROMs() Wrong categoryID = {}'.format(categoryID))
-        #     kodi.dialog_OK('Wrong categoryID = {}'.format(categoryID))
-        #     return
-        hashed_db_filename = cfg.vcategory_db_dir.pjoin(launcherID + '.json')
-        if not hashed_db_filename.exists():
-            kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
+        vlauncher_FN = cfg.VIRTUAL_ROMS_DIR.pjoin('{}_{}.json'.format(cfg.vcategory_name, launcherID))
+        if not vlauncher_FN.exists():
+            kodi.dialog_OK('Virtual launcher JSON file not found.')
             return
-        # [TODO] Move function contents here or use generic JSON load function.
-        cfg.roms = load_VCategory_ROMs_JSON(cfg.vcategory_db_dir, launcherID)
+        cfg.roms = utils.load_JSON_file(vlauncher_FN.getPath())
         if not cfg.roms:
-            kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
+            kodi.notify('Virtual category ROMs JSON empty.')
             return
 
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:

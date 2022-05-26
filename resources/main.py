@@ -1250,9 +1250,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_TITLE_ID),
         },
         {
-            'render_name' : 'Browse by Year',
+            'render_name' : 'Browse ROMs by Year',
             'info' : {
-                'title' : 'Browse by Year',
+                'title' : 'Browse ROMs by Year',
                 'plot' : 'Browse virtual launchers in Year virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1268,9 +1268,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_YEARS_ID),
         },
         {
-            'render_name' : 'Browse by Genre',
+            'render_name' : 'Browse ROMs by Genre',
             'info' : {
-                'title' : 'Browse by Genre',
+                'title' : 'Browse ROMs by Genre',
                 'plot' : 'Browse virtual launchers in Genre virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1286,9 +1286,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_GENRE_ID),
         },
         {
-            'render_name' : 'Browse by Developer',
+            'render_name' : 'Browse ROMs by Developer',
             'info' : {
-                'title' : 'Browse by Developer',
+                'title' : 'Browse ROMs by Developer',
                 'plot' : 'Browse virtual launchers in Developer virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1304,9 +1304,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_DEVELOPER_ID),
         },
         {
-            'render_name' : 'Browse by Number of Players',
+            'render_name' : 'Browse ROMs by Number of Players',
             'info' : {
-                'title' : 'Browse by Number of Players',
+                'title' : 'Browse ROMs by Number of Players',
                 'plot' : 'Browse virtual launchers in Number of Players virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1322,9 +1322,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_NPLAYERS_ID),
         },
         {
-            'render_name' : 'Browse by ESRB Rating',
+            'render_name' : 'Browse ROMs by ESRB Rating',
             'info' : {
-                'title' : 'Browse by ESRB Rating',
+                'title' : 'Browse ROMs by ESRB Rating',
                 'plot' : 'Browse virtual launchers in ESRB Rating virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1340,9 +1340,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_ESRB_ID),
         },
         {
-            'render_name' : 'Browse by User Rating',
+            'render_name' : 'Browse ROMs by User Rating',
             'info' : {
-                'title' : 'Browse by User Rating',
+                'title' : 'Browse ROMs by User Rating',
                 'plot' : 'Browse virtual launchers in User Rating virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1358,9 +1358,9 @@ def create_vcategories_data_Browse_by(cfg):
             'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_RATING_ID),
         },
         {
-            'render_name' : 'Browse by Category',
+            'render_name' : 'Browse ROMs by Category',
             'info' : {
-                'title' : 'Browse by Category',
+                'title' : 'Browse ROMs by Category',
                 'plot' : 'Browse virtual launchers in Category virtual category',
                 'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
@@ -1476,7 +1476,7 @@ def render_vlaunchers_ROM_Collection(cfg):
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
 # Render virtual launchers inside a "Browse By xxxxxx" virtual category.
-def render_vlaunchers_Browse_by(cfg, catID):
+def render_vlaunchers_Browse_by(cfg, categoryID):
     log.debug('render_Browse_by_vlaunchers() Starting...')
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_SIZE)
@@ -1485,39 +1485,15 @@ def render_vlaunchers_Browse_by(cfg, catID):
     misc_clear_AEL_Launcher_Content(cfg)
 
     # --- Load virtual launchers in this category ---
-    vdic = {
-        const.VCATEGORY_BROWSE_BY_TITLE_ID : (cfg.VCAT_TITLE_FILE_PATH, 'Browse by Title'),
-        const.VCATEGORY_BROWSE_BY_YEARS_ID : (cfg.VCAT_YEARS_FILE_PATH, 'Browse by Year'),
-        const.VCATEGORY_BROWSE_BY_GENRE_ID : (cfg.VCAT_GENRE_FILE_PATH, 'Browse by Genre'),
-        const.VCATEGORY_BROWSE_BY_DEVELOPER_ID : (cfg.VCAT_DEVELOPER_FILE_PATH, 'Browse by Developer'),
-        const.VCATEGORY_BROWSE_BY_NPLAYERS_ID : (cfg.VCAT_NPLAYERS_FILE_PATH, 'Browse by Number of Players'),
-        const.VCATEGORY_BROWSE_BY_ESRB_ID : (cfg.VCAT_ESRB_FILE_PATH, 'Browse by ESRB Rating'),
-        const.VCATEGORY_BROWSE_BY_RATING_ID : (cfg.VCAT_RATING_FILE_PATH, 'Browse by User Rating'),
-        const.VCATEGORY_BROWSE_BY_CATEGORY_ID : (cfg.VCAT_CATEGORY_FILE_PATH, 'Browse by Category'),
-    }
-    try:
-        vcat_db_FN, vcat_name = vdic[catID]
-    except:
-        log.error('render_vlaunchers_Browse_by() Wrong catID = {}'.format(catID))
-        kodi.dialog_OK('Wrong catID = {}'.format(catID))
-        return
-
-    # --- If the virtual category has no launchers then render nothing ---
-    # Also, tell the user to update the virtual launcher database
-    if not vcat_db_FN.exists():
-        kodi.dialog_OK('{} database not found. '.format(vcat_name) +
-            'Update the virtual category database first.')
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        return
-    VL = db.load_VCategory_XML(vcat_db_FN)
-    # Check timestamps and warn user if database should be regenerated.
-    if VL['timestamp'] < cfg.update_timestamp:
+    st = kodi.new_status_dic()
+    db.get_launcher_info(cfg, st, categoryID, None)
+    if cfg.outdated_vlauncher_flag:
         kodi.dialog_OK('Categories/Launchers/ROMs were modified. '
             'Virtual category database should be updated!')
 
-    # Render virtual launchers rows.
-    for vlauncher_id in VL['vlaunchers']:
-        vlauncher = VL['vlaunchers'][vlauncher_id]
+    # --- Render virtual launchers rows ---
+    for vlauncher_id in cfg.VL_index['vlaunchers']:
+        vlauncher = cfg.VL_index['vlaunchers'][vlauncher_id]
         vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
         listitem = xbmcgui.ListItem(vlauncher_name)
         listitem.setInfo('video', {
@@ -1528,14 +1504,14 @@ def render_vlaunchers_Browse_by(cfg, catID):
         listitem.setArt({'icon': 'DefaultFolder.png'})
         # Create context menu.
         if cfg.kiosk_mode_disabled:
-            url = aux_url_RP('SEARCH_LAUNCHER', catID, vlauncher_id)
+            url = aux_url_RP('SEARCH_LAUNCHER', categoryID, vlauncher_id)
             commands = [
                 ('Search ROMs in Virtual Launcher', url),
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ]
             listitem.addContextMenuItems(commands, replaceItems = True)
-        url = aux_url('SHOW_ROMS', catID, vlauncher_id)
+        url = aux_url('SHOW_ROMS', categoryID, vlauncher_id)
         xbmcplugin.addDirectoryItem(cfg.addon_handle, url, listitem, True)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
