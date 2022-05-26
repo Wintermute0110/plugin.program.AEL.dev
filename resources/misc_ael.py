@@ -15,10 +15,10 @@
 #
 # Functions in this module only depend on the Python standard library.
 # This module can be loaded anywhere without creating circular dependencies.
-# Optionally this module can include module constants.
-# Optionally this module can include module utils to use the log_*() functions.
+# Optionally this module can include module const and log.
 
 # --- Addon modules ---
+import resources.log as log
 
 # --- Python standard library ---
 
@@ -198,3 +198,42 @@ def print_Collection_slist(collection, sl):
     sl.append("[COLOR violet]s_poster[/COLOR]: '{}'".format(collection['s_poster']))
     sl.append("[COLOR violet]s_clearlogo[/COLOR]: '{}'".format(collection['s_clearlogo']))
     sl.append("[COLOR violet]s_trailer[/COLOR]: '{}'".format(collection['s_trailer']))
+
+# ROM dictionary is edited by Python passing by assigment
+def fix_rom_object(rom):
+    # log.debug('fix_rom_object() Fixing ROM {}'.format(rom['id']))
+    # Add new fields if not present
+    if 'm_nplayers'    not in rom: rom['m_nplayers']    = ''
+    if 'm_esrb'        not in rom: rom['m_esrb']        = ESRB_PENDING
+    if 'disks'         not in rom: rom['disks']         = []
+    if 'pclone_status' not in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
+    if 'cloneof'       not in rom: rom['cloneof']       = ''
+    if 's_3dbox'       not in rom: rom['s_3dbox']       = ''
+    if 'i_extra_ROM'   not in rom: rom['i_extra_ROM']   = False
+    # Delete unwanted/obsolete stuff
+    if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
+    # DB field renamings
+    if 'm_studio' in rom:
+        rom['m_developer'] = rom['m_studio']
+        rom.pop('m_studio')
+
+def fix_Favourite_rom_object(rom):
+    # Fix standard ROM fields
+    fix_rom_object(rom)
+
+    # Favourite ROMs additional stuff
+    if 'args_extra' not in rom: rom['args_extra'] = []
+    if 'non_blocking' not in rom: rom['non_blocking'] = False
+    if 'roms_default_thumb' in rom:
+        rom['roms_default_icon'] = rom['roms_default_thumb']
+        rom.pop('roms_default_thumb')
+    if 'minimize' in rom:
+        rom['toggle_window'] = rom['minimize']
+        rom.pop('minimize')
+
+def aux_check_for_file(str_list, dic_key_name, launcher):
+    path = launcher[dic_key_name]
+    path_FN = utils.FileName(path)
+    if path and not path_FN.exists():
+        problems_found = True
+        str_list.append('{} "{}" not found'.format(dic_key_name, path_FN.getPath()))

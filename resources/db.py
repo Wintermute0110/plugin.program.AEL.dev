@@ -411,13 +411,14 @@ def get_launcher_info(cfg, st, categoryID, launcherID):
     cfg.launcher_is_browse_by = categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST
     cfg.launcher_is_standard = not cfg.launcher_is_vlauncher and not cfg.launcher_is_vcategory
     cfg.launcher_is_virtual = not cfg.launcher_is_standard
+    cfg.categoryID = categoryID
+    cfg.launcherID = launcherID
 
     if cfg.launcher_is_standard:
-        launcher = cfg.launchers[launcherID]
-        roms_base_noext = launcher['roms_base_noext']
-        cfg.roms_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
-        cfg.parents_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
-        cfg.index_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
+        cfg.launcher = cfg.launchers[launcherID]
+        cfg.roms_FN = cfg.ROMS_DIR.pjoin(cfg.launcher['roms_base_noext'] + '.json')
+        cfg.parents_FN = cfg.ROMS_DIR.pjoin(cfg.launcher['roms_base_noext'] + '_parents.json')
+        cfg.index_FN = cfg.ROMS_DIR.pjoin(cfg.launcher['roms_base_noext'] + '_index_PClone.json')
         cfg.window_title = 'Launcher ROM data' # Used in command_view_menu()
         cfg.launcher_label = 'Launcher ROM' # Used in command_view_menu()
 
@@ -635,39 +636,39 @@ def get_launcher_from_ROM(cfg, st_dic, rom): pass
 # * In most cases cfg.roms is a dictionary of dictionaries.
 #   In some cases () cfg.roms is an OrderedDictionary.
 # * If load_pclone_ROMs_flag is True then PClone ROMs are also loaded.
-def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
-    log.debug('load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
+def load_ROMs(cfg, st_dic, load_pclone_ROMs_flag = False):
+    log.debug('load_ROMs() categoryID "{}" | launcherID "{}"'.format(cfg.categoryID, cfg.launcherID))
     # Actual ROM Launcher ------------------------------------------------------------------------
     if cfg.launcher_is_standard:
         if not cfg.roms_FN.exists():
-            kodi_set_st_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
+            kodi.set_st_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
             return
         cfg.roms = utils.load_JSON_file(cfg.roms_FN.getPath())
         if not cfg.roms:
-            kodi_set_st_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
+            kodi.set_st_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
             return
         if not load_pclone_ROMs_flag: return
 
         # Load parent ROMs.
         if not cfg.parents_FN.exists():
-            kodi_set_st_notify(st_dic, 'Parent ROMs JSON not found.')
+            kodi.set_st_notify(st_dic, 'Parent ROMs JSON not found.')
             return
         cfg.roms_parent = utils.load_JSON_file(cfg.parents_FN.getPath())
         if not cfg.roms_parent:
-            kodi_set_st_notify(st_dic, 'Parent ROMs JSON is empty.')
+            kodi.set_st_notify(st_dic, 'Parent ROMs JSON is empty.')
             return
 
         # Load parent/clone index.
         if not cfg.index_FN.exists():
-            kodi_set_st_notify(st_dic, 'PClone index JSON not found.')
+            kodi.set_st_notify(st_dic, 'PClone index JSON not found.')
             return
         cfg.pclone_index = utils.load_JSON_file(cfg.index_FN.getPath())
         if not cfg.pclone_index:
-            kodi_set_st_notify(st_dic, 'PClone index dict is empty.')
+            kodi.set_st_notify(st_dic, 'PClone index dict is empty.')
             return
 
     # Virtual launchers --------------------------------------------------------------------------
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+    elif cfg.launcher_is_vlauncher and cfg.launcherID == const.VLAUNCHER_FAVOURITES_ID:
         # Transform list of dictionaries into an OrderedDict
         raw_data = utils.load_JSON_file(cfg.roms_FN.getPath())
         cfg.roms = raw_data[1] if raw_data else {}
@@ -678,7 +679,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         cfg.control_str = raw_data[0]['control']
         cfg.version_int = raw_data[0]['version']
 
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
+    elif cfg.launcher_is_vlauncher and cfg.launcherID == const.VLAUNCHER_RECENT_ID:
         # Collection ROMs are a list od dictionaries, not a dictionary as usual in other DBs.
         # Transform list of dictionaries into an OrderedDict to keep the order.
         raw_data = utils.load_JSON_file(cfg.roms_FN.getPath())
@@ -690,7 +691,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         cfg.control_str = raw_data[0]['control']
         cfg.version_int = raw_data[0]['version']
 
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
+    elif cfg.launcher_is_vlauncher and cfg.launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
         raw_data = utils.load_JSON_file(cfg.roms_FN.getPath())
         cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
@@ -700,7 +701,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         cfg.control_str = raw_data[0]['control']
         cfg.version_int = raw_data[0]['version']
 
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+    elif cfg.launcher_is_vcategory and cfg.categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         # Collection ROMs are a list, not a dictionary as usual in other DBs.
         # Convert the list to an OrderedDict() to keep the order.
         raw_data = utils.load_JSON_file(cfg.roms_FN.getPath())
@@ -723,7 +724,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             kodi.notify('Virtual category ROMs JSON empty.')
             return
 
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
+    elif cfg.launcher_is_vcategory and cfg.categoryID == const.VCATEGORY_AOS_ID:
         if not cfg.roms_FN.exists():
             kodi_set_st_nwarn(st_dic, '{} database not available yet.'.format(db_platform))
             return
@@ -756,45 +757,53 @@ def save_vlauncher_index(cfg, st, categoryID, launcherID):
         raise RuntimeError
 
 # Old code from main.command_edit_rom()
-def save_ROMs(cfg, st, categoryID, launcherID):
-    log.debug('save_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
+def save_ROMs(cfg, st):
+    log.debug('save_ROMs() categoryID "{}" | launcherID "{}"'.format(cfg.categoryID, cfg.launcherID))
     # Actual ROM Launcher ------------------------------------------------------------------------
     if cfg.launcher_is_standard:
         # Save categories/launchers to update main timestamp.
         # Also update changed launcher timestamp.
-        cfg.launchers[launcherID]['num_roms'] = len(roms)
-        cfg.launchers[launcherID]['timestamp_launcher'] = _t = time.time()
-        pDialog = KodiProgressDialog()
-        pDialog.startProgress('Saving ROM JSON database...')
-        # Move code of this function here?
-        write_ROMs_JSON(cfg.ROMS_DIR, cfg.launchers[launcherID], roms)
-        pDialog.updateProgress(90)
-        write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
-        pDialog.endProgress()
+        cfg.launchers[cfg.launcherID]['num_roms'] = len(cfg.roms)
+        cfg.launchers[cfg.launcherID]['timestamp_launcher'] = _t = time.time()
+        pdiag = kodi.ProgressDialog()
+        pdiag.startProgress('Saving ROM JSON database...')
+        # Move code of this function here???
+        write_ROMs_JSON(cfg.ROMS_DIR, cfg.launchers[cfg.launcherID], cfg.roms)
+        
+        pdiag.updateProgress(90)
+        write_catfile(cfg)
+        pdiag.endProgress()
 
         # If launcher is audited then synchronise the edit ROM in the list of parents.
-        if launcher['audit_state'] == AUDIT_STATE_ON:
+        if cfg.launcher['audit_state'] == const.AUDIT_STATE_ON:
             log.debug('Updating ROM in Parents JSON')
-            pDialog.startProgress('Loading Parents JSON...')
+            pdiag.startProgress('Loading Parents JSON...')
             json_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents.json')
             parent_roms = utils.load_JSON_file(json_FN.getPath())
             # Only edit if ROM is in parent list
             if romID in parent_roms:
                 log.debug('romID in Parent JSON. Updating...')
                 parent_roms[romID] = roms[romID]
-            pDialog.updateProgress(10, 'Saving Parents JSON...')
-            utils.write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, parent_roms)
-            pDialog.endProgress()
+            pdiag.updateProgress(10, 'Saving Parents JSON...')
+            utils.write_JSON_file(cfg.ROMS_DIR, parents_roms_base_noext, parent_roms)
+            pdiag.endProgress()
 
     # Virtual launchers --------------------------------------------------------------------------
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+    elif cfg.launcher_is_vlauncher and cfg.launcherID == const.VLAUNCHER_FAVOURITES_ID:
         control_dic = {
             'control' : 'Advanced Emulator Launcher Favourite ROMs',
             'version' : const.AEL_STORAGE_FORMAT,
         }
         utils.write_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath(), [control_dic, cfg.roms])
 
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+    elif cfg.launcher_is_vlauncher and cfg.launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
+        control_dic = {
+            'control' : 'Advanced Emulator Launcher Favourite ROMs',
+            'version' : const.AEL_STORAGE_FORMAT,
+        }
+        utils.write_JSON_file(cfg.MOST_PLAYED_FILE_PATH.getPath(), [control_dic, cfg.roms])
+
+    elif cfg.launcher_is_vcategory and cfg.categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         # Convert back the OrderedDict into a list and save Collection
         collection_rom_list = [cfg.roms[key] for key in cfg.roms]
         json_file_path = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
@@ -811,9 +820,17 @@ def save_ROMs(cfg, st, categoryID, launcherID):
 # ------------------------------------------------------------------------------------------------
 # Categories/Launchers
 # ------------------------------------------------------------------------------------------------
-# Write to disk categories.xml
-def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
-    log.debug('write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
+# Write to disk categories.xml/launchers.xml
+def write_catfile(cfg, update_timestamp = 0.0):
+    db_file = cfg.CATEGORIES_FILE_PATH
+    categories = cfg.categories
+    launchers = cfg.launchers
+    log.debug('write_catfile() Writing {}'.format(db_file.getOriginalPath()))
+
+    # time.time() returns a float. Usually precision is much better than a second, but not always.
+    # See https://docs.python.org/2/library/time.html#time.time
+    # NOTE When updating reports timestamp of categories/launchers must not be modified.
+    _t = update_timestamp if update_timestamp else time.time()
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -824,19 +841,12 @@ def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0
     sl = [
         '<?xml version="1.0" encoding="utf-8"?>',
         '<advanced_emulator_launcher version="{}">'.format(const.AEL_STORAGE_FORMAT),
+        # Write a timestamp when file is created.
+        # This enables the Virtual Launchers to know if it's time for an update.
+        '<control>',
+        misc.XML('update_timestamp', const.text_type(_t)),
+        '</control>',
     ]
-
-    # --- Control information ---
-    # time.time() returns a float. Usually precision is much better than a second, but not always.
-    # See https://docs.python.org/2/library/time.html#time.time
-    # NOTE When updating reports timestamp of categories/launchers must not be modified.
-    _t = time.time() if not update_timestamp else update_timestamp
-
-    # Write a timestamp when file is created. This enables the Virtual Launchers to know if
-    # it's time for an update.
-    sl.append('<control>')
-    sl.append(misc.XML('update_timestamp', const.text_type(_t)))
-    sl.append('</control>')
 
     # --- Create Categories XML list ---
     for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
@@ -944,24 +954,26 @@ def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0
         sl.append(misc.XML('path_trailer', launcher['path_trailer']))
         sl.append('</launcher>')
     sl.append('</advanced_emulator_launcher>')
-    utils.write_slist_to_file(categories_file.getPath(), sl)
+    utils.write_slist_to_file(db_file.getPath(), sl)
 
-# Loads categories.xml from disk and fills dictionary self.categories.
-# Returns the update_timestamp of the XML file.
-# If IO error then returns None.
-def load_catfile(categories_file, categories, launchers):
-    __debug_xml_parser = 0
+# Loads categories.xml/launchers.xml from disk and fills dictionaries in cfg object.
+# Returns None.
+def load_catfile(cfg):
+    __debug_parser = 0
+    db_file = cfg.CATEGORIES_FILE_PATH
+    categories = cfg.categories
+    launchers = cfg.launchers
 
-    xml_tree = utils.load_XML_to_ET(categories_file.getPath())
+    xml_tree = utils.load_XML_to_ET(db_file.getPath())
     if not xml_tree: return None
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
-        if __debug_xml_parser: log.debug('Root child {}'.format(category_element.tag))
+        if __debug_parser: log.debug('Root child {}'.format(category_element.tag))
 
         if category_element.tag == 'control':
             for control_child in category_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text)
+                    cfg.update_timestamp = float(control_child.text)
 
         elif category_element.tag == 'category':
             # Default values
@@ -973,7 +985,7 @@ def load_catfile(categories_file, categories, launchers):
                 text_XML = category_child.text if category_child.text is not None else ''
                 text_XML = misc.unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
 
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
@@ -993,7 +1005,7 @@ def load_catfile(categories_file, categories, launchers):
                 text_XML = category_child.text if category_child.text is not None else ''
                 text_XML = misc.unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
 
                 if xml_tag == 'args_extra':
                     # Transform list() datatype
@@ -1014,9 +1026,8 @@ def load_catfile(categories_file, categories, launchers):
                 else:
                     launcher[xml_tag] = text_XML
             launchers[launcher['id']] = launcher
-    # log.debug('fs_load_catfile() Loaded {} categories'.format(len(categories)))
-    # log.debug('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
-    return update_timestamp
+    # log.debug('load_catfile() Loaded {} categories'.format(len(categories)))
+    # log.debug('load_catfile() Loaded {} launchers'.format(len(launchers)))
 
 # -------------------------------------------------------------------------------------------------
 # Standard ROM databases
@@ -1116,6 +1127,10 @@ def rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
         log.debug('RENAMED OP {}'.format(old_roms_DAT_FN.getOriginalPath()))
         log.debug('   into OP {}'.format(new_roms_DAT_FN.getOriginalPath()))
 
+# [TODO]
+#
+# Unify this and put all the information in a JSON file.
+# Then remove this function and integrate in load_ROMs()/save_ROMs()
 def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Get file names
     roms_base_noext = launcher['roms_base_noext']
@@ -1132,7 +1147,7 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Note that this is ignored when reading the file.
     sl = []
     sl.append('<?xml version="1.0" encoding="utf-8"?>')
-    sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
+    sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(const.AEL_STORAGE_FORMAT))
     sl.append('<launcher>')
     sl.append(misc.XML('id', launcher['id']))
     sl.append(misc.XML('m_name', launcher['m_name']))
