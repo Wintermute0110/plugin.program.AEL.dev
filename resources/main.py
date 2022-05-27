@@ -89,7 +89,7 @@ class Configuration:
         self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
 
         # --- Databases and reports ---
-        self.CATEGORIES_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('categories.xml')
+        self.CATEGORIES_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('launchers.xml')
         self.FAV_JSON_FILE_PATH        = self.ADDON_DATA_DIR.pjoin('favourites.json')
         self.COLLECTIONS_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('collections.xml')
         self.VCAT_TITLE_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('vcat_title.xml')
@@ -298,9 +298,8 @@ def run_plugin(addon_argv):
     #         'A default categories.xml has been created. You can now customize it to your needs.')
     #     _cat_create_default()
     #     fs_write_catfile(CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
-
     # --- Load categories.xml and fill categories and launchers dictionaries ---
-    db.load_catfile(cfg)
+    # db.load_catfile(cfg)
 
     # --- Get addon command ---
     command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
@@ -831,6 +830,10 @@ def render_main_window(cfg):
     misc_set_all_sorting_methods(cfg)
     misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
     misc_clear_AEL_Launcher_Content(cfg)
+
+    # Load launchers.xml and set MODE to Normal Launcher.
+    st = kodi.new_status_dic()
+    db.load_db_index(cfg, st)
 
     # --- Render categories/launchers in classic mode or in flat mode ---
     # This code must never fail. If categories.xml cannot be read because an upgrade
@@ -1386,6 +1389,10 @@ def render_launchers_in_category(cfg, categoryID):
     misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
     misc_clear_AEL_Launcher_Content(cfg)
 
+    # Load launchers.xml and set MODE to Normal Launcher.
+    st = kodi.new_status_dic()
+    db.load_db_index(cfg, st, categoryID)
+
     # If the category has no launchers then render nothing
     launcher_IDs = []
     for launcher_id in cfg.launchers:
@@ -1485,7 +1492,7 @@ def render_vlaunchers_Browse_by(cfg, categoryID):
 
     # --- Load virtual launchers in this category ---
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, st, categoryID, None)
+    db.load_vlauncher_index(cfg, st, categoryID)
     if cfg.outdated_vlauncher_flag:
         kodi.dialog_OK('Categories/Launchers/ROMs were modified. '
             'Virtual category database should be updated!')
@@ -1785,8 +1792,9 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Set st dictionary to notify if no ROMs to render.
     loading_ticks_start = time.time()
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, st, categoryID, launcherID)
-    db.load_ROMs(cfg, st)
+    db.load_db_index(cfg, st, categoryID, launcherID)
+    db.get_ROM_db_filenames(cfg, st, categoryID, launcherID)
+    db.load_ROMs(cfg, st)    
     if kodi.is_error_status(st):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         kodi_display_status_message(st)
@@ -5443,7 +5451,7 @@ def command_update_browse_by_db_single(cfg, virtual_categoryID, all_roms_externa
 
     # Load Virtual Launcher index and get information.
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, st, virtual_categoryID, None)
+    db.load_vlauncher_index(cfg, st, virtual_categoryID)
 
     # --- Delete previous hashed database JSON files ---
     aux_clean_browse_by_JSON_files(cfg, cfg.vcategory_name)
@@ -6723,7 +6731,8 @@ def exec_utils_check_database(cfg):
 
     # Open Categories/Launchers XML. XML should be updated automatically on load.
     pdiag.startProgress('Checking Categories/Launchers...')
-    db.load_catfile(cfg)
+    st = kodi.new_status_dic()
+    db.load_db_index(cfg, st)
     for category_id, category in cfg.categories.items():
         # category = cfg.categories[category_id]
         # Fix s_thumb -> s_icon renaming
@@ -6758,23 +6767,23 @@ def exec_utils_check_database(cfg):
         if launcher['default_clearlogo'] == 's_flyer':  launcher['default_clearlogo'] = 's_poster'
         if launcher['default_controller'] == 's_flyer': launcher['default_controller'] = 's_poster'
     # Save categories.xml/launchers.xml to update timestamp.
-    db.write_catfile(cfg)
+    db.write_launchers_XML(cfg)
     pdiag.endProgress()
 
     # Traverse all launchers. Load ROMs and check every ROMs.
     pdiag.startProgress('Checking Launcher ROMs...', len(cfg.launchers))
-    for launcher_id, launcher in cfg.launchers.items():
+    for launcherID, launcher in cfg.launchers.items():
         pdiag.updateProgressInc()
         log.debug('exec_utils_check_database() Checking Launcher "{}"'.format(launcher['m_name']))
         # Load and fix standard ROM database.
         st = kodi.new_status_dic()
-        db.get_launcher_info(cfg, st, launcher['categoryID'], launcher_id)
+        db.get_ROM_db_filenames(cfg, st, launcher['categoryID'], launcherID)
         db.load_ROMs(cfg, st)
         for rom_id, rom in cfg.roms.items(): misc_ael.fix_rom_object(rom)
         db.save_ROMs(cfg, st)
 
         # >>> If exists, load and fix Parent ROM database.
-        # parents_FN = cfg.ROMS_DIR.pjoin(self.launchers[launcher_id]['roms_base_noext'] + '_parents.json')
+        # parents_FN = cfg.ROMS_DIR.pjoin(self.launchers[launcherID]['roms_base_noext'] + '_parents.json')
         # if parents_FN.exists():
         #     roms = utils_load_JSON_file(parents_FN.getPath())
         #     for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
@@ -6783,12 +6792,13 @@ def exec_utils_check_database(cfg):
         # This updates timestamps and forces regeneration of Virtual Launchers.
         launcher['timestamp_launcher'] = time.time()
     # Save categories.xml because launcher timestamps changed.
-    db.write_catfile(cfg)
+    db.write_launchers_XML(cfg)
     pdiag.endProgress()
 
     # Load Favourite ROMs and update JSON
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, st, None, const.VLAUNCHER_FAVOURITES_ID)
+    db.load_db_index(cfg, st, None, const.VLAUNCHER_FAVOURITES_ID)
+    db.get_ROM_db_filenames(cfg, st, None, const.VLAUNCHER_FAVOURITES_ID)
     db.load_ROMs(cfg, st)
     pdiag.startProgress('Checking Favourite ROMs...', len(cfg.roms))
     for rom_id, rom in cfg.roms.items():
@@ -6799,34 +6809,31 @@ def exec_utils_check_database(cfg):
 
     # Load Recently Played ROMs and check/update.
     pdiag.startProgress('Checking Recently Played ROMs...')
-    # recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
-    for rom in recent_roms_list: self._misc_fix_Favourite_rom_object(rom)
-    # fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, recent_roms_list)
+    st = kodi.new_status_dic()
+    db.load_db_index(cfg, st, None, const.VLAUNCHER_RECENT_ID)
+    db.get_ROM_db_filenames(cfg, st, None, const.VLAUNCHER_RECENT_ID)
+    db.load_ROMs(cfg, st)
+    for rom_id, rom in cfg.roms.items(): misc_ael.fix_Favourite_rom_object(rom)
+    db.save_ROMs(cfg, st)
     pdiag.endProgress()
 
     # Load Most Played ROMs and check/update.
     pdiag.startProgress('Checking Most Played ROMs...')
-    # most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
     st = kodi.new_status_dic()
-    db.get_launcher_info(cfg, st, None, const.VLAUNCHER_MOST_PLAYED_ID)
+    db.load_db_index(cfg, st, None, const.VLAUNCHER_MOST_PLAYED_ID)
+    db.get_ROM_db_filenames(cfg, st, None, const.VLAUNCHER_MOST_PLAYED_ID)
     db.load_ROMs(cfg, st)
-    for rom_id, rom in cfg.roms.items():
-        misc_ael.fix_Favourite_rom_object(rom)
-    # fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, most_played_roms)
+    for rom_id, rom in cfg.roms.items(): misc_ael.fix_Favourite_rom_object(rom)
     db.save_ROMs(cfg, st)
     pdiag.endProgress()
 
-    # Carry on from this point
-    return
-
     # Traverse every ROM Collection database and check/update Favourite ROMs.
-    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-    pdiag.startProgress('Checking Collection ROMs...', len(COL['collections']))
-    for collection_id in COL['collections']:
+    st = kodi.new_status_dic()
+    db.load_db_index(cfg, st, const.VCATEGORY_ROM_COLLECTION_ID)
+    pdiag.startProgress('Checking Collection ROMs...', len(cfg.collections))
+    for collectionID, collection in cfg.collections.items():
         pdiag.updateProgressInc()
-
         # Fix collection
-        collection = COL['collections'][collection_id]
         if 'default_thumb' in collection:
             collection['default_icon'] = collection['default_thumb']
             collection.pop('default_thumb')
@@ -6850,16 +6857,33 @@ def exec_utils_check_database(cfg):
         if collection['default_clearlogo'] == 's_flyer': collection['default_clearlogo'] = 's_poster'
 
         # Fix collection ROMs
-        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-        for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
-        fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
-    fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
+        db.get_ROM_db_filenames(cfg, st, const.VCATEGORY_ROM_COLLECTION_ID, collectionID)
+        db.load_ROMs(cfg, st)
+        for rom_id, rom in cfg.roms.items(): misc_ael.fix_Favourite_rom_object(rom)
+        db.save_ROMs(cfg, st)
+    db.write_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH, cfg.collections)
+    # db.save_collections_index(cfg, st)
+    pdiag.endProgress()
+
+    # Also fix ROMs in virtual launchers?
+    # It is not worth it because they can be regenerated. However, it is a good exercise to test
+    # the new load/save ROM API.
+    pdiag.startProgress('Checking Browse By ROMs...', len(const.VCATEGORY_BROWSE_BY_ID_LIST))
+    for categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST:
+        pdiag.updateProgressInc()
+        st = kodi.new_status_dic()
+        db.load_db_index(cfg, st, categoryID)
+        for launcherID in cfg.vlaunchers:
+            db.get_ROM_db_filenames(cfg, st, categoryID, launcherID)
+            db.load_ROMs(cfg, st)
+            for rom_id, rom in cfg.roms.items(): misc_ael.fix_Favourite_rom_object(rom)
+            db.save_ROMs(cfg, st)
+        # db.write_VCategory_XML(cfg, st)
     pdiag.endProgress()
 
     # So long and thanks for all the fish.
     kodi.notify('All databases checked')
-    log.debug('_command_check_database() Exiting')
+    log.debug('exec_utils_check_database() Exiting')
 
 def exec_utils_check_launchers(cfg):
     log.info('exec_utils_check_launchers() Checking all Launchers configuration ...')
@@ -8344,14 +8368,14 @@ def run_before_execution(self, rom_title, toggle_screen_flag):
     # id="media_state_action" default="0" values="Stop|Pause|Let Play"
     media_state_action = self.settings['media_state_action']
     media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-    log.debug('_run_before_execution() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
+    log.debug('run_before_execution() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
     if media_state_action == 0 and xbmc.Player().isPlaying():
-        log.debug('_run_before_execution() Calling xbmc.Player().stop()')
+        log.debug('run_before_execution() Calling xbmc.Player().stop()')
         xbmc.Player().stop()
         xbmc.sleep(100)
         self.kodi_was_playing = True
     elif media_state_action == 1 and xbmc.Player().isPlaying():
-        log.debug('_run_before_execution() Calling xbmc.Player().pause()')
+        log.debug('run_before_execution() Calling xbmc.Player().pause()')
         xbmc.Player().pause()
         xbmc.sleep(100)
         self.kodi_was_playing = True
@@ -8360,13 +8384,13 @@ def run_before_execution(self, rom_title, toggle_screen_flag):
     # See http://forum.kodi.tv/showthread.php?tid=164522
     self.kodi_audio_suspended = False
     if self.settings['suspend_audio_engine']:
-        log.debug('_run_before_execution() Suspending Kodi audio engine')
+        log.debug('run_before_execution() Suspending Kodi audio engine')
         xbmc.audioSuspend()
         xbmc.enableNavSounds(False)
         xbmc.sleep(100)
         self.kodi_audio_suspended = True
     else:
-        log.debug('_run_before_execution() DO NOT suspend Kodi audio engine')
+        log.debug('run_before_execution() DO NOT suspend Kodi audio engine')
 
     # --- Force joystick suspend if requested in "Settings" --> "Advanced"
     # See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
@@ -8374,7 +8398,7 @@ def run_before_execution(self, rom_title, toggle_screen_flag):
     # See https://forum.kodi.tv/showthread.php?tid=313615
     self.kodi_joystick_suspended = False
     # if self.settings['suspend_joystick_engine']:
-        # log.debug('_run_before_execution() Suspending Kodi joystick engine')
+        # log.debug('run_before_execution() Suspending Kodi joystick engine')
         # >> Research. Get the value of the setting first
         # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
         # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
@@ -8392,42 +8416,42 @@ def run_before_execution(self, rom_title, toggle_screen_flag):
         # log.debug('Response  ''{}'''.format(response))
         # self.kodi_joystick_suspended = True
 
-        # log.error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+        # log.error('run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
     # else:
-        # log.debug('_run_before_execution() DO NOT suspend Kodi joystick engine')
+        # log.debug('run_before_execution() DO NOT suspend Kodi joystick engine')
 
     # --- Toggle Kodi windowed/fullscreen if requested ---
     if toggle_screen_flag:
-        log.debug('_run_before_execution() Toggling Kodi fullscreen')
+        log.debug('run_before_execution() Toggling Kodi fullscreen')
         kodi_toogle_fullscreen()
     else:
-        log.debug('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
+        log.debug('run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
     # Disable screensaver
     if self.settings['suspend_screensaver']:
         kodi_disable_screensaver()
     else:
         screensaver_mode = kodi_get_screensaver_mode()
-        log.debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+        log.debug('run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
 
     # --- Pause Kodi execution some time ---
     delay_tempo_ms = self.settings['delay_tempo']
-    log.debug('_run_before_execution() Pausing {} ms'.format(delay_tempo_ms))
+    log.debug('run_before_execution() Pausing {} ms'.format(delay_tempo_ms))
     xbmc.sleep(delay_tempo_ms)
-    log.debug('_run_before_execution() function ENDS')
+    log.debug('run_before_execution() function ENDS')
 
 def run_after_execution(self, toggle_screen_flag):
     # --- Stop Kodi some time ---
     delay_tempo_ms = self.settings['delay_tempo']
-    log.debug('_run_after_execution() Pausing {} ms'.format(delay_tempo_ms))
+    log.debug('run_after_execution() Pausing {} ms'.format(delay_tempo_ms))
     xbmc.sleep(delay_tempo_ms)
 
     # --- Toggle Kodi windowed/fullscreen if requested ---
     if toggle_screen_flag:
-        log.debug('_run_after_execution() Toggling Kodi fullscreen')
+        log.debug('run_after_execution() Toggling Kodi fullscreen')
         kodi_toogle_fullscreen()
     else:
-        log.debug('_run_after_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
+        log.debug('run_after_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
     # --- Resume audio engine if it was suspended ---
     # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
@@ -8435,41 +8459,41 @@ def run_after_execution(self, toggle_screen_flag):
     # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
     #   ERROR: ActiveAE::Resume - failed to init
     if self.kodi_audio_suspended:
-        log.debug('_run_after_execution() Kodi audio engine was suspended before launching')
-        log.debug('_run_after_execution() Resuming Kodi audio engine')
+        log.debug('run_after_execution() Kodi audio engine was suspended before launching')
+        log.debug('run_after_execution() Resuming Kodi audio engine')
         xbmc.audioResume()
         xbmc.enableNavSounds(True)
         xbmc.sleep(100)
     else:
-        log.debug('_run_after_execution() DO NOT resume Kodi audio engine')
+        log.debug('run_after_execution() DO NOT resume Kodi audio engine')
 
     # --- Resume joystick engine if it was suspended ---
     if self.kodi_joystick_suspended:
-        log.debug('_run_after_execution() Kodi joystick engine was suspended before launching')
-        log.debug('_run_after_execution() Resuming Kodi joystick engine')
+        log.debug('run_after_execution() Kodi joystick engine was suspended before launching')
+        log.debug('run_after_execution() Resuming Kodi joystick engine')
         # response = xbmc.executeJSONRPC(c_str)
         # log.debug('JSON      ''{}'''.format(c_str))
         # log.debug('Response  ''{}'''.format(response))
-        log.debug('_run_before_execution() Not supported on Kodi Krypton!')
+        log.debug('run_after_execution() Not supported on Kodi Krypton!')
     else:
-        log.debug('_run_after_execution() DO NOT resume Kodi joystick engine')
+        log.debug('run_after_execution() DO NOT resume Kodi joystick engine')
 
     # Restore screensaver status.
     if self.settings['suspend_screensaver']:
         kodi_restore_screensaver()
     else:
         screensaver_mode = kodi_get_screensaver_mode()
-        log.debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
+        log.debug('run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
 
     # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
     media_state_action = self.settings['media_state_action']
     media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-    log.debug('_run_after_execution() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
-    log.debug('_run_after_execution() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
+    log.debug('run_after_execution() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
+    log.debug('run_after_execution() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
     if self.kodi_was_playing and media_state_action == 1:
-        log.debug('_run_after_execution() Calling xbmc.Player().play()')
+        log.debug('run_after_execution() Calling xbmc.Player().play()')
         xbmc.Player().play()
-    log.debug('_run_after_execution() function ENDS')
+    log.debug('run_after_execution() function ENDS')
 
 # ROM scanner. Called when user chooses Launcher CM, "Add ROMs" -> "Scan for new ROMs"
 def command_rom_scanner(self, launcherID):
@@ -8481,7 +8505,7 @@ def command_rom_scanner(self, launcherID):
     launcher_exts = launcher['romext']
     rom_extra_path = utils.FileName(launcher['romextrapath'])
     launcher_multidisc = launcher['multidisc']
-    log.info('_roms_import_roms() Starting ROM scanner ...')
+    log.info('command_rom_scanner() Starting ROM scanner ...')
     log.info('Launcher name  "{}"'.format(launcher['m_name']))
     log.info('Launcher ID    "{}"'.format(launcher['id']))
     log.info('ROM path       "{}"'.format(rom_path.getPath()))
