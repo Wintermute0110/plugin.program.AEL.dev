@@ -2144,12 +2144,11 @@ class VirtualCollectionFactory(object):
     @staticmethod
     def create_by_category(vcategory_id:str, collection_value:str) -> VirtualCollection:
 
-        unique_id = text.misc_generate_random_SID()
         return VirtualCollection({
-            'id' : '{}_{}'.format(vcategory_id, unique_id),
+            'id' : f'{vcategory_id}_{collection_value}',
             'parent_id': vcategory_id,
             'm_name' : collection_value,
-            'plot': "Browse ROMs filtered on '{}'".format(collection_value),
+            'plot': f"Browse ROMs filtered on '{collection_value}'",
             'collection_value': collection_value,
             'finished': settings.getSettingAsBool('display_hide_vcategories')
         }, [

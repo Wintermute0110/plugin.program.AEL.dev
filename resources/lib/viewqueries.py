@@ -25,7 +25,6 @@ from __future__ import division
 
 import logging
 import typing
-import collections
 from urllib.parse import urlencode
 
 # AKL modules
@@ -34,7 +33,9 @@ from akl.utils import kodi
 
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator
-from resources.lib.repositories import ViewRepository
+from resources.lib.commands import view_rendering_commands
+from resources.lib.repositories import ViewRepository, UnitOfWork, ROMCollectionRepository, ROMsRepository
+from resources.lib.domain import VirtualCollectionFactory
 
 logger = logging.getLogger(__name__)
 #
@@ -100,12 +101,18 @@ def qry_get_root_items():
     return container
 
 #
-# View items.
+# View pre-rendered items.
 #
 def qry_get_view_items(view_id: str, is_virtual_view=False):
     views_repository = ViewRepository(globals.g_PATHS)
     container = views_repository.find_items(view_id, is_virtual_view)
     return container
+
+#
+# View database unrendered items.
+#
+def qry_get_database_view_items(category_id: str, collection_value: str):
+    return view_rendering_commands.cmd_render_virtual_collection(category_id, collection_value)
 
 #
 # Utilities items
@@ -155,7 +162,7 @@ def qry_get_utilities_items():
     })
     container['items'].append({
         'name': 'Rebuild virtual views',
-        'url': globals.router.url_for_path('execute/command/render_listitem_views'),
+        'url': globals.router.url_for_path('execute/command/render_virtual_views'),
         'is_folder': False,
         'type': 'video',
         'info': {

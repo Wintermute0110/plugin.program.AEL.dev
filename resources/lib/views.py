@@ -139,6 +139,20 @@ def vw_route_render_virtual_view(view_id: str):
         render_list_items(container, container_context_items, filter)
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+    
+@router.route('/collection/virtual/<category_id>/items')
+def vw_route_render_virtual_items_view(category_id: str):
+    collection_value = router.args["value"][0]
+    container               = viewqueries.qry_get_database_view_items(category_id, collection_value)
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+
+    filter_type = router.args['filter'][0] if 'filter' in router.args else None
+    filter_term = router.args['term'][0] if 'term' in router.args else None
+    filter = vw_create_filter(filter_type, filter_term)
+    
+    render_list_items(container, container_context_items, filter)
+        
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
        
 # -------------------------------------------------------------------------------------------------
 # Utilities and Global reports

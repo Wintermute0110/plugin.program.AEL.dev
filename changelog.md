@@ -1,4 +1,5 @@
 ## Current
+- Virtual categories now render items from database
 - Minor bugfixes
 - Updated dependency  
 
