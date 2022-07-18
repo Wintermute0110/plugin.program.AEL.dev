@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------      
 def cmd_set_launcher_args(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
+    rom_id:str           = args['rom_id'] if 'rom_id' in args else None
     launcher_id:str      = args['akl_addon_id'] if 'akl_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     launcher_settings    = args['settings'] if 'settings' in args else None
@@ -47,27 +48,40 @@ def cmd_set_launcher_args(args) -> bool:
     with uow:
         addon_repository = AelAddonRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
+        rom_repository = ROMsRepository(uow)
         
         addon = addon_repository.find_by_addon_id(addon_id, constants.AddonType.LAUNCHER)
-        romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
-        if launcher_id is None:
-            romcollection.add_launcher(addon, launcher_settings, True)
-        else: 
-            launcher = romcollection.get_launcher(launcher_id)
-            launcher.set_settings(launcher_settings)
+        if romcollection_id is not None:
+            romcollection = romcollection_repository.find_romcollection(romcollection_id)
+            if launcher_id is None:
+                romcollection.add_launcher(addon, launcher_settings, True)
+            else: 
+                launcher = romcollection.get_launcher(launcher_id)
+                launcher.set_settings(launcher_settings)
+                
+            if 'romcollection' in launcher_settings \
+                and kodi.dialog_yesno('Do you want to overwrite collection metadata properties with values from the launcher?'):
+                romcollection.import_data_dic(launcher_settings['romcollection'])
+                metadata_updated = True
+                
+            romcollection_repository.update_romcollection(romcollection)
+            uow.commit()
             
-        if 'romcollection' in launcher_settings \
-            and kodi.dialog_yesno('Do you want to overwrite collection metadata properties with values from the launcher?'):
-            romcollection.import_data_dic(launcher_settings['romcollection'])
-            metadata_updated = True
-            
-        romcollection_repository.update_romcollection(romcollection)
-        uow.commit()
+            if metadata_updated: AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
+            AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
+        else:
+            rom = rom_repository.find_rom(rom_id)
+            if launcher_id is None:
+                rom.add_launcher(addon, launcher_settings, True)
+            else: 
+                launcher = rom.get_launcher(launcher_id)
+                launcher.set_settings(launcher_settings)
+                
+            rom_repository.update_rom(rom)
+            uow.commit()
     
-    kodi.notify('Configured launcher {}'.format(addon.get_name()))
-    if metadata_updated: AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
-    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
+    kodi.notify(f'Configured launcher {addon.get_name()}')
     return True
 
 # -------------------------------------------------------------------------------------------------

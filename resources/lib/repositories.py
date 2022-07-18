@@ -431,6 +431,10 @@ QUERY_SELECT_ROOT_CATEGORY_ASSETS       = "SELECT * FROM vw_category_assets WHER
 QUERY_SELECT_CATEGORIES_BY_PARENT       = "SELECT * FROM vw_categories WHERE parent_id = ? ORDER BY m_name"
 QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT  = "SELECT * FROM vw_category_assets WHERE parent_id = ?"
 
+QUERY_SELECT_CATEGORIES_BY_ROM          = "SELECT c.* FROM vw_categories AS c INNER JOIN roms_in_category AS rc ON rc.category_id = c.id WHERE rc.rom_id = ?"
+QUERY_SELECT_CATEGORIES_ASSETS_BY_ROM   = "SELECT ca.* FROM vw_category_assets AS ca INNER JOIN roms_in_category AS rc ON rc.category_id = ca.category_id WHERE rc.rom_id = ?"
+
+
 QUERY_INSERT_CATEGORY             = """
                                     INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
                                     VALUES (?,?,?,?,?,?,?,?,?)
@@ -442,6 +446,11 @@ QUERY_UPDATE_CATEGORY             = """
                                     """
 QUERY_INSERT_CATEGORY_ASSET       = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
 QUERY_DELETE_CATEGORY             = "DELETE FROM category WHERE id = ?"
+	
+QUERY_INSERT_ROM_IN_CATEGORY       = "INSERT INTO roms_in_category (rom_id, category_id) VALUES (?,?)"
+QUERY_REMOVE_ROM_FROM_CATEGORY     = "DELETE FROM roms_in_category WHERE rom_id = ? AND category_id = ?"
+QUERY_REMOVE_ROMS_FROM_CATEGORY    = "DELETE FROM roms_in_category WHERE category_id = ?"
+
 class CategoryRepository(object):
 
     def __init__(self, uow: UnitOfWork):
@@ -510,7 +519,21 @@ class CategoryRepository(object):
                 assets.append(Asset(asset_data))    
                 
             yield Category(category_data, assets)
-
+        
+    def find_categories_by_rom(self, rom_id: str) -> typing.Iterator[Category]:
+        self._uow.execute(QUERY_SELECT_CATEGORIES_BY_ROM, rom_id)
+        result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_CATEGORIES_ASSETS_BY_ROM, rom_id)
+        assets_result_set = self._uow.result_set()
+        
+        for category_data in result_set:
+            assets = []
+            for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
+                assets.append(Asset(asset_data))    
+                
+            yield Category(category_data, assets)            
+    
     def insert_category(self, category_obj: Category, parent_obj: Category = None):
         logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
@@ -572,7 +595,16 @@ class CategoryRepository(object):
     def delete_category(self, category_id: str):
         logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
         self._uow.execute(QUERY_DELETE_CATEGORY, category_id)
+
+    def add_rom_to_category(self, category_id: str, rom_id: str):
+        self._uow.execute(QUERY_INSERT_ROM_IN_CATEGORY, rom_id, category_id)
+            
+    def remove_rom_from_category(self, category_id: str, rom_id: str):
+        self._uow.execute(QUERY_REMOVE_ROM_FROM_CATEGORY, rom_id, category_id)
         
+    def remove_all_roms_in_category(self, category_id: str):
+        self._uow.execute(QUERY_REMOVE_ROMS_FROM_CATEGORY, category_id)
+                
     def _insert_asset(self, asset: Asset, category_obj: Category):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
@@ -978,13 +1010,19 @@ class ROMCollectionRepository(object):
 # ROMsRepository -> ROMs from SQLite DB
 #     
 QUERY_SELECT_ROM                    = "SELECT * FROM vw_roms WHERE id = ?"
-QUERY_SELECT_ROMS_BY_SET            = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETS             = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
 QUERY_SELECT_ROM_ASSETPATHS         = "SELECT * FROM vw_rom_asset_paths WHERE rom_id = ?"
+QUERY_SELECT_ROM_TAGS               = "SELECT * FROM vw_rom_tags WHERE rom_id = ?"
+
+QUERY_SELECT_ROMS_BY_SET            = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETS_BY_SET      = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS rap INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rap.rom_id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_TAGS_BY_SET        = "SELECT rt.* FROM vw_rom_tags AS rt INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rt.rom_id AND rs.romcollection_id = ?"
-QUERY_SELECT_ROM_TAGS               = "SELECT * FROM vw_rom_tags WHERE rom_id = ?"
+
+QUERY_SELECT_ROMS_BY_CATEGORY           = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_category AS rc ON rc.rom_id = r.id AND rc.category_id = ?"
+QUERY_SELECT_ROM_ASSETS_BY_CATEGORY     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_category AS rc ON rc.rom_id = ra.rom_id AND rc.category_id = ?"
+QUERY_SELECT_ROM_ASSETPATHS_BY_CATEGORY = "SELECT rap.* FROM vw_rom_asset_paths AS rap INNER JOIN roms_in_category AS rc ON rc.rom_id = rap.rom_id AND rc.category_id = ?"
+QUERY_SELECT_ROM_TAGS_BY_CATEGORY       = "SELECT rt.* FROM vw_rom_tags AS rt INNER JOIN roms_in_category AS rc ON rc.rom_id = rt.rom_id AND rc.category_id = ?"
 
 # Filter values
 QUERY_SELECT_GENRES_BY_COLLECTION      = "SELECT DISTINCT(r.m_genre) AS genre FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY genre"
@@ -992,12 +1030,12 @@ QUERY_SELECT_YEARS_BY_COLLECTION       = "SELECT DISTINCT(r.m_year) AS year FROM
 QUERY_SELECT_DEVELOPER_BY_COLLECTION   = "SELECT DISTINCT(r.m_developer) AS developer FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY developer"
 QUERY_SELECT_RATING_BY_COLLECTION      = "SELECT DISTINCT(r.m_rating) AS rating FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY rating"
 
-QUERY_INSERT_ROM                = """
-                                INSERT INTO roms (
-                                    id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating,
-                                    platform, box_size, nointro_status, cloneof, rom_status, scanned_by_id)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-                                """ 
+QUERY_INSERT_ROM    = """
+                    INSERT INTO roms (
+                        id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating,
+                        platform, box_size, nointro_status, cloneof, rom_status, scanned_by_id)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                    """ 
 
 QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
 QUERY_SELECT_RECENTLY_PLAYED_ROMS        = "SELECT * FROM vw_roms WHERE last_launch_timestamp IS NOT NULL ORDER BY last_launch_timestamp DESC LIMIT 100"
@@ -1041,15 +1079,16 @@ QUERY_UPDATE_ROM                = """
 QUERY_DELETE_ROM                = "DELETE FROM roms WHERE id = ?"
 QUERY_DELETE_ROMS_BY_COLLECTION = "DELETE FROM roms WHERE id IN (SELECT rc.rom_id FROM roms_in_romcollection AS rc WHERE rc.romcollection_id = ?)"
 
-QUERY_SELECT_ROM_SCANNED_DATA        = "SELECT s.* FROM scanned_roms_data AS s WHERE s.rom_id = ?"
-QUERY_SELECT_ROM_SCANNED_DATA_BY_SET = "SELECT s.* FROM scanned_roms_data AS s INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = s.rom_id AND rs.romcollection_id = ?"
-QUERY_DELETE_SCANNED_DATA            = "DELETE FROM scanned_roms_data WHERE rom_id = ?"
+QUERY_SELECT_ROM_SCANNED_DATA             = "SELECT s.* FROM scanned_roms_data AS s WHERE s.rom_id = ?"
+QUERY_SELECT_ROM_SCANNED_DATA_BY_SET      = "SELECT s.* FROM scanned_roms_data AS s INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = s.rom_id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM_SCANNED_DATA_BY_CATEGORY = "SELECT s.* FROM scanned_roms_data AS s INNER JOIN roms_in_category AS rc ON rc.rom_id = s.rom_id AND rc.category_id = ?"
+QUERY_DELETE_SCANNED_DATA                 = "DELETE FROM scanned_roms_data WHERE rom_id = ?"
 
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, akl_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
-QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
+QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE rom_id = ? AND id = ?"
 
 QUERY_SELECT_TAGS               = "SELECT * FROM tags"
 QUERY_INSERT_TAG                = "INSERT INTO tags (id, tag) VALUES (?,?)" 
@@ -1061,6 +1100,41 @@ class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+
+    def find_roms_by_category(self, category: Category) -> typing.Iterator[ROM]:
+        category_id = category.get_id()
+        
+        self._uow.execute(QUERY_SELECT_ROMS_BY_CATEGORY, category_id)
+        result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_CATEGORY, category_id)
+        assets_result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS_BY_CATEGORY, category_id)
+        asset_paths_result_set = self._uow.result_set()
+                    
+        self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA_BY_CATEGORY, category_id)
+        scanned_data_result_set = self._uow.result_set()
+
+        self._uow.execute(QUERY_SELECT_ROM_TAGS_BY_CATEGORY, category_id)
+        tags_data_set = self._uow.result_set()
+     
+        for rom_data in result_set:
+            assets = []
+            asset_paths = []
+            tags = {}
+            for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
+                assets.append(Asset(asset_data))    
+            for asset_paths_data in filter(lambda a: a['rom_id'] == rom_data['id'], asset_paths_result_set):
+                asset_paths.append(AssetPath(asset_paths_data))
+            for tag in filter(lambda t: t['rom_id'] == rom_data['id'], tags_data_set):
+                tags[tag['tag']] = tag['id']
+                
+            scanned_data = {
+                entry['data_key']: entry['data_value'] 
+                for entry in filter(lambda s: s['rom_id'] == rom_data['id'], scanned_data_result_set) 
+            }
+            yield ROM(rom_data, tags, assets, asset_paths, scanned_data)
 
     def find_roms_by_romcollection(self, romcollection: ROMCollection) -> typing.Iterator[ROM]:
         is_virtual = romcollection.get_type() == constants.OBJ_COLLECTION_VIRTUAL
@@ -1248,13 +1322,16 @@ class ROMsRepository(object):
 
         self._update_scanned_data(rom_obj.get_id(),rom_obj.scanned_data)
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
-                
+              
     def delete_rom(self, rom_id: str):
         logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
         self._uow.execute(QUERY_DELETE_ROM, rom_id)
 
     def delete_roms_by_romcollection(self, romcollection_id:str):
         self._uow.execute(QUERY_DELETE_ROMS_BY_COLLECTION, romcollection_id)
+
+    def remove_launcher(self, rom_id: str, launcher_id:str):
+        self._uow.execute(QUERY_DELETE_ROM_LAUNCHER, rom_id, launcher_id)
 
     def insert_tag(self, tag:str) -> str:
         db_id = text.misc_generate_random_SID()
@@ -1288,14 +1365,14 @@ class ROMsRepository(object):
         for rom_launcher in rom_launchers:
             if rom_launcher.get_id() is None:
                 rom_launcher.set_id(text.misc_generate_random_SID())
-                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
+                self._uow.execute(QUERY_INSERT_ROM_LAUNCHER,
                     rom_launcher.get_id(),
                     rom_id, 
                     rom_launcher.addon.get_id(), 
                     rom_launcher.get_settings_str(), 
                     rom_launcher.is_default())
             else:
-                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
+                self._uow.execute(QUERY_UPDATE_ROM_LAUNCHER,
                     rom_launcher.get_settings_str(), 
                     rom_launcher.is_default(),
                     rom_launcher.get_id())

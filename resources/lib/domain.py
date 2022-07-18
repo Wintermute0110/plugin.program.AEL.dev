@@ -322,6 +322,16 @@ class ROMLauncherAddon(ROMAddon):
             '--akl_addon_id': self.get_id()
         }
         
+    def get_configure_command_for_rom(self, rom: ROM) -> dict:
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--rom_id': rom.get_id(), 
+            '--akl_addon_id': self.get_id()
+        }
+        
     def launch(self, rom: ROM):
         kodi.run_script(
             self.addon.get_addon_id(), 
@@ -331,6 +341,11 @@ class ROMLauncherAddon(ROMAddon):
         kodi.run_script(
             self.addon.get_addon_id(), 
             self.get_configure_command(romcollection))
+    
+    def configure_for_rom(self, rom:ROM):
+        kodi.run_script(
+            self.addon.get_addon_id(), 
+            self.get_configure_command_for_rom(rom))
 
 class RetroplayerLauncherAddon(ROMLauncherAddon):
     
@@ -360,9 +375,20 @@ class RetroplayerLauncherAddon(ROMLauncherAddon):
         kodi.play_item(rom.get_name(), rom_file_path.getPath(), 'game', game_info)
         logger.debug('Retroyplayer call finished')
    
-    def configure(self, romcollection:ROMCollection):
+    def configure(self, romcollection: ROMCollection):
         post_data = {
             'romcollection_id': romcollection.get_id(),
+            'akl_addon_id': self.get_id(),
+            'addon_id': self.addon.get_addon_id(),
+            'settings': {}
+        }        
+        is_stored = api.client_post_launcher_settings(globals.WEBSERVER_HOST, globals.WEBSERVER_PORT, post_data)
+        if not is_stored:
+            kodi.notify_error('Failed to store launchers settings')
+            
+    def configure_for_rom(self, rom: ROM):
+        post_data = {
+            'rom_id': rom.get_id(),
             'akl_addon_id': self.get_id(),
             'addon_id': self.addon.get_addon_id(),
             'settings': {}
@@ -686,7 +712,7 @@ class MetaDataItemABC(EntityABC):
         return None
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
-        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
+        logger.debug(f'Setting "{asset_info.id}" to {path}')
         asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
         asset_path.set_path(path)
         asset_path.set_asset_info(asset_info)
@@ -1061,7 +1087,7 @@ class ROMCollection(MetaDataItemABC):
             if current_default_launcher: current_default_launcher.set_default(False)
             
         self.launchers_data.append(launcher)
-        logger.debug(f'Adding addon "{addon.get_addon_id()}" to launcher "{self.get_name()}"')
+        logger.debug(f'Adding addon "{addon.get_addon_id()}" to collection "{self.get_name()}"')
 
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
@@ -1075,6 +1101,16 @@ class ROMCollection(MetaDataItemABC):
         if default_launcher is None: return self.launchers_data[0]
         
         return default_launcher
+
+    def set_launcher_as_default(self, launcher_id):
+        if len(self.launchers_data) == 0: return
+        
+        current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if current_default_launcher: current_default_launcher.set_default(False)
+        
+        launcher_to_be_default = next((l for l in self.launchers_data if l.get_id() == launcher_id), None)
+        if launcher_to_be_default:
+            launcher_to_be_default.set_default(True)
 
     def has_scanners(self) -> bool:
         return len(self.scanners_data) > 0
@@ -1322,7 +1358,7 @@ class ROM(MetaDataItemABC):
         return self.tags if self.tags is None else {}
 
     def get_launch_count(self):
-        return self.entity_data['launch_count']
+        return self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
 
     def get_last_launch_date(self):
         return self.entity_data['last_launch_timestamp']
@@ -1406,12 +1442,45 @@ class ROM(MetaDataItemABC):
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
 
+    def has_launchers(self) -> bool:
+        return len(self.launchers_data) > 0
+
+    def add_launcher(self, addon: AelAddon, settings: dict, is_non_blocking = True, is_default: bool = False):
+        launcher = ROMLauncherAddonFactory.create(addon, { 
+            'settings': json.dumps(settings),
+            'is_non_blocking': is_non_blocking,
+            'is_default': is_default
+        })        
+        if is_default:
+            current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+            if current_default_launcher: current_default_launcher.set_default(False)
+            
+        self.launchers_data.append(launcher)
+        logger.debug(f'Adding addon "{addon.get_addon_id()}" to ROM "{self.get_name()}"')
+
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
 
     def get_launcher(self, id:str) -> ROMLauncherAddon:
         return next((l for l in self.launchers_data if l.get_id() == id), None)
 
+    def get_default_launcher(self) -> ROMLauncherAddon:
+        if len(self.launchers_data) == 0: return None
+        default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if default_launcher is None: return self.launchers_data[0]
+        
+        return default_launcher
+
+    def set_launcher_as_default(self, launcher_id):
+        if len(self.launchers_data) == 0: return
+        
+        current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if current_default_launcher: current_default_launcher.set_default(False)
+        
+        launcher_to_be_default = next((l for l in self.launchers_data if l.get_id() == launcher_id), None)
+        if launcher_to_be_default:
+            launcher_to_be_default.set_default(True)
+            
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data)

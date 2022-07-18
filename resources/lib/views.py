@@ -192,6 +192,10 @@ def vw_add_category(category_id: str = None, parent_category_id: str = None):
 def vw_edit_category(category_id: str):
     AppMediator.async_cmd('EDIT_CATEGORY', {'category_id': category_id })
 
+@router.route('/categories/addrom/<category_id>')
+def vw_add_rom_to_category(category_id: str):
+    AppMediator.async_cmd('ADD_STANDALONE_ROM', {'category_id': category_id })
+
 @router.route('/romcollection/add')
 @router.route('/romcollection/add/<category_id>')
 @router.route('/romcollection/add/<category_id>/in')

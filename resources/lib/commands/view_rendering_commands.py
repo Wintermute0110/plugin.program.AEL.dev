@@ -291,6 +291,7 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
     romcollections = romcollections_repository.find_romcollections_by_parent(category_obj.get_id())
+    roms = roms_repository.find_roms_by_category(category_obj)
     
     view_data = {
         'id': category_obj.get_id(),
@@ -308,15 +309,21 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
                                   views_repository, render_sub_views)
     
     for romcollection in romcollections:
-        logger.debug('Processing romcollection "{}"'.format(romcollection.get_name()))
+        logger.debug(f"Processing romcollection '{romcollection.get_name()}'")
         try:
             view_items.append(_render_romcollection_listitem(romcollection))
-        except Exception as ex:
-            logger.error('Exception while rendering list item ROM Collection "{}"'.format(romcollection.get_name()), exc_info=ex)
-            kodi.notify_error("Failed to process ROM collection {}".format(romcollection.get_name()))
+        except Exception:
+            logger.exception(f"Exception while rendering list item ROM Collection '{romcollection.get_name()}'")
+            kodi.notify_error(f"Failed to process ROM collection {romcollection.get_name()}")
         if render_sub_views and not category_obj.get_type() == constants.OBJ_CATEGORY_VIRTUAL:
             collection_view_data = _render_romcollection_view(romcollection, roms_repository)
             views_repository.store_view(romcollection.get_id(), romcollection.get_type(), collection_view_data)
+
+    for rom in roms:
+        try:
+            view_items.append(_render_rom_listitem(rom))
+        except Exception:
+            logger.exception(f"Exception while rendering list item ROM '{rom.get_name()}'")
                   
     logger.debug(f'Storing {len(view_items)} items for category "{category_obj.get_name()}" view.')
     view_data['items'] = view_items

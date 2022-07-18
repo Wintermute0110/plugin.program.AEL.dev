@@ -25,8 +25,8 @@ from akl.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
-from resources.lib.repositories import ROMsRepository, ROMCollectionRepository, UnitOfWork
-from resources.lib.domain import g_assetFactory
+from resources.lib.repositories import CategoryRepository, ROMsRepository, ROMCollectionRepository, UnitOfWork
+from resources.lib.domain import g_assetFactory, ROM
 
 logger = logging.getLogger(__name__)
 
@@ -54,11 +54,14 @@ def cmd_edit_rom(args):
     options = collections.OrderedDict()
     options['ROM_EDIT_METADATA']       = 'Edit Metadata ...'
     options['ROM_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-    options['EDIT_ROM_STATUS']         = 'ROM status: {0}'.format(rom.get_finished_str())
+    options['EDIT_ROM_STATUS']         = f'ROM status: {rom.get_finished_str()}'
+    if rom.has_launchers():
+        options['EDIT_ROM_LAUNCHERS']  = 'Manage associated launchers'
+    else: options['ADD_ROM_LAUNCHER']  = 'Add new launcher to ROM'    
     options['DELETE_ROM']              = 'Delete ROM'
     options['SCRAPE_ROM']              = 'Scrape ROM'
 
-    s = 'Edit ROM "{}"'.format(rom.get_name())
+    s = f'Edit ROM "{rom.get_name()}"'
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
@@ -66,7 +69,7 @@ def cmd_edit_rom(args):
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_ROM: cmd_edit_rom() Selected {}'.format(selected_option))
+    logger.debug(f'EDIT_ROM: cmd_edit_rom() Selected {selected_option}')
     AppMediator.sync_cmd(selected_option, args)
     
 # --- Submenu commands ---
@@ -156,6 +159,43 @@ def cmd_rom_assets(args):
                 AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})   
 
     AppMediator.sync_cmd('ROM_EDIT_ASSETS', {'rom_id': rom_id, 'selected_asset': asset.id})    
+    
+#
+# Remove ROMCollection
+#
+@AppMediator.register('DELETE_ROM')
+def cmd_rom_delete(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    romcollections = []
+    categories = []
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
+        category_repository = CategoryRepository(uow)
+        
+        rom = roms_repository.find_rom(rom_id)
+
+        question = f'Are you sure you want to delete "{rom.get_name()}"?\nThis will delete the ROM from all views.'
+        ret = kodi.dialog_yesno(question)
+        if not ret: 
+            AppMediator.sync_cmd('EDIT_ROM', args)
+            return
+        
+        romcollections = list(romcollections_repository.find_romcollections_by_rom(rom_id))
+        categories = list(category_repository.find_categories_by_rom(rom_id))
+      
+        logger.info(f'Deleting ROM "{rom.get_name()}" ID {rom.get_id()}')
+        roms_repository.delete_rom(rom.get_id())
+        uow.commit()
+        
+    for romcollection in romcollections:
+        AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
+    for category in categories:
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+    AppMediator.async_cmd('RENDER_VIRTUAL_VIEWS')
+    
+    kodi.notify(f'Deleted ROM {rom.get_name()}')
 
 # --- Atomic commands ---
 @AppMediator.register('ROM_EDIT_METADATA_TITLE')
@@ -314,7 +354,6 @@ def cmd_rom_metadata_nplayers_online(args):
         kodi.notify('Changed ROM NPlayers Online')
         
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
-
 
 @AppMediator.register('ROM_EDIT_METADATA_RATING')
 def cmd_rom_metadata_rating(args):
@@ -607,3 +646,46 @@ def cmd_manage_rom_tags(args):
 
         if did_tag_change:
             uow.commit()
+
+# -------------------------------------------------------------------------------------------------
+# ROM ADD
+# -------------------------------------------------------------------------------------------------
+@AppMediator.register('ADD_STANDALONE_ROM')
+def cmd_add_rom(args):
+    category_id:str = args['category_id'] if 'category_id' in args else None
+    
+    if category_id is None:
+        logger.warning('No Category id supplied.')
+        kodi.notify_warn("Invalid parameters supplied.")
+        return
+    
+    rom_name = ""
+    is_file_based = kodi.dialog_yesno("Is it a file based ROM/executable?")
+    if is_file_based:
+        file_path = kodi.dialog_get_file("Select file")
+        if file_path is not None:
+            path = io.FileName(file_path)
+            rom_name = path.getBaseNoExt()
+    
+    rom_name = kodi.dialog_keyboard("Name", rom_name)
+    if rom_name is None:
+        return
+    
+    rom_obj = ROM()
+    rom_obj.set_name(rom_name)
+    rom_obj.set_scanned_data_element("file", file_path)
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        category_repository = CategoryRepository(uow)
+        roms_repository = ROMsRepository(uow)
+        
+        roms_repository.insert_rom(rom_obj)
+        category_repository.add_rom_to_category(category_id, rom_obj.get_id())
+        uow.commit()
+        
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', args)
+    AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_TITLE_ID})
+    kodi.notify(f"Created new standalone ROM '{rom_name}'")
+    kodi.refresh_container()
+    

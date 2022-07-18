@@ -1,5 +1,6 @@
 ## Current
 - Virtual categories now render items from database
+- Add and execute single instance ROMs or Games
 - Minor bugfixes
 - Updated dependency  
 

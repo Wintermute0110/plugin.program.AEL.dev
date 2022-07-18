@@ -34,7 +34,6 @@ logger = logging.getLogger(__name__)
 # ROMCollection launcher management.
 # -------------------------------------------------------------------------------------------------
 
-# --- Submenu menu command ---
 @AppMediator.register('EDIT_ROMCOLLECTION_LAUNCHERS')
 def cmd_manage_romcollection_launchers(args):
     logger.debug('EDIT_ROMCOLLECTION_LAUNCHERS: cmd_manage_romcollection_launchers() SHOW MENU')
@@ -68,7 +67,71 @@ def cmd_manage_romcollection_launchers(args):
     logger.debug('EDIT_ROMCOLLECTION_LAUNCHERS: cmd_manage_romcollection_launchers() Selected {}'.format(selected_option))
     AppMediator.sync_cmd(selected_option, args)
 
+@AppMediator.register('EDIT_ROM_LAUNCHERS')
+def cmd_manage_rom_launchers(args):
+    logger.debug('EDIT_ROM_LAUNCHERS: cmd_manage_rom_launchers() SHOW MENU')
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    
+    selected_option = None
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)        
+        rom = repository.find_rom(rom_id)
+        
+    launchers = rom.get_launchers()
+    default_launcher = next((l for l in launchers if l.is_default()), launchers[0]) if len(launchers) > 0 else None
+    default_launcher_name = default_launcher.get_name() if default_launcher is not None else 'None'
+    
+    options = collections.OrderedDict()
+    options['ADD_ROM_LAUNCHER']         = 'Add new launcher'
+    options['EDIT_ROM_LAUNCHER']        = 'Edit launcher'
+    options['REMOVE_ROM_LAUNCHER']      = 'Remove launcher'
+    options['SET_DEFAULT_ROM_LAUNCHER'] = f'Set default launcher: "{default_launcher_name}"'
+        
+    s = f'Manage Launchers for "{rom.get_name()}"'
+    selected_option = kodi.OrdDictionaryDialog().select(s, options)
+    if selected_option is None:
+        # >> Exits context menu
+        logger.debug('Selected None. Closing context menu')
+        AppMediator.sync_cmd('EDIT_ROM', args)
+        return
+    
+    # >> Execute subcommand. May be atomic, maybe a submenu.
+    logger.debug(f'Selected {selected_option}')
+    AppMediator.sync_cmd(selected_option, args)
+    
 # --- Sub commands ---
+@AppMediator.register('ADD_ROM_LAUNCHER')
+def cmd_add_rom_launchers(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    
+    options = collections.OrderedDict()
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository      = AelAddonRepository(uow)
+        rom_repository  = ROMsRepository(uow)
+        
+        addons = repository.find_all_launchers()
+        rom = rom_repository.find_rom(rom_id)
+
+        for addon in addons:
+            options[addon] = addon.get_name()
+    
+    s = 'Choose launcher to associate'
+    selected_option:AelAddon = kodi.OrdDictionaryDialog().select(s, options)
+    
+    if selected_option is None:
+        # >> Exits context menu
+        logger.debug('Selected None. Closing context menu')
+        AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+        return
+    
+    # >> Execute subcommand. May be atomic, maybe a submenu.
+    logger.debug(f'Selected {selected_option.get_id()}')
+    
+    selected_launcher = ROMLauncherAddonFactory.create(selected_option, {})
+    selected_launcher.configure_for_rom(rom)
+
 @AppMediator.register('ADD_LAUNCHER')
 def cmd_add_romcollection_launchers(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
@@ -131,7 +194,39 @@ def cmd_edit_romcollection_launchers(args):
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_LAUNCHER: cmd_edit_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
     selected_option.configure(romcollection)
-       
+      
+@AppMediator.register('EDIT_ROM_LAUNCHER')
+def cmd_edit_rom_launcher(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)        
+        rom = repository.find_rom(rom_id)
+        
+    launchers = rom.get_launchers()
+    if len(launchers) == 0:
+        kodi.notify('No launchers configured for this ROM!')
+        AppMediator.async_cmd('EDIT_ROM_LAUNCHERS', args)
+        return
+    
+    options = collections.OrderedDict()
+    for launcher in launchers:
+        options[launcher] = launcher.get_name()
+    
+    s = 'Choose launcher to edit'
+    selected_option:ROMLauncherAddon = kodi.OrdDictionaryDialog().select(s, options)
+    
+    if selected_option is None:
+        # >> Exits context menu
+        logger.debug('Selected None. Closing context menu')
+        AppMediator.async_cmd('EDIT_ROM_LAUNCHERS', args)
+        return
+    
+    # >> Execute subcommand. May be atomic, maybe a submenu.
+    logger.debug(f'Selected {selected_option.get_id()}')
+    selected_option.configure_for_rom(rom) 
+    
 @AppMediator.register('REMOVE_LAUNCHER')
 def cmd_remove_romcollection_launchers(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
@@ -168,11 +263,54 @@ def cmd_remove_romcollection_launchers(args):
             return
         
         romcollection_repository.remove_launcher(romcollection.get_id(), selected_option.get_id())
-        logger.info('REMOVE_LAUNCHER: cmd_remove_romcollection_launchers() Removed launcher#{}'.format(selected_option.get_id()))
+        logger.info(f'Removed launcher#{selected_option.get_id()}')
         uow.commit()
     
+    kodi.notify(f'Removed launcher "{selected_option.get_name()}"')
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION_LAUNCHERS', args)
+  
+@AppMediator.register('REMOVE_ROM_LAUNCHER')
+def cmd_remove_rom_launchers(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
     
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)        
+        rom = repository.find_rom(rom_id)
+    
+        launchers = rom.get_launchers()
+        if len(launchers) == 0:
+            kodi.notify('No launchers configured for this ROM!')
+            AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+            return
+        
+        options = collections.OrderedDict()
+        for launcher in launchers:
+            options[launcher] = launcher.get_name()
+        
+        s = 'Choose launcher to remove'
+        selected_option:ROMLauncherAddon = kodi.OrdDictionaryDialog().select(s, options)
+        
+        if selected_option is None:
+            # >> Exits context menu
+            logger.debug('Selected None. Closing context menu')
+            AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+            return
+        
+        # >> Execute subcommand. May be atomic, maybe a submenu.
+        logger.debug(f'Selected {selected_option.get_id()}')
+        if not kodi.dialog_yesno(f'Are you sure to delete launcher "{selected_option.get_name()}"'):
+            logger.debug('Cancelled operation.')
+            AppMediator.async_cmd('EDIT_ROM_LAUNCHERS', args)
+            return
+        
+        repository.remove_launcher(rom.get_id(), selected_option.get_id())
+        logger.info(f'Removed launcher#{selected_option.get_id()}')
+        uow.commit()
+    
+    kodi.notify(f'Removed launcher "{selected_option.get_name()}"')
+    AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+      
 @AppMediator.register('SET_DEFAULT_LAUNCHER')
 def cmd_set_default_romcollection_launchers(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
@@ -203,11 +341,47 @@ def cmd_set_default_romcollection_launchers(args):
         
         # >> Execute subcommand. May be atomic, maybe a submenu.
         logger.debug('SET_DEFAULT_LAUNCHER: cmd_set_default_romcollection_launchers() Selected {}'.format(selected_option))
-        #@romcollection.set_launcher_as_default(launc)
+        romcollection.set_launcher_as_default(selected_option)
         romcollection_repository.update_romcollection(romcollection)
         uow.commit()
     
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION_LAUNCHERS', args)
+    
+@AppMediator.register('SET_DEFAULT_ROM_LAUNCHER')
+def cmd_set_default_rom_launchers(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)        
+        rom = repository.find_rom(rom_id)
+    
+        launchers = rom.get_launchers()
+        if len(launchers) == 0:
+            kodi.notify('No launchers configured for this ROM!')
+            AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+            return
+        
+        options = collections.OrderedDict()
+        for launcher in launchers:
+            options[launcher.get_id()] = launcher.get_name()
+        
+        s = 'Choose launcher to set as default'
+        selected_option = kodi.OrdDictionaryDialog().select(s, options)
+        
+        if selected_option is None:
+            # >> Exits context menu
+            logger.debug('Selected None. Closing context menu')
+            AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
+            return
+        
+        # >> Execute subcommand. May be atomic, maybe a submenu.
+        logger.debug(f'Selected {selected_option}')
+        rom.set_launcher_as_default(selected_option)
+        repository.update_rom(rom)
+        uow.commit()
+    
+    AppMediator.sync_cmd('EDIT_ROM_LAUNCHERS', args)
         
 # -------------------------------------------------------------------------------------------------
 # ROMCollection Launcher executing
