@@ -652,39 +652,46 @@ def cmd_manage_rom_tags(args):
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('ADD_STANDALONE_ROM')
 def cmd_add_rom(args):
-    category_id:str = args['category_id'] if 'category_id' in args else None
-    
-    if category_id is None:
-        logger.warning('No Category id supplied.')
-        kodi.notify_warn("Invalid parameters supplied.")
-        return
-    
-    rom_name = ""
-    is_file_based = kodi.dialog_yesno("Is it a file based ROM/executable?")
-    if is_file_based:
-        file_path = kodi.dialog_get_file("Select file")
-        if file_path is not None:
-            path = io.FileName(file_path)
-            rom_name = path.getBaseNoExt()
-    
-    rom_name = kodi.dialog_keyboard("Name", rom_name)
-    if rom_name is None:
-        return
-    
-    rom_obj = ROM()
-    rom_obj.set_name(rom_name)
-    rom_obj.set_scanned_data_element("file", file_path)
-    
+    parent_id = args['category_id'] if 'category_id' in args else None
+    grand_parent_id = args['parent_category_id'] if 'parent_category_id' in args else None
+        
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         category_repository = CategoryRepository(uow)
         roms_repository = ROMsRepository(uow)
         
+        parent_category       = category_repository.find_category(parent_id) if parent_id is not None else None
+        grand_parent_category = category_repository.find_category(grand_parent_id) if grand_parent_id is not None else None
+        
+        if grand_parent_category is not None:
+            options_dialog = kodi.ListDialog()
+            selected_option = options_dialog.select('Add ROM in?',[parent_category.get_name(), grand_parent_category.get_name()])
+            if selected_option > 0:
+                parent_category = grand_parent_category
+        
+        rom_name = ""
+        is_file_based = kodi.dialog_yesno("Is it a file based ROM/executable?")
+        file_path = None
+        if is_file_based:
+            file_path = kodi.dialog_get_file("Select file")
+            if file_path is not None:
+                path = io.FileName(file_path)
+                rom_name = path.getBaseNoExt()
+        
+        rom_name = kodi.dialog_keyboard("Name", rom_name)
+        if rom_name is None:
+            return
+        
+        rom_obj = ROM()
+        rom_obj.set_name(rom_name)
+        if file_path:
+            rom_obj.set_scanned_data_element("file", file_path)
+
         roms_repository.insert_rom(rom_obj)
-        category_repository.add_rom_to_category(category_id, rom_obj.get_id())
+        category_repository.add_rom_to_category(parent_category.get_id(), rom_obj.get_id())
         uow.commit()
         
-    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', args)
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': parent_category.get_id()})
     AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_TITLE_ID})
     kodi.notify(f"Created new standalone ROM '{rom_name}'")
     kodi.refresh_container()

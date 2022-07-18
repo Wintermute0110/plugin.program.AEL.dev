@@ -441,6 +441,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('Edit Category', _context_menu_url_for(f'/categories/edit/{item_id}')))
         commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{item_id}/in/{container_id}')))
         commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{item_id}/in/{container_id}')))
+        commands.append(('Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{item_id}/in/{container_id}')))
         
     if is_romcollection: 
         commands.append(('View ROM Collection', _context_menu_url_for(f'/romcollection/view/{item_id}')))
@@ -449,8 +450,6 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     if not is_category and container_is_category:
         commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{container_id}')))
         commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{container_id}')))
-    
-    if container_is_category:
         commands.append(('Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{container_id}')))
         
     if is_virtual_category:
