@@ -6878,12 +6878,14 @@ def exec_utils_check_database(cfg):
             db.load_ROMs(cfg, st)
             for rom_id, rom in cfg.roms.items(): misc_ael.fix_Favourite_rom_object(rom)
             db.save_ROMs(cfg, st)
-        # db.write_VCategory_XML(cfg, st)
     pdiag.endProgress()
 
     # So long and thanks for all the fish.
     kodi.notify('All databases checked')
     log.debug('exec_utils_check_database() Exiting')
+
+
+# Working on this function now.
 
 def exec_utils_check_launchers(cfg):
     log.info('exec_utils_check_launchers() Checking all Launchers configuration ...')
