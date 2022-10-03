@@ -1360,7 +1360,9 @@ class ROM(MetaDataItemABC):
         return []
 
     def get_tag_data(self) -> dict:
-        return self.tags if self.tags is None else {}
+        if self.tags is None:
+            self.tags = {}
+        return self.tags
 
     def get_launch_count(self):
         return self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
@@ -1394,10 +1396,9 @@ class ROM(MetaDataItemABC):
     def add_tag(self, tag:str):
         if self.tags is None:
             self.tags = {}
-
-        existing_tags = self.get_tags()
-        if not tag in existing_tags:
-            self.tags[tag] = ''
+        if tag in self.tags:
+            return
+        self.tags[tag] = ''
 
     def remove_tag(self, tag:str):
         if self.tags is None: return

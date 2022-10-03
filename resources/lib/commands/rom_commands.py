@@ -371,6 +371,7 @@ def cmd_rom_metadata_rating(args):
             
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
+
 @AppMediator.register('ROM_EDIT_METADATA_PLOT')
 def cmd_rom_metadata_plot(args):
     rom_id = args['rom_id'] if 'rom_id' in args else None  
@@ -384,6 +385,7 @@ def cmd_rom_metadata_plot(args):
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+
 
 @AppMediator.register('ROM_EDIT_METADATA_TAGS')
 def cmd_rom_metadata_tags(args):
@@ -654,8 +656,8 @@ def cmd_manage_rom_tags(args):
 def cmd_add_rom(args):
     parent_id = args['category_id'] if 'category_id' in args else None
     grand_parent_id = args['parent_category_id'] if 'parent_category_id' in args else None
-        
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+        
     with uow:
         category_repository = CategoryRepository(uow)
         roms_repository = ROMsRepository(uow)
