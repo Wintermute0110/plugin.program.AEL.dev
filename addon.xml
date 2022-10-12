@@ -14,16 +14,16 @@
     <description lang="en_GB">Gaming front-end and general application launcher for Kodi. Supports scanning, scraping and launching of ROMs and games, using many plugins. Easily extendable with lots of plugins or create your own.</description>
     <platform>android freebsd ios linux osx windows</platform>
     <license>GNU General Public License version 2</license>
-    <email>wintermute0110@gmail.com</email>
+    <email>crizzz@gmail.com</email>
     <forum>http://forum.kodi.tv/showthread.php?tid=366351</forum>
     <website>https://github.com/chrisism/plugin.program.akl</website>
     <source>https://github.com/chrisism/plugin.program.akl</source>
     <assets>
       <icon>media/icon.png</icon>
       <fanart>media/fanart.jpg</fanart>
-      <screenshot>media/Estuary_ROM_Launcher.jpg</screenshot>
-      <screenshot>media/Estuary_ROM_Console.jpg</screenshot>
-      <screenshot>media/Estuary_ROM_MAME.jpg</screenshot>
+      <screenshot>media/arcticzephyr_reloaded_01_companies.jpg</screenshot>
+      <screenshot>media/arcticzephyr_reloaded_02_systems.jpg</screenshot>
+      <screenshot>media/arcticzephyr_reloaded_03_games.jpg</screenshot>
     </assets>
     <news>See changelog.txt for information about the latest release.</news>
   </extension>
