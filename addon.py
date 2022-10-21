@@ -3,8 +3,8 @@
 # Advanced Kodi Launcher main script file
 #
 
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
-# Portions (c) 2018 Chrisism
+# Copyright (c) Chrisism <crizizz@gmail.com>
+# Big Portions (c) Wintermute0110 <wintermute0110@gmail.com> 
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -32,20 +32,8 @@ logger = logging.getLogger(__name__)
 import sys
 
 # -------------------------------------------------------------------------------------------------
-# Hacks and tests
+# Entrypoint of the Frontend/UI application
 # -------------------------------------------------------------------------------------------------
-# --- Test SHOW_ALL_CATEGORIES / SHOW_ALL_LAUNCHERS / SHOW_ALL_ROMS command ---
-# sys.argv[2] = '?com=SHOW_ALL_ROMS'
-# resources.main.run_plugin(sys.argv)
-
-# -------------------------------------------------------------------------------------------------
-# main()
-# -------------------------------------------------------------------------------------------------
-# Put the main bulk of the code in files inside /resources/, which is a package directory.
-# This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
-# loading time is faster compared to loading PY files.
-# See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-#
 
 try:
     views.run_plugin(sys.argv)

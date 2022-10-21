@@ -36,9 +36,9 @@ class ViewRepository(object):
 
     def find_root_items(self):
         repository_file = self.paths.ROOT_PATH
-        logger.debug('find_root_items(): Loading path data from file {}'.format(repository_file.getPath()))
+        logging.debug(f'find_root_items(): Loading path data from file {repository_file.getPath()}')
         if not repository_file.exists():
-            logger.debug('find_root_items(): Path does not exist {}'.format(repository_file.getPath()))
+            logging.debug(f'find_root_items(): Path does not exist {repository_file.getPath()}')
             return None
 
         try:
