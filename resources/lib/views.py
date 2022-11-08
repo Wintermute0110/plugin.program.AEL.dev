@@ -55,28 +55,28 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------------------------
 def run_plugin(addon_argv):
     # --- Some debug stuff for development ---
-    logging.debug('------------ Called Advanced Kodi Launcher run_plugin(addon_argv) ------------')
-    logging.debug(f'addon.id         "{globals.addon_id}"')
-    logging.debug(f'addon.version    "{globals.addon_version}"')
+    logger.debug('------------ Called Advanced Kodi Launcher run_plugin(addon_argv) ------------')
+    logger.debug(f'addon.id         "{globals.addon_id}"')
+    logger.debug(f'addon.version    "{globals.addon_version}"')
     for i in range(len(sys.argv)): 
-        logging.debug(f'sys.argv[{i}] "{sys.argv[i]}"')
+        logger.debug(f'sys.argv[{i}] "{sys.argv[i]}"')
 
     # --- Bootstrap object instances --- 
     globals.g_bootstrap_instances()
     try:
         router.run()
     except Exception as e:
-        logging.error('Exception while executing route', exc_info=e)
+        logger.error('Exception while executing route', exc_info=e)
         kodi.notify_error('Failed to execute route or command')
         
-    logging.debug('Advanced Kodi Launcher run_plugin() exit')
+    logger.debug('Advanced Kodi Launcher run_plugin() exit')
 
 # -------------------------------------------------------------------------------------------------
 # LisItem rendering
 # -------------------------------------------------------------------------------------------------
 @router.route('/')
 def vw_route_render_root():
-    logging.debug("Executing route: vw_route_render_root")
+    logger.debug("Executing route: vw_route_render_root")
     container = viewqueries.qry_get_root_items()
     container_context_items = viewqueries.qry_container_context_menu_items(container)
 
@@ -86,7 +86,7 @@ def vw_route_render_root():
 @router.route('/category/<view_id>')
 @router.route('/collection/<view_id>')
 def vw_route_render_collection(view_id: str):
-    logging.debug("Executing route: vw_route_render_collection")
+    logger.debug("Executing route: vw_route_render_collection")
     container               = viewqueries.qry_get_view_items(view_id)
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
@@ -109,7 +109,7 @@ def vw_route_render_collection(view_id: str):
 
 @router.route('/collection/<view_id>/search')
 def vw_route_search_collection(view_id: str):
-    logging.debug("Executing route: vw_route_search_collection")
+    logger.debug("Executing route: vw_route_search_collection")
     #vw_route_render_collection(view_id)
     AppMediator.sync_cmd('SEARCH', {'romcollection_id': view_id})
     kodi.refresh_container()

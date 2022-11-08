@@ -398,7 +398,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
             kodi.delete_cache_texture(dest_asset_file.getPath())
             kodi.print_texture_info(dest_asset_file.getPath())
         except Exception:
-            logging.exception("Failed to delete cache")
+            logger.exception("Failed to delete cache")
 
         # --- Notify user ---
         kodi.notify(f'{obj_instance.get_object_name()} {asset_info.name} has been updated')

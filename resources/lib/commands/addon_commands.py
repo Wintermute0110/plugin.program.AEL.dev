@@ -58,7 +58,7 @@ def cmd_show_addons(args):
 
         options = collections.OrderedDict()
         for addon in addons:
-            logging.info(f"Installed Addon {addon.get_addon_id()} v{addon.get_version()} {addon.get_addon_type()}")
+            logger.info(f"Installed Addon {addon.get_addon_id()} v{addon.get_version()} {addon.get_addon_type()}")
             if addon.get_addon_id() in options:
                 continue
             name = f"{addon.get_name()} v{addon.get_version()}"

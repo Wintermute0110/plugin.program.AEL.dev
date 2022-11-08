@@ -14,8 +14,6 @@ from resources.lib.domain import Category, ROMCollection, ROM, Asset, AssetPath,
 from resources.lib.domain import VirtualCategoryFactory, VirtualCollectionFactory, ROMLauncherAddonFactory, g_assetFactory
 from resources.lib.domain import ROMCollectionScanner, ROMLauncherAddon, AelAddon
 
-logger = logging.getLogger(__name__)
-
 # #################################################################################################
 # #################################################################################################
 # Data storage objects.
@@ -33,21 +31,22 @@ class ViewRepository(object):
 
     def __init__(self, paths: globals.AKL_Paths):
         self.paths = paths
+        self.logger = logging.getLogger(__name__)
 
     def find_root_items(self):
         repository_file = self.paths.ROOT_PATH
-        logging.debug(f'find_root_items(): Loading path data from file {repository_file.getPath()}')
+        self.logger.debug(f'find_root_items(): Loading path data from file {repository_file.getPath()}')
         if not repository_file.exists():
-            logging.debug(f'find_root_items(): Path does not exist {repository_file.getPath()}')
+            self.logger.debug(f'find_root_items(): Path does not exist {repository_file.getPath()}')
             return None
 
         try:
             item_data = repository_file.readJson()
         except ValueError as ex:
             statinfo = repository_file.stat()
-            logger.error('find_root_items(): ValueError exception in file.readJson() function', exc_info=ex)
-            logger.error('find_root_items(): Dir  {}'.format(repository_file.getPath()))
-            logger.error('find_root_items(): Size {}'.format(statinfo.st_size))
+            self.logger.error('find_root_items(): ValueError exception in file.readJson() function', exc_info=ex)
+            self.logger.error('find_root_items(): Dir  {}'.format(repository_file.getPath()))
+            self.logger.error('find_root_items(): Size {}'.format(statinfo.st_size))
             return None
         
         return item_data
@@ -57,21 +56,21 @@ class ViewRepository(object):
         if is_virtual:
             repository_file = self.paths.GENERATED_VIEWS_DIR.pjoin('view_{}.json'.format(view_id))
             
-        logger.debug('find_items(): Loading path data from file {}'.format(repository_file.getPath()))
+        self.logger.debug('find_items(): Loading path data from file {}'.format(repository_file.getPath()))
         try:
             item_data = repository_file.readJson()
         except ValueError as ex:
             statinfo = repository_file.stat()
-            logger.error('find_items(): ValueError exception in file.readJson() function', exc_info=ex)
-            logger.error('find_items(): Dir  {}'.format(repository_file.getPath()))
-            logger.error('find_items(): Size {}'.format(statinfo.st_size))
+            self.logger.error('find_items(): ValueError exception in file.readJson() function', exc_info=ex)
+            self.logger.error('find_items(): Dir  {}'.format(repository_file.getPath()))
+            self.logger.error('find_items(): Size {}'.format(statinfo.st_size))
             return None
         
         return item_data
 
     def store_root_view(self, view_data):
         repository_file = self.paths.ROOT_PATH
-        logger.debug('store_root_view(): Storing data in file {}'.format(repository_file.getPath()))
+        self.logger.debug('store_root_view(): Storing data in file {}'.format(repository_file.getPath()))
         repository_file.writeJson(view_data)
 
     def store_view(self, view_id:str, object_type:str, view_data):        
@@ -82,11 +81,11 @@ class ViewRepository(object):
         
         if view_data is None: 
             if repository_file.exists():
-                logger.debug('store_view(): No data for file {}. Removing file'.format(repository_file.getPath()))
+                self.logger.debug('store_view(): No data for file {}. Removing file'.format(repository_file.getPath()))
                 repository_file.unlink()
             return
 
-        logger.debug(f'store_view(): Storing data in file {repository_file.getPath()}')
+        self.logger.debug(f'store_view(): Storing data in file {repository_file.getPath()}')
         repository_file.writeJson(view_data)
 
     def cleanup_views(self, view_ids_to_keep:typing.List[str]):
@@ -94,18 +93,18 @@ class ViewRepository(object):
         for view_file in view_files:
             view_id = view_file.getBaseNoExt().replace('view_', '')
             if not view_id in view_ids_to_keep:
-                logger.info(f'Removing file for view "{view_id}"')
+                self.logger.info(f'Removing file for view "{view_id}"')
                 view_file.unlink()
 
     def cleanup_virtual_category_views(self, view_id):
         view_files = self.paths.GENERATED_VIEWS_DIR.scanFilesInPath(f'view_{view_id}_*.json')
-        logger.info(f'Removing {len(view_files)} files for virtual category "{view_id}"')
+        self.logger.info(f'Removing {len(view_files)} files for virtual category "{view_id}"')
         for view_file in view_files:
             view_file.unlink()
  
     def cleanup_all_virtual_category_views(self):
         view_files = self.paths.GENERATED_VIEWS_DIR.scanFilesInPath('view_vcategory*.json')
-        logger.info(f'Removing {len(view_files)} files for all virtual categories')
+        self.logger.info(f'Removing {len(view_files)} files for all virtual categories')
         for view_file in view_files:
             view_file.unlink()
         
@@ -118,11 +117,12 @@ class XmlConfigurationRepository(object):
     def __init__(self, file_path: io.FileName, debug = False):
         self.file_path = file_path
         self.debug = debug
+        self.logger = logging.getLogger(__name__)
 
     def get_categories(self) -> typing.Iterator[Category]:
         # --- Parse using cElementTree ---
         # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
-        logger.debug('XmlRepository.get_categories() Loading {0}'.format(self.file_path.getPath()))
+        self.logger.debug('XmlRepository.get_categories() Loading {0}'.format(self.file_path.getPath()))
 
         xml_root = self.file_path.readXml()
         if xml_root is None:
@@ -130,7 +130,8 @@ class XmlConfigurationRepository(object):
 
         # >> Process tags in XML configuration file
         for root_element in xml_root:
-            if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
+            if self.debug: 
+                self.logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
 
             if not root_element.tag == 'category':
                 continue
@@ -142,7 +143,8 @@ class XmlConfigurationRepository(object):
                 text_XML_line = root_child.text if root_child.text is not None else ''
                 text_XML_line = text.unescape_XML(text_XML_line)
                 xml_tag  = root_child.tag
-                if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                if self.debug: 
+                    self.logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
                 category_temp[xml_tag] = text_XML_line
                                 
                 if xml_tag.startswith('s_'):
@@ -151,13 +153,13 @@ class XmlConfigurationRepository(object):
                     assets.append(Asset(asset_data))
                 
             # --- Add category to categories dictionary ---
-            logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
+            self.logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
             yield Category(category_temp, assets)
 
     def get_launchers(self) -> typing.Iterator[ROMCollection]:    
         # --- Parse using cElementTree ---
         # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
-        logger.debug('XmlRepository.get_launchers() Loading {0}'.format(self.file_path.getPath()))
+        self.logger.debug('XmlRepository.get_launchers() Loading {0}'.format(self.file_path.getPath()))
 
         xml_root = self.file_path.readXml()
         if xml_root is None:
@@ -165,7 +167,8 @@ class XmlConfigurationRepository(object):
             
         # >> Process tags in XML configuration file
         for root_element in xml_root:
-            if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
+            if self.debug: 
+                self.logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
 
             if not root_element.tag == 'launcher':
                 continue
@@ -178,7 +181,8 @@ class XmlConfigurationRepository(object):
                 text_XML_line = root_child.text if root_child.text is not None else ''
                 text_XML_line = text.unescape_XML(text_XML_line)
                 xml_tag  = root_child.tag
-                if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                if self.debug: 
+                    self.logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
                 if xml_tag == 'categoryID': xml_tag = 'parent_id'                
                 launcher_temp[xml_tag] = text_XML_line
                 
@@ -193,7 +197,7 @@ class XmlConfigurationRepository(object):
                     asset_paths.append(AssetPath(asset_path_data))
                     
             # --- Add launcher to launchers collection ---
-            logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
+            self.logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
             yield ROMCollection(launcher_temp, assets, asset_paths, [], [])
 
 
@@ -210,13 +214,14 @@ class ROMsJsonFileRepository(object):
     def __init__(self, file_path: io.FileName, debug = False):
         self.file_path = file_path
         self.debug = debug
+        self.logger = logging.getLogger(__name__)
     #
     # Loads ROM databases from disk
     #
     def load_ROMs(self) -> typing.List[ROM]:
-        logger.debug('ROMsJsonFileRepository::load_ROMs() Starting ...')
+        self.logger.debug('ROMsJsonFileRepository::load_ROMs() Starting ...')
         if not self.file_path.exists():
-            logger.warning('Launcher JSON not found "{0}"'.format(self.file_path.getPath()))
+            self.logger.warning('Launcher JSON not found "{0}"'.format(self.file_path.getPath()))
             return []
 
         roms_data = []
@@ -224,14 +229,14 @@ class ROMsJsonFileRepository(object):
         # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
         #    exception exceptions.ValueError and launcher cannot be deleted. Deal
         #    with this exception so at least launcher can be rescanned.
-        logger.debug('ROMsJsonFileRepository.find_by_launcher(): Loading roms from file {0}'.format(self.file_path.getPath()))
+        self.logger.debug('ROMsJsonFileRepository.find_by_launcher(): Loading roms from file {0}'.format(self.file_path.getPath()))
         try:
             roms_data = self.file_path.readJson()
         except ValueError:
             statinfo = self.file_path.stat()
-            logger.error('ROMsJsonFileRepository.find_by_launcher(): ValueError exception in json.load() function')
-            logger.error('ROMsJsonFileRepository.find_by_launcher(): Dir  {0}'.format(self.file_path.getPath()))
-            logger.error('ROMsJsonFileRepository.find_by_launcher(): Size {0}'.format(statinfo.st_size))
+            self.logger.error('ROMsJsonFileRepository.find_by_launcher(): ValueError exception in json.load() function')
+            self.logger.error('ROMsJsonFileRepository.find_by_launcher(): Dir  {0}'.format(self.file_path.getPath()))
+            self.logger.error('ROMsJsonFileRepository.find_by_launcher(): Size {0}'.format(statinfo.st_size))
             return None
 
         # --- Extract roms from JSON data structure and ensure version is correct ---
@@ -285,10 +290,11 @@ class UnitOfWork(object):
     def __init__(self, db_path: io.FileName):
         self._db_path = db_path
         self._commit = False
+        self.logger = logging.getLogger(__name__)
     
     def check_database(self) -> bool:
         if not self._db_path.exists():
-            logger.warning("UnitOfWork.check_database(): Database '%s' missing" % self._db_path)
+            self.logger.warning("UnitOfWork.check_database(): Database '%s' missing" % self._db_path)
             return False
 
         self.open_session()
@@ -296,7 +302,7 @@ class UnitOfWork(object):
         tables = self.result_set()
 
         if not len(tables) or len(tables) == 0:
-            logger.warning("UnitOfWork.check_database(): Database: '%s' no tables" % self._db_path)
+            self.logger.warning("UnitOfWork.check_database(): Database: '%s' no tables" % self._db_path)
             self.close_session()
             return False
         
@@ -344,11 +350,11 @@ class UnitOfWork(object):
         self.open_session()
         
         for migration_file in migration_files:
-            logger.info(f'Executing migration script: {migration_file.getPath()}')
+            self.logger.info(f'Executing migration script: {migration_file.getPath()}')
             sql_statements = migration_file.loadFileToStr()
             self.execute_script(sql_statements)
        
-        logger.info(f'Updating database schema version of app {globals.addon_id} to {globals.addon_version}')     
+        self.logger.info(f'Updating database schema version of app {globals.addon_id} to {globals.addon_version}')     
         self.conn.execute("UPDATE akl_version SET version=? WHERE app=?", [globals.addon_version, globals.addon_id])
         self.commit()
         self.close_session()
@@ -374,15 +380,15 @@ class UnitOfWork(object):
 
     def execute(self, sql, *args) -> Cursor:
         if self.VERBOSE:
-            logger.debug(f'[SQL] {sql}')
+            self.logger.debug(f'[SQL] {sql}')
             sql_args_str = ','.join(map(str, args))
-            logger.debug(f'[SQL] ARGS: {sql_args_str}')
+            self.logger.debug(f'[SQL] ARGS: {sql_args_str}')
         try:
             return self.cursor.execute(sql, args)
         except Exception as ex:
-            logger.error(f'Error while executing query: {sql}', exc_info=ex)
+            self.logger.error(f'Error while executing query: {sql}', exc_info=ex)
             sql_args_str = ','.join(map(str, args))
-            logger.error(f'Used arguments: {sql_args_str}')
+            self.logger.error(f'Used arguments: {sql_args_str}')
             raise
     
     def execute_script(self, sql_statements):
@@ -402,7 +408,7 @@ class UnitOfWork(object):
 
     def __exit__(self, type, value, traceback):
         if type is not None: # errors raised
-            logger.error("type: %s value: %s", type, value)
+            self.logger.error("type: %s value: %s", type, value)
         self.close_session()
 
     def dict_factory(cursor, row):
@@ -455,6 +461,7 @@ class CategoryRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+        self.logger = logging.getLogger(__name__)
 
     def find_category(self, category_id: str) -> Category:
         if category_id == constants.VCATEGORY_ADDONROOT_ID: return Category({'m_name': 'Root'})
@@ -535,7 +542,7 @@ class CategoryRepository(object):
             yield Category(category_data, assets)            
     
     def insert_category(self, category_obj: Category, parent_obj: Category = None):
-        logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
+        self.logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = category_obj.get_assets_root_path()
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
@@ -566,7 +573,7 @@ class CategoryRepository(object):
             self._insert_asset(asset, category_obj)  
             
     def update_category(self, category_obj: Category):
-        logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
+        self.logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
         assets_path = category_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
@@ -593,7 +600,7 @@ class CategoryRepository(object):
             else: self._update_asset(asset, category_obj)    
 
     def delete_category(self, category_id: str):
-        logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
+        self.logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
         self._uow.execute(QUERY_DELETE_CATEGORY, category_id)
 
     def add_rom_to_category(self, category_id: str, rom_id: str):
@@ -683,6 +690,7 @@ class ROMCollectionRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+        self.logger = logging.getLogger(__name__)
 
     def count_collections(self) -> int:
         self._uow.execute(QUERY_COUNT_ROMCOLLECTIONS)
@@ -821,7 +829,7 @@ class ROMCollectionRepository(object):
             yield ROMCollection(romcollection_data, assets, asset_paths, launchers, scanners)                       
     
     def insert_romcollection(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
-        logger.info("ROMCollectionRepository.insert_romcollection(): Inserting new romcollection '{}'".format(romcollection_obj.get_name()))
+        self.logger.info("ROMCollectionRepository.insert_romcollection(): Inserting new romcollection '{}'".format(romcollection_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = romcollection_obj.get_assets_root_path()
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
@@ -883,7 +891,7 @@ class ROMCollectionRepository(object):
                 romcollection_scanner.get_settings_str())
               
     def update_romcollection(self, romcollection_obj: ROMCollection):
-        logger.info("ROMCollectionRepository.update_romcollection(): Updating romcollection '{}'".format(romcollection_obj.get_name()))
+        self.logger.info("ROMCollectionRepository.update_romcollection(): Updating romcollection '{}'".format(romcollection_obj.get_name()))
         assets_path = romcollection_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
@@ -952,7 +960,7 @@ class ROMCollectionRepository(object):
             else: self._update_asset_path(asset_path, romcollection_obj)           
             
     def update_romcollection_parent_reference(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
-        logger.info(f"ROMCollectionRepository.update_romcollection_parent_reference(): Updating romcollection '{romcollection_obj.get_name()}'")
+        self.logger.info(f"ROMCollectionRepository.update_romcollection_parent_reference(): Updating romcollection '{romcollection_obj.get_name()}'")
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_PARENT, parent_category_id, romcollection_obj.get_id())
             
@@ -966,7 +974,7 @@ class ROMCollectionRepository(object):
         self._uow.execute(QUERY_REMOVE_ROMS_FROM_ROMCOLLECTION, romcollection_id)
         
     def delete_romcollection(self, romcollection_id: str):
-        logger.info("ROMCollectionRepository.delete_romcollection(): Deleting romcollection '{}'".format(romcollection_id))
+        self.logger.info("ROMCollectionRepository.delete_romcollection(): Deleting romcollection '{}'".format(romcollection_id))
         self._uow.execute(QUERY_DELETE_ROMCOLLECTION, romcollection_id)
 
     def remove_launcher(self, romcollection_id: str, launcher_id:str):
@@ -1100,6 +1108,7 @@ class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+        self.logger = logging.getLogger(__name__)
 
     def find_roms_by_category(self, category: Category) -> typing.Iterator[ROM]:
         category_id = category.get_id()
@@ -1237,7 +1246,7 @@ class ROMsRepository(object):
         return tags
 
     def insert_rom(self, rom_obj: ROM): 
-        logger.info(f"ROMsRepository.insert_rom(): Inserting new ROM '{rom_obj.get_name()}'")
+        self.logger.info(f"ROMsRepository.insert_rom(): Inserting new ROM '{rom_obj.get_name()}'")
         metadata_id = text.misc_generate_random_SID()
         assets_path = rom_obj.get_assets_root_path()
         
@@ -1280,7 +1289,7 @@ class ROMsRepository(object):
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
 
     def update_rom(self, rom_obj: ROM):
-        logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
+        self.logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
         assets_path = rom_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
@@ -1324,7 +1333,7 @@ class ROMsRepository(object):
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
               
     def delete_rom(self, rom_id: str):
-        logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
+        self.logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
         self._uow.execute(QUERY_DELETE_ROM, rom_id)
 
     def delete_roms_by_romcollection(self, romcollection_id:str):
@@ -1441,6 +1450,7 @@ class AelAddonRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+        self.logger = logging.getLogger(__name__)
 
     def find(self, id:str) -> AelAddon:
         self._uow.execute(QUERY_SELECT_ADDON, id)
@@ -1477,7 +1487,7 @@ class AelAddonRepository(object):
             yield AelAddon(addon_data)
             
     def insert_addon(self, addon: AelAddon):
-        logger.info("AelAddonRepository.insert_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
+        self.logger.info("AelAddonRepository.insert_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_INSERT_ADDON,
                     addon.get_id(),
                     addon.get_name(),
@@ -1487,7 +1497,7 @@ class AelAddonRepository(object):
                     addon.get_extra_settings_str())
         
     def update_addon(self, addon: AelAddon):
-        logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
+        self.logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_UPDATE_ADDON,
                     addon.get_name(),
                     addon.get_addon_id(),
