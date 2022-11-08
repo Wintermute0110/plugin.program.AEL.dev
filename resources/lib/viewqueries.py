@@ -25,7 +25,6 @@ from __future__ import division
 
 import logging
 import typing
-import collections
 from urllib.parse import urlencode
 
 # AKL modules
@@ -34,7 +33,9 @@ from akl.utils import kodi
 
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator
-from resources.lib.repositories import ViewRepository
+from resources.lib.commands import view_rendering_commands
+from resources.lib.repositories import ViewRepository, UnitOfWork, ROMCollectionRepository, ROMsRepository
+from resources.lib.domain import VirtualCollectionFactory
 
 logger = logging.getLogger(__name__)
 #
@@ -100,12 +101,18 @@ def qry_get_root_items():
     return container
 
 #
-# View items.
+# View pre-rendered items.
 #
 def qry_get_view_items(view_id: str, is_virtual_view=False):
     views_repository = ViewRepository(globals.g_PATHS)
     container = views_repository.find_items(view_id, is_virtual_view)
     return container
+
+#
+# View database unrendered items.
+#
+def qry_get_database_view_items(category_id: str, collection_value: str):
+    return view_rendering_commands.cmd_render_virtual_collection(category_id, collection_value)
 
 #
 # Utilities items
@@ -155,7 +162,7 @@ def qry_get_utilities_items():
     })
     container['items'].append({
         'name': 'Rebuild virtual views',
-        'url': globals.router.url_for_path('execute/command/render_listitem_views'),
+        'url': globals.router.url_for_path('execute/command/render_virtual_views'),
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -174,6 +181,19 @@ def qry_get_utilities_items():
         'info': {
             'title': 'Scan for plugin-addons',
             'plot': 'Scan for addons that can be used by AKL (launchers, scrapers etc.)',
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    container['items'].append({
+        'name': 'Show installed plugin-addons',
+        'url': globals.router.url_for_path('execute/command/show_addons'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Show installed plugin-addons',
+            'plot': 'Shows previously scanned addons that can be used by AKL (launchers, scrapers etc.)',
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
@@ -380,7 +400,8 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     commands = []
     if is_category: 
         commands.append(('Rebuild {} view'.format(container_name),
-                        _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
+                        _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))
+        
     if is_romcollection:
         commands.append(('Search ROM in collection', _context_menu_url_for(f'/collection/{container_id}/search')))
         commands.append(('Rebuild {} view'.format(container_name),
@@ -419,7 +440,6 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     is_category: bool           = item_type == constants.OBJ_CATEGORY
     is_romcollection: bool      = item_type == constants.OBJ_ROMCOLLECTION
     is_virtual_category: bool   = item_type == constants.OBJ_CATEGORY_VIRTUAL
-    is_virtual_collection: bool = item_type == constants.OBJ_COLLECTION_VIRTUAL
     is_rom: bool                = item_type == constants.OBJ_ROM
     
     commands = []
@@ -428,11 +448,13 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('Edit ROM', _context_menu_url_for(f'/rom/edit/{item_id}')))
         commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
         commands.append(('Add ROM to AKL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
+        
     if is_category: 
         commands.append(('View Category', _context_menu_url_for(f'/categories/view/{item_id}')))
         commands.append(('Edit Category', _context_menu_url_for(f'/categories/edit/{item_id}')))
         commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{item_id}/in/{container_id}')))
         commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{item_id}/in/{container_id}')))
+        commands.append(('Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{item_id}/in/{container_id}')))
         
     if is_romcollection: 
         commands.append(('View ROM Collection', _context_menu_url_for(f'/romcollection/view/{item_id}')))
@@ -441,10 +463,11 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     if not is_category and container_is_category:
         commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{container_id}')))
         commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{container_id}')))
-    
+        commands.append(('Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{container_id}')))
+        
     if is_virtual_category:
         commands.append((f'Rebuild {item_name} view', _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':item_id})))
-        
+                
     return commands
 
 def _context_menu_url_for(url: str, params: dict = None) -> str:

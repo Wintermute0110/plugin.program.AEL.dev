@@ -222,20 +222,28 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
 
     asset_directory = obj_instance.get_assets_root_path()        
-    # --- New style code ---
-    if asset_directory is None:
-        if obj_instance.get_assets_kind() == constants.KIND_ASSET_CATEGORY:
-            asset_directory = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
-        elif obj_instance.get_assets_kind() == constants.KIND_ASSET_COLLECTION:
-            asset_directory = io.FileName(settings.getSetting('collections_asset_dir'), isdir = True)
-        elif obj_instance.get_assets_kind() == constants.KIND_ASSET_LAUNCHER:
-            asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
-        elif obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
-            asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+    if not asset_directory:
+        if kodi.dialog_yesno("No local assets path configured. Configure now?\n Else we will use addon default directories."):
+            path_str = kodi.dialog_get_directory(f"Assets root path for entry '{obj_instance.get_name()}'")
+            asset_directory = io.FileName(path_str, True)
+            obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
         else:
-            kodi.dialog_OK('Unknown obj_instance.get_assets_kind() {}. '.format(obj_instance.get_assets_kind()) +
-                        'This is a bug, please report it.')
-            return None
+            if obj_instance.get_assets_kind() == constants.KIND_ASSET_CATEGORY:
+                asset_directory = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+            elif obj_instance.get_assets_kind() == constants.KIND_ASSET_COLLECTION:
+                asset_directory = io.FileName(settings.getSetting('collections_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+            elif obj_instance.get_assets_kind() == constants.KIND_ASSET_LAUNCHER:
+                asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+            elif obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
+                asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+            else:
+                kodi.dialog_OK('Unknown obj_instance.get_assets_kind() {}. '.format(obj_instance.get_assets_kind()) +
+                            'This is a bug, please report it.')
+                return None
         
     asset_path_noext = g_assetFactory.assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
                                                    obj_instance.get_name(), obj_instance.get_id())
@@ -309,13 +317,11 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # --- Import an image ---
     # >> Copy and rename a local image into asset directory
     elif selected_option == 'IMPORT_LOCAL':
-        # >> If assets exists start file dialog from current asset directory
-        current_image_file = obj_instance.get_asset_FN(asset_info)
-        current_image_dir = io.FileName(current_image_file.getDir(), isdir = True)
-        logger.debug('edit_asset() current_image_dir  "{0}"'.format(current_image_dir.getPath()))
-        logger.debug('edit_asset() current_image_file "{0}"'.format(current_image_file.getPath()))
-
-        title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
+        current_image_dir = obj_instance.get_asset_path(asset_info, fallback_to_root=False)
+        if not current_image_dir:
+            current_image_dir = obj_instance.get_assets_root_path()
+        
+        title_str = f'Select {obj_instance.get_object_name()} {asset_info.name}'
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
             new_asset_file_str = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
@@ -327,9 +333,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
         # >> Determine image extension and dest filename. Check for errors.
         new_asset_file = io.FileName(new_asset_file_str)
         dest_asset_file = asset_path_noext.append(new_asset_file.getExt())
-        logger.debug('m_gui_edit_asset() new_asset_file     "{0}"'.format(new_asset_file.getPath()))
-        logger.debug('m_gui_edit_asset() new_asset_file ext "{0}"'.format(new_asset_file.getExt()))
-        logger.debug('m_gui_edit_asset() dest_asset_file    "{0}"'.format(dest_asset_file.getPath()))
+        logger.debug(f'm_gui_edit_asset() new_asset_file     "{new_asset_file.getPath()}"')
+        logger.debug(f'm_gui_edit_asset() new_asset_file ext "{new_asset_file.getExt()}"')
+        logger.debug(f'm_gui_edit_asset() dest_asset_file    "{dest_asset_file.getPath()}"')
         if new_asset_file.getPath() == dest_asset_file.getPath():
             logger.info('m_gui_edit_asset() new_asset_file and dest_asset_file are the same. Returning.')
             kodi.notify_warn('new_asset_file and dest_asset_file are the same. Returning')
@@ -388,11 +394,14 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
         # logger.debug('dest_asset_file  ctime {0}'.format(time.ctime(os.path.getctime(dest_asset_file.getPath()))))
 
         # --- Delete cached image to force a cache update ---
-        kodi.delete_cache_texture(dest_asset_file.getPath())
-        kodi.print_texture_info(dest_asset_file.getPath())
+        try:
+            kodi.delete_cache_texture(dest_asset_file.getPath())
+            kodi.print_texture_info(dest_asset_file.getPath())
+        except Exception:
+            logger.exception("Failed to delete cache")
 
         # --- Notify user ---
-        kodi.notify('{0} {1} has been updated'.format(obj_instance.get_object_name(), asset_info.name))
+        kodi.notify(f'{obj_instance.get_object_name()} {asset_info.name} has been updated')
 
     # --- Unset asset ---
     elif selected_option == 'UNSET':

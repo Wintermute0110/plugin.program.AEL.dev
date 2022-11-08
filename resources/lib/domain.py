@@ -36,8 +36,13 @@ from akl import settings, constants
 
 logger = logging.getLogger(__name__)
 
-def is_empty(input: any) -> bool:
-    return input is None or len(input) == 0
+
+def _is_a_number(input: any):
+    return isinstance(input, int) or isinstance(input, float)
+
+
+def _is_empty(input: any) -> bool:
+    return input is None or (not _is_a_number(input) and len(input) == 0)
 
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
@@ -322,6 +327,16 @@ class ROMLauncherAddon(ROMAddon):
             '--akl_addon_id': self.get_id()
         }
         
+    def get_configure_command_for_rom(self, rom: ROM) -> dict:
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--rom_id': rom.get_id(), 
+            '--akl_addon_id': self.get_id()
+        }
+        
     def launch(self, rom: ROM):
         kodi.run_script(
             self.addon.get_addon_id(), 
@@ -331,6 +346,11 @@ class ROMLauncherAddon(ROMAddon):
         kodi.run_script(
             self.addon.get_addon_id(), 
             self.get_configure_command(romcollection))
+    
+    def configure_for_rom(self, rom:ROM):
+        kodi.run_script(
+            self.addon.get_addon_id(), 
+            self.get_configure_command_for_rom(rom))
 
 class RetroplayerLauncherAddon(ROMLauncherAddon):
     
@@ -360,9 +380,20 @@ class RetroplayerLauncherAddon(ROMLauncherAddon):
         kodi.play_item(rom.get_name(), rom_file_path.getPath(), 'game', game_info)
         logger.debug('Retroyplayer call finished')
    
-    def configure(self, romcollection:ROMCollection):
+    def configure(self, romcollection: ROMCollection):
         post_data = {
             'romcollection_id': romcollection.get_id(),
+            'akl_addon_id': self.get_id(),
+            'addon_id': self.addon.get_addon_id(),
+            'settings': {}
+        }        
+        is_stored = api.client_post_launcher_settings(globals.WEBSERVER_HOST, globals.WEBSERVER_PORT, post_data)
+        if not is_stored:
+            kodi.notify_error('Failed to store launchers settings')
+            
+    def configure_for_rom(self, rom: ROM):
+        post_data = {
+            'rom_id': rom.get_id(),
             'akl_addon_id': self.get_id(),
             'addon_id': self.addon.get_addon_id(),
             'settings': {}
@@ -686,7 +717,7 @@ class MetaDataItemABC(EntityABC):
         return None
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
-        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
+        logger.debug(f'Setting "{asset_info.id}" to {path}')
         asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
         asset_path.set_path(path)
         asset_path.set_asset_info(asset_info)
@@ -1061,7 +1092,7 @@ class ROMCollection(MetaDataItemABC):
             if current_default_launcher: current_default_launcher.set_default(False)
             
         self.launchers_data.append(launcher)
-        logger.debug(f'Adding addon "{addon.get_addon_id()}" to launcher "{self.get_name()}"')
+        logger.debug(f'Adding addon "{addon.get_addon_id()}" to collection "{self.get_name()}"')
 
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
@@ -1075,6 +1106,16 @@ class ROMCollection(MetaDataItemABC):
         if default_launcher is None: return self.launchers_data[0]
         
         return default_launcher
+
+    def set_launcher_as_default(self, launcher_id):
+        if len(self.launchers_data) == 0: return
+        
+        current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if current_default_launcher: current_default_launcher.set_default(False)
+        
+        launcher_to_be_default = next((l for l in self.launchers_data if l.get_id() == launcher_id), None)
+        if launcher_to_be_default:
+            launcher_to_be_default.set_default(True)
 
     def has_scanners(self) -> bool:
         return len(self.scanners_data) > 0
@@ -1315,14 +1356,16 @@ class ROM(MetaDataItemABC):
 
     def get_tags(self) -> typing.List[str]:
         if self.tags is not None:
-            return [tag for tag in self.tags.keys()]
+            return [tag for tag in self.tags.keys() if tag is not None]
         return []
 
     def get_tag_data(self) -> dict:
-        return self.tags if self.tags is None else {}
+        if self.tags is None:
+            self.tags = {}
+        return self.tags
 
     def get_launch_count(self):
-        return self.entity_data['launch_count']
+        return self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
 
     def get_last_launch_date(self):
         return self.entity_data['last_launch_timestamp']
@@ -1353,10 +1396,9 @@ class ROM(MetaDataItemABC):
     def add_tag(self, tag:str):
         if self.tags is None:
             self.tags = {}
-
-        existing_tags = self.get_tags()
-        if not tag in existing_tags:
-            self.tags[tag] = ''
+        if tag in self.tags:
+            return
+        self.tags[tag] = ''
 
     def remove_tag(self, tag:str):
         if self.tags is None: return
@@ -1406,12 +1448,45 @@ class ROM(MetaDataItemABC):
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
 
+    def has_launchers(self) -> bool:
+        return len(self.launchers_data) > 0
+
+    def add_launcher(self, addon: AelAddon, settings: dict, is_non_blocking = True, is_default: bool = False):
+        launcher = ROMLauncherAddonFactory.create(addon, { 
+            'settings': json.dumps(settings),
+            'is_non_blocking': is_non_blocking,
+            'is_default': is_default
+        })        
+        if is_default:
+            current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+            if current_default_launcher: current_default_launcher.set_default(False)
+            
+        self.launchers_data.append(launcher)
+        logger.debug(f'Adding addon "{addon.get_addon_id()}" to ROM "{self.get_name()}"')
+
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
 
     def get_launcher(self, id:str) -> ROMLauncherAddon:
         return next((l for l in self.launchers_data if l.get_id() == id), None)
 
+    def get_default_launcher(self) -> ROMLauncherAddon:
+        if len(self.launchers_data) == 0: return None
+        default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if default_launcher is None: return self.launchers_data[0]
+        
+        return default_launcher
+
+    def set_launcher_as_default(self, launcher_id):
+        if len(self.launchers_data) == 0: return
+        
+        current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if current_default_launcher: current_default_launcher.set_default(False)
+        
+        launcher_to_be_default = next((l for l in self.launchers_data if l.get_id() == launcher_id), None)
+        if launcher_to_be_default:
+            launcher_to_be_default.set_default(True)
+            
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data)
@@ -1533,44 +1608,42 @@ class ROM(MetaDataItemABC):
 
         if constants.META_PLOT_ID in metadata_to_update \
             and api_rom_obj.get_plot() \
-            and (overwrite_existing or is_empty(self.get_plot())):              
+            and (overwrite_existing or _is_empty(self.get_plot())):              
             self.set_plot(api_rom_obj.get_plot())
-        
-        logger.debug('Plot3 ' + self.get_plot())
-
+    
         if constants.META_YEAR_ID in metadata_to_update \
             and api_rom_obj.get_releaseyear() \
-            and (overwrite_existing or is_empty(self.get_releaseyear())):       
+            and (overwrite_existing or _is_empty(self.get_releaseyear())):       
             self.set_releaseyear(api_rom_obj.get_releaseyear())
         
         if constants.META_GENRE_ID in metadata_to_update \
             and api_rom_obj.get_genre() \
-            and (overwrite_existing or is_empty(self.get_genre())):
+            and (overwrite_existing or _is_empty(self.get_genre())):
             self.set_genre(api_rom_obj.get_genre())
         
         if constants.META_DEVELOPER_ID in metadata_to_update \
             and api_rom_obj.get_developer() \
-            and (overwrite_existing or is_empty(self.get_developer())):         
+            and (overwrite_existing or _is_empty(self.get_developer())):         
             self.set_developer(api_rom_obj.get_developer())
         
         if constants.META_NPLAYERS_ID in metadata_to_update \
             and api_rom_obj.get_number_of_players() \
-            and (overwrite_existing or is_empty(self.get_number_of_players())):
+            and (overwrite_existing or _is_empty(self.get_number_of_players())):
             self.set_number_of_players(api_rom_obj.get_number_of_players())
         
         if constants.META_NPLAYERS_ONLINE_ID in metadata_to_update \
             and api_rom_obj.get_number_of_players_online() \
-            and (overwrite_existing or is_empty(self.get_number_of_players_online())):
+            and (overwrite_existing or _is_empty(self.get_number_of_players_online())):
             self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
         
         if constants.META_ESRB_ID in metadata_to_update\
              and api_rom_obj.get_esrb_rating() \
-            and (overwrite_existing or is_empty(self.get_esrb_rating())):       
+            and (overwrite_existing or _is_empty(self.get_esrb_rating())):       
             self.set_esrb_rating(api_rom_obj.get_esrb_rating())
         
         if constants.META_RATING_ID in metadata_to_update \
             and api_rom_obj.get_rating() \
-            and (overwrite_existing or is_empty(self.get_rating())):            
+            and (overwrite_existing or _is_empty(self.get_rating())):            
             self.set_rating(api_rom_obj.get_rating())
         
         if constants.META_TAGS_ID in metadata_to_update and api_rom_obj.get_tags() is not None:
@@ -2146,12 +2219,11 @@ class VirtualCollectionFactory(object):
     @staticmethod
     def create_by_category(vcategory_id:str, collection_value:str) -> VirtualCollection:
 
-        unique_id = text.misc_generate_random_SID()
         return VirtualCollection({
-            'id' : '{}_{}'.format(vcategory_id, unique_id),
+            'id' : f'{vcategory_id}_{collection_value}',
             'parent_id': vcategory_id,
             'm_name' : collection_value,
-            'plot': "Browse ROMs filtered on '{}'".format(collection_value),
+            'plot': f"Browse ROMs filtered on '{collection_value}'",
             'collection_value': collection_value,
             'finished': settings.getSettingAsBool('display_hide_vcategories')
         }, [

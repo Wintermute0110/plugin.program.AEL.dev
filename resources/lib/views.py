@@ -54,16 +54,12 @@ logger = logging.getLogger(__name__)
 # This is the plugin entry point.
 # ---------------------------------------------------------------------------------------------
 def run_plugin(addon_argv):
-    # --- Initialise log system ---
-    # >> Force DEBUG log level for development.
-    # >> Place it before settings loading so settings can be dumped during debugging.
-    # set_log_level(LOG_DEBUG)
-
     # --- Some debug stuff for development ---
     logger.debug('------------ Called Advanced Kodi Launcher run_plugin(addon_argv) ------------')
-    logger.debug('addon.id         "{}"'.format(globals.addon_id))
-    logger.debug('addon.version    "{}"'.format(globals.addon_version))
-    for i in range(len(sys.argv)): logger.debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
+    logger.debug(f'addon.id         "{globals.addon_id}"')
+    logger.debug(f'addon.version    "{globals.addon_version}"')
+    for i in range(len(sys.argv)): 
+        logger.debug(f'sys.argv[{i}] "{sys.argv[i]}"')
 
     # --- Bootstrap object instances --- 
     globals.g_bootstrap_instances()
@@ -80,6 +76,7 @@ def run_plugin(addon_argv):
 # -------------------------------------------------------------------------------------------------
 @router.route('/')
 def vw_route_render_root():
+    logger.debug("Executing route: vw_route_render_root")
     container = viewqueries.qry_get_root_items()
     container_context_items = viewqueries.qry_container_context_menu_items(container)
 
@@ -89,6 +86,7 @@ def vw_route_render_root():
 @router.route('/category/<view_id>')
 @router.route('/collection/<view_id>')
 def vw_route_render_collection(view_id: str):
+    logger.debug("Executing route: vw_route_render_collection")
     container               = viewqueries.qry_get_view_items(view_id)
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
@@ -111,6 +109,7 @@ def vw_route_render_collection(view_id: str):
 
 @router.route('/collection/<view_id>/search')
 def vw_route_search_collection(view_id: str):
+    logger.debug("Executing route: vw_route_search_collection")
     #vw_route_render_collection(view_id)
     AppMediator.sync_cmd('SEARCH', {'romcollection_id': view_id})
     kodi.refresh_container()
@@ -137,6 +136,20 @@ def vw_route_render_virtual_view(view_id: str):
                 AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': container['parent_id']})
     else:
         render_list_items(container, container_context_items, filter)
+        
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+    
+@router.route('/collection/virtual/<category_id>/items')
+def vw_route_render_virtual_items_view(category_id: str):
+    collection_value = router.args["value"][0]
+    container               = viewqueries.qry_get_database_view_items(category_id, collection_value)
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+
+    filter_type = router.args['filter'][0] if 'filter' in router.args else None
+    filter_term = router.args['term'][0] if 'term' in router.args else None
+    filter = vw_create_filter(filter_type, filter_term)
+    
+    render_list_items(container, container_context_items, filter)
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
        
@@ -177,6 +190,12 @@ def vw_add_category(category_id: str = None, parent_category_id: str = None):
 @router.route('/categories/edit/<category_id>')
 def vw_edit_category(category_id: str):
     AppMediator.async_cmd('EDIT_CATEGORY', {'category_id': category_id })
+
+@router.route('/categories/addrom/<category_id>')
+@router.route('/categories/addrom/<category_id>/in')
+@router.route('/categories/addrom/<category_id>/in/<parent_category_id>')
+def vw_add_rom_to_category(category_id: str = None, parent_category_id: str = None):
+    AppMediator.async_cmd('ADD_STANDALONE_ROM', {'category_id': category_id,  'parent_category_id': parent_category_id})
 
 @router.route('/romcollection/add')
 @router.route('/romcollection/add/<category_id>')

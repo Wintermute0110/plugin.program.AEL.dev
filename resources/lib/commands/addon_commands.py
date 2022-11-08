@@ -19,13 +19,14 @@ from __future__ import division
 
 import logging
 import typing
-from akl import constants
+import collections
 
 # -- Kodi libs -- 
 import xbmc
 import xbmcaddon
 
 # -- AKL libs -- 
+from akl import constants
 from akl.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
@@ -47,6 +48,27 @@ def cmd_scan_addons(args):
         
     logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
     kodi.notify('Scan completed. Found {} addons'.format(addon_count))
+
+@AppMediator.register('SHOW_ADDONS')
+def cmd_show_addons(args):    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = AelAddonRepository(uow)
+        addons = repository.find_all()
+
+        options = collections.OrderedDict()
+        for addon in addons:
+            logger.info(f"Installed Addon {addon.get_addon_id()} v{addon.get_version()} {addon.get_addon_type()}")
+            if addon.get_addon_id() in options:
+                continue
+            name = f"{addon.get_name()} v{addon.get_version()}"
+            options[addon.get_addon_id()] = name
+
+        s = 'Addons'
+        selected_option = kodi.OrdDictionaryDialog().select(s, options)
+        if selected_option is None:
+            return
+  
 
 def _check_installed_addons() -> int:
     addon_count = 0
