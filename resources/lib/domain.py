@@ -1356,7 +1356,7 @@ class ROM(MetaDataItemABC):
 
     def get_tags(self) -> typing.List[str]:
         if self.tags is not None:
-            return [tag for tag in self.tags.keys()]
+            return [tag for tag in self.tags.keys() if tag is not None]
         return []
 
     def get_tag_data(self) -> dict:
