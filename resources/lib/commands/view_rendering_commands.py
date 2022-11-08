@@ -245,7 +245,8 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     
     root_categories = categories_repository.find_root_categories()
     root_romcollections = romcollections_repository.find_root_romcollections()
-        
+    root_roms = roms_repository.find_root_roms()
+
     root_data = {
         'id': constants.VCATEGORY_ADDONROOT_ID,
         'name': 'Root',
@@ -266,6 +267,12 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
         if render_sub_views:    
             collection_view_data = _render_romcollection_view(root_romcollection, roms_repository)
             views_repository.store_view(root_romcollection.get_id(), root_romcollection.get_type(), collection_view_data)
+
+    for rom in root_roms:
+        try:
+            root_items.append(_render_rom_listitem(rom))
+        except Exception:
+            logger.exception(f"Exception while rendering list item ROM '{rom.get_name()}'")                  
 
     root_vcategory = VirtualCategoryFactory.create(constants.VCATEGORY_ROOT_ID)
     logger.debug('Processing root virtual category')
