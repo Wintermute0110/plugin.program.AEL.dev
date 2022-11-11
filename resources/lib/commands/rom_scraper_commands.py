@@ -167,6 +167,7 @@ def cmd_scrape_rom_with_settings(args):
         options = collections.OrderedDict()        
         options['SCRAPER_METADATA_POLICY']      = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
         options['SCRAPER_ASSET_POLICY']         = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
+        options['SCRAPER_SEARCH_TERM_MODE']     = f'Search term mode: "{kodi.translate(scraper_settings.search_term_mode)}"'
         options['SCRAPER_GAME_SELECTION_MODE']  = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
         options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
         options['SCRAPER_META_TO_SCRAPE']       = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
@@ -301,10 +302,11 @@ def cmd_scrape_rom_assets(args):
         asset_options = g_assetFactory.get_all()
         options = collections.OrderedDict()
         for asset_option in asset_options:
-            if selected_addon.is_asset_supported(asset_option):
+            if selected_addon.is_asset_supported(asset_option.id):
                 options[asset_option.id] = asset_option.name
         
-        selected_options = kodi.MultiSelectDialog().select('Assets to scrape', options, preselected=scraper_settings.asset_IDs_to_scrape)
+        selected_options = kodi.MultiSelectDialog().select(
+            'Assets to scrape', options, preselected=scraper_settings.asset_IDs_to_scrape)
     
         if selected_options is not None:
             scraper_settings.asset_IDs_to_scrape = selected_options 
@@ -364,6 +366,25 @@ def cmd_configure_scraper_asset_policy(args):
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
     
+@AppMediator.register('SCRAPER_SEARCH_TERM_MODE')
+def cmd_configure_scraper_search_term_mode(args):
+    scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
+    
+    options = collections.OrderedDict()
+    options[constants.SCRAPE_MANUAL]    = kodi.translate(constants.SCRAPE_MANUAL)
+    options[constants.SCRAPE_AUTOMATIC] = kodi.translate(constants.SCRAPE_AUTOMATIC)
+    s = 'Game search term mode "{}"'.format(kodi.translate(scraper_settings.search_term_mode))
+    selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.search_term_mode)
+    
+    if selected_option is None:
+        AppMediator.sync_cmd(args['ret_cmd'], args)
+        return
+    
+    scraper_settings.search_term_mode = selected_option  
+    args['scraper_settings'] = scraper_settings
+    AppMediator.sync_cmd(args['ret_cmd'], args)
+    return
+
 @AppMediator.register('SCRAPER_GAME_SELECTION_MODE')
 def cmd_configure_scraper_game_selection_mode(args):
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
