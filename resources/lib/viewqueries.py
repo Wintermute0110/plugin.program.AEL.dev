@@ -3,7 +3,7 @@
 # Advanced Kodi Launcher: UI query implementations. Getting data for the UI
 #
 
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,12 +34,10 @@ from akl.utils import kodi
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator
 from resources.lib.commands import view_rendering_commands
-from resources.lib.repositories import ViewRepository, UnitOfWork, ROMCollectionRepository, ROMsRepository
-from resources.lib.domain import VirtualCollectionFactory
+from resources.lib.repositories import ViewRepository
 
 logger = logging.getLogger(__name__)
 #
-
 # Root view items
 #
 def qry_get_root_items():

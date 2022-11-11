@@ -283,7 +283,7 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
 
     for vcollection_id in constants.VCOLLECTIONS:
         vcollection = VirtualCollectionFactory.create(vcollection_id)
-        logger.debug('Processing virtual collection "{}"'.format(vcollection.get_name()))
+        logger.debug(f'Processing virtual collection "{vcollection.get_name()}"')
         root_items.append(_render_romcollection_listitem(vcollection))
         collection_view_data = _render_romcollection_view(vcollection, roms_repository)
         views_repository.store_view(vcollection.get_id(), vcollection.get_type(), collection_view_data)
@@ -411,8 +411,11 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     assets = romcollection_obj.get_view_assets()
 
     if romcollection_obj.get_type() == constants.OBJ_COLLECTION_VIRTUAL:
-        collection_value = romcollection_obj.get_custom_attribute("collection_value")
-        url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_parent_id()}/items?value={collection_value}')
+        if romcollection_obj.get_parent_id() is None:
+           url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_id()}')
+        else: 
+            collection_value = romcollection_obj.get_custom_attribute("collection_value")
+            url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_parent_id()}/items?value={collection_value}')
     else:
         url = globals.router.url_for_path(f'collection/{romcollection_obj.get_id()}')
 
