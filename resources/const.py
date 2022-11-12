@@ -17,6 +17,7 @@
 
 # --- Python Standard Library ---
 import collections
+import os
 
 # --- Transitional code from Python 2 to Python 3 ---
 # See https://github.com/benjaminp/six/blob/master/six.py
