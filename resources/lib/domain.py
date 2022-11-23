@@ -816,7 +816,7 @@ class MetaDataItemABC(EntityABC):
         self.entity_data[asset_info.default_key] = mapped_to_info.key
         
     def __str__(self):
-        return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
+        return '{}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
 
 # -------------------------------------------------------------------------------------------------
 # Class representing an AKL Cateogry.

@@ -5,3 +5,4 @@ routing==0.2.3
 pytest==6.2.5
 script.module.akl==1.0.7
 requests==2.22.0
+flake8==5.0.4
