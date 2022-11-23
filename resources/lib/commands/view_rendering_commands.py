@@ -264,7 +264,7 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     for root_romcollection in root_romcollections:
         logger.debug(f'Processing romcollection "{root_romcollection.get_name()}"')
         root_items.append(_render_romcollection_listitem(root_romcollection))
-        if render_sub_views:    
+        if render_sub_views:
             collection_view_data = _render_romcollection_view(root_romcollection, roms_repository)
             views_repository.store_view(root_romcollection.get_id(), root_romcollection.get_type(), collection_view_data)
 
@@ -278,8 +278,8 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     logger.debug('Processing root virtual category')
     root_items.append(_render_category_listitem(root_vcategory))
     if render_sub_views:
-        _render_category_view(root_vcategory, categories_repository, romcollections_repository, 
-                                roms_repository, views_repository, render_sub_views)  
+        _render_category_view(root_vcategory, categories_repository, romcollections_repository,
+                              roms_repository, views_repository, render_sub_views)
 
     for vcollection_id in constants.VCOLLECTIONS:
         vcollection = VirtualCollectionFactory.create(vcollection_id)
@@ -291,10 +291,11 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     logger.debug('Storing {} items in root view.'.format(len(root_items)))
     root_data['items'] = root_items
     views_repository.store_root_view(root_data)
-        
-def _render_category_view(category_obj: Category, categories_repository: CategoryRepository, 
-                         romcollections_repository: ROMCollectionRepository, roms_repository: ROMsRepository,
-                         views_repository: ViewRepository, render_sub_views = False):
+
+
+def _render_category_view(category_obj: Category, categories_repository: CategoryRepository,
+                          romcollections_repository: ROMCollectionRepository, roms_repository: ROMsRepository,
+                          views_repository: ViewRepository, render_sub_views=False):
     
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
     romcollections = romcollections_repository.find_romcollections_by_parent(category_obj.get_id())
@@ -309,10 +310,12 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     }
     view_items = []
     for sub_category in sub_categories:
-        logger.debug('Processing category "{}", part of "{}"'.format(sub_category.get_name(), category_obj.get_name()))
+        if sub_category is None:
+            continue
+        logger.debug(f'Processing category "{sub_category.get_name()}", part of "{category_obj.get_name()}"')
         view_items.append(_render_category_listitem(sub_category))
         if render_sub_views:
-            _render_category_view(sub_category, categories_repository, romcollections_repository, roms_repository, 
+            _render_category_view(sub_category, categories_repository, romcollections_repository, roms_repository,
                                   views_repository, render_sub_views)
     
     for romcollection in romcollections:
@@ -335,11 +338,10 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     logger.debug(f'Storing {len(view_items)} items for category "{category_obj.get_name()}" view.')
     view_data['items'] = view_items
     views_repository.store_view(category_obj.get_id(), category_obj.get_type(), view_data)  
-    
-def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository) -> dict:
-    
-    roms = roms_repository.find_roms_by_romcollection(romcollection_obj)
-    
+
+
+def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository) -> dict: 
+    roms = roms_repository.find_roms_by_romcollection(romcollection_obj)  
     view_data = {
         'id': romcollection_obj.get_id(),
         'parent_id': romcollection_obj.get_parent_id(),
@@ -356,12 +358,13 @@ def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository
         try:
             rom.apply_romcollection_asset_mapping(romcollection_obj)
             view_items.append(_render_rom_listitem(rom))
-        except Exception as ex:
-            logger.error('Exception while rendering list item ROM "{}"'.format(rom.get_name()), exc_info=ex)
+        except Exception:
+            logger.exception(f'Exception while rendering list item ROM "{rom.get_name()}"')
         
-    logger.debug('Storing {} items for romcollection "{}" view.'.format(len(view_items), romcollection_obj.get_name()))
+    logger.debug(f'Storing {len(view_items)} items for romcollection "{romcollection_obj.get_name()}" view.')
     view_data['items'] = view_items
     return view_data
+
 
 # -------------------------------------------------------------------------------------------------
 # Rendering of list items per view

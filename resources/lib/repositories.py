@@ -456,13 +456,13 @@ class CategoryRepository(object):
                 
             yield Category(category_data, assets)
 
-    def find_categories_by_parent(self, category_id) -> typing.Iterator[Category]:
-        
+    def find_categories_by_parent(self, category_id) -> typing.Iterator[Category]:        
         if category_id == constants.VCATEGORY_ROOT_ID:
             for vcategory_id in constants.VCATEGORIES:
                 yield VirtualCategoryFactory.create(vcategory_id)
         
-        if category_id in constants.VCATEGORIES: return []
+        if category_id in constants.VCATEGORIES:
+            return []
         
         self._uow.execute(qry.SELECT_CATEGORIES_BY_PARENT, category_id)
         result_set = self._uow.result_set()
