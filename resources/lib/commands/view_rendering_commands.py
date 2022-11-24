@@ -2,7 +2,7 @@
 #
 # Advanced Kodi Launcher: Commands (Precompiling the view data)
 #
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,21 +31,23 @@ from resources.lib.domain import VirtualCollectionFactory, VirtualCategoryFactor
 
 logger = logging.getLogger(__name__)
 
+
 @AppMediator.register('RENDER_VIEWS')
 def cmd_render_views_data(args):
     kodi.notify('Rendering all views')
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository     = CategoryRepository(uow)
+        categories_repository = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
-        roms_repository           = ROMsRepository(uow)
-        views_repository          = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
         
         _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_sub_views=True)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
+
 
 @AppMediator.register('RENDER_CATEGORY_VIEW')
 def cmd_render_view_data(args):
@@ -55,10 +57,10 @@ def cmd_render_view_data(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository     = CategoryRepository(uow)
+        categories_repository = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
-        roms_repository           = ROMsRepository(uow)
-        views_repository          = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
                 
         if category_id is None or category_id == constants.VCATEGORY_ADDONROOT_ID:
             _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_recursive)
@@ -166,14 +168,15 @@ def cmd_render_romcollection_view_data(args):
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
+
 @AppMediator.register('RENDER_VCOLLECTION_VIEW')
 def cmd_render_vcollection(args):
     vcollection_id = args['vcollection_id'] if 'vcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        roms_repository     = ROMsRepository(uow)
-        views_repository    = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
         
         vcollection = VirtualCollectionFactory.create(vcollection_id)
                 
@@ -183,6 +186,7 @@ def cmd_render_vcollection(args):
     
         kodi.notify('{} view rendered'.format(vcollection.get_name()))
     kodi.refresh_container()
+
 
 @AppMediator.register('RENDER_ROM_VIEWS')
 def cmd_render_rom_views(args):
@@ -236,12 +240,13 @@ def cmd_render_virtual_collection(vcategory_id: str, collection_value: str) -> d
         viewdata = _render_romcollection_view(vcollection, roms_repository)
     return viewdata
 
+
 # -------------------------------------------------------------------------------------------------
 # Rendering of views (containers)
-# -------------------------------------------------------------------------------------------------         
-def _render_root_view(categories_repository: CategoryRepository, romcollections_repository: ROMCollectionRepository, 
-                      roms_repository: ROMsRepository, views_repository: ViewRepository, 
-                      render_sub_views = False):
+# -------------------------------------------------------------------------------------------------
+def _render_root_view(categories_repository: CategoryRepository, romcollections_repository: ROMCollectionRepository,
+                      roms_repository: ROMsRepository, views_repository: ViewRepository,
+                      render_sub_views=False):
     
     root_categories = categories_repository.find_root_categories()
     root_romcollections = romcollections_repository.find_root_romcollections()
@@ -340,8 +345,8 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     views_repository.store_view(category_obj.get_id(), category_obj.get_type(), view_data)  
 
 
-def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository) -> dict: 
-    roms = roms_repository.find_roms_by_romcollection(romcollection_obj)  
+def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository) -> dict:
+    roms = roms_repository.find_roms_by_romcollection(romcollection_obj)
     view_data = {
         'id': romcollection_obj.get_id(),
         'parent_id': romcollection_obj.get_parent_id(),
@@ -402,7 +407,8 @@ def _render_category_listitem(category_obj: Category) -> dict:
             'num_romcollections': category_obj.num_romcollections() 
         }
     }
- 
+
+
 def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     # --- Do not render row if romcollection finished ---
     if romcollection_obj.is_finished() and \
@@ -416,7 +422,7 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     if romcollection_obj.get_type() == constants.OBJ_COLLECTION_VIRTUAL:
         if romcollection_obj.get_parent_id() is None:
            url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_id()}')
-        else: 
+        else:
             collection_value = romcollection_obj.get_custom_attribute("collection_value")
             url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_parent_id()}/items?value={collection_value}')
     else:

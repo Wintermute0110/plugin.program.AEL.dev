@@ -5,7 +5,6 @@ import typing
 import sqlite3
 from sqlite3.dbapi2 import Cursor
 
-from akl.settings import *
 from akl.utils import text, io
 from akl import constants
 
@@ -14,6 +13,7 @@ from resources.lib import queries as qry
 from resources.lib.domain import Category, ROMCollection, ROM, Asset, AssetPath, VirtualCollection
 from resources.lib.domain import VirtualCategoryFactory, VirtualCollectionFactory, ROMLauncherAddonFactory, g_assetFactory
 from resources.lib.domain import ROMCollectionScanner, ROMLauncherAddon, AelAddon
+
 
 # #################################################################################################
 # #################################################################################################
@@ -52,7 +52,7 @@ class ViewRepository(object):
         
         return item_data
 
-    def find_items(self, view_id, is_virtual = False) -> typing.Any:
+    def find_items(self, view_id, is_virtual=False) -> typing.Any:
         repository_file = self.paths.VIEWS_DIR.pjoin('view_{}.json'.format(view_id))
         if is_virtual:
             repository_file = self.paths.GENERATED_VIEWS_DIR.pjoin('view_{}.json'.format(view_id))
@@ -281,6 +281,8 @@ class ROMsJsonFileRepository(object):
     def _alter_dictionary_for_compatibility(self, rom_data: dict) -> dict:
         rom_data['rom_status'] = rom_data['fav_status'] if 'fav_status' in rom_data else None
         return rom_data
+
+
 #
 # UnitOfWork to be used with sqlite repositories.
 # Can be used to create database scopes/sessions (unit of work pattern).
@@ -418,6 +420,7 @@ class UnitOfWork(object):
             d[col[0]] = row[idx]
         return d
 
+
 #
 # CategoryRepository -> Category from SQLite DB
 #
@@ -428,7 +431,8 @@ class CategoryRepository(object):
         self.logger = logging.getLogger(__name__)
 
     def find_category(self, category_id: str) -> Category:
-        if category_id == constants.VCATEGORY_ADDONROOT_ID: return Category({'m_name': 'Root'})
+        if category_id == constants.VCATEGORY_ADDONROOT_ID:
+            return Category({'m_name': 'Root'})
         
         self._uow.execute(qry.SELECT_CATEGORY, category_id)
         category_data = self._uow.single_result()
@@ -438,7 +442,7 @@ class CategoryRepository(object):
                 
         assets = []
         for asset_data in assets_result_set:
-            assets.append(Asset(asset_data))    
+            assets.append(Asset(asset_data))
             
         return Category(category_data, assets)
 
@@ -452,7 +456,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                assets.append(Asset(asset_data))    
+                assets.append(Asset(asset_data))
                 
             yield Category(category_data, assets)
 
@@ -1084,7 +1088,7 @@ class ROMsRepository(object):
         tags = {}
         for tag_data in tags_data:
             tags[tag_data['tag']] = tag_data['id']
-            
+                  
         return ROM(rom_data, tags, assets, asset_paths, scanned_data, launchers)
 
     def find_all_tags(self) -> dict:
@@ -1096,7 +1100,7 @@ class ROMsRepository(object):
         return tags
 
     def insert_rom(self, rom_obj: ROM): 
-        self.logger.info(f"ROMsRepository.insert_rom(): Inserting new ROM '{rom_obj.get_name()}'")
+        self.logger.info(f"Inserting new ROM '{rom_obj.get_rom_identifier()}'")
         metadata_id = text.misc_generate_random_SID()
         assets_path = rom_obj.get_assets_root_path()
         
@@ -1139,7 +1143,7 @@ class ROMsRepository(object):
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
 
     def update_rom(self, rom_obj: ROM):
-        self.logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
+        self.logger.info(f"Updating ROM '{rom_obj.get_rom_identifier()}'")
         assets_path = rom_obj.get_assets_root_path()
         
         self._uow.execute(qry.UPDATE_METADATA,
@@ -1263,17 +1267,27 @@ class ROMsRepository(object):
         vcategory_id    = vcollection.get_parent_id()
         
         if vcategory_id is not None:            
-            if vcategory_id == constants.VCATEGORY_TITLE_ID:     return qry.SELECT_BY_TITLE, qry.SELECT_BY_TITLE_ASSETS            
-            if vcategory_id == constants.VCATEGORY_GENRE_ID:     return qry.SELECT_BY_GENRE, qry.SELECT_BY_GENRE_ASSETS            
-            if vcategory_id == constants.VCATEGORY_DEVELOPER_ID: return qry.SELECT_BY_DEVELOPER, qry.SELECT_BY_DEVELOPER_ASSETS            
-            if vcategory_id == constants.VCATEGORY_ESRB_ID:      return qry.SELECT_BY_ESRB, qry.SELECT_BY_ESRB_ASSETS            
-            if vcategory_id == constants.VCATEGORY_YEARS_ID:     return qry.SELECT_BY_YEAR, qry.SELECT_BY_YEAR_ASSETS            
-            if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:  return qry.SELECT_BY_NPLAYERS, qry.SELECT_BY_NPLAYERS_ASSETS            
-            if vcategory_id == constants.VCATEGORY_RATING_ID:    return qry.SELECT_BY_RATING, qry.SELECT_BY_RATING_ASSETS
+            if vcategory_id == constants.VCATEGORY_TITLE_ID:
+                return qry.SELECT_BY_TITLE, qry.SELECT_BY_TITLE_ASSETS            
+            if vcategory_id == constants.VCATEGORY_GENRE_ID:
+                return qry.SELECT_BY_GENRE, qry.SELECT_BY_GENRE_ASSETS            
+            if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:
+                return qry.SELECT_BY_DEVELOPER, qry.SELECT_BY_DEVELOPER_ASSETS            
+            if vcategory_id == constants.VCATEGORY_ESRB_ID:
+                return qry.SELECT_BY_ESRB, qry.SELECT_BY_ESRB_ASSETS            
+            if vcategory_id == constants.VCATEGORY_YEARS_ID:
+                return qry.SELECT_BY_YEAR, qry.SELECT_BY_YEAR_ASSETS            
+            if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:
+                return qry.SELECT_BY_NPLAYERS, qry.SELECT_BY_NPLAYERS_ASSETS            
+            if vcategory_id == constants.VCATEGORY_RATING_ID:
+                return qry.SELECT_BY_RATING, qry.SELECT_BY_RATING_ASSETS
         else:
-            if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:   return qry.SELECT_MY_FAVOURITES, qry.SELECT_FAVOURITES_ROM_ASSETS
-            if vcollection_id == constants.VCOLLECTION_RECENT_ID:       return qry.SELECT_RECENTLY_PLAYED_ROMS,qry.SELECT_RECENTLY_PLAYED_ROM_ASSETS
-            if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:  return qry.SELECT_MOST_PLAYED_ROMS, qry.SELECT_MOST_PLAYED_ROM_ASSETS
+            if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
+                return qry.SELECT_MY_FAVOURITES, qry.SELECT_FAVOURITES_ROM_ASSETS
+            if vcollection_id == constants.VCOLLECTION_RECENT_ID:
+                return qry.SELECT_RECENTLY_PLAYED_ROMS,qry.SELECT_RECENTLY_PLAYED_ROM_ASSETS
+            if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
+                return qry.SELECT_MOST_PLAYED_ROMS, qry.SELECT_MOST_PLAYED_ROM_ASSETS
             
         return None, None
               
