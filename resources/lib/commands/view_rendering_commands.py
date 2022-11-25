@@ -2,7 +2,7 @@
 #
 # Advanced Kodi Launcher: Commands (Precompiling the view data)
 #
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,21 +31,23 @@ from resources.lib.domain import VirtualCollectionFactory, VirtualCategoryFactor
 
 logger = logging.getLogger(__name__)
 
+
 @AppMediator.register('RENDER_VIEWS')
 def cmd_render_views_data(args):
     kodi.notify('Rendering all views')
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository     = CategoryRepository(uow)
+        categories_repository = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
-        roms_repository           = ROMsRepository(uow)
-        views_repository          = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
         
         _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_sub_views=True)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
+
 
 @AppMediator.register('RENDER_CATEGORY_VIEW')
 def cmd_render_view_data(args):
@@ -55,10 +57,10 @@ def cmd_render_view_data(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository     = CategoryRepository(uow)
+        categories_repository = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
-        roms_repository           = ROMsRepository(uow)
-        views_repository          = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
                 
         if category_id is None or category_id == constants.VCATEGORY_ADDONROOT_ID:
             _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_recursive)
@@ -166,14 +168,15 @@ def cmd_render_romcollection_view_data(args):
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
+
 @AppMediator.register('RENDER_VCOLLECTION_VIEW')
 def cmd_render_vcollection(args):
     vcollection_id = args['vcollection_id'] if 'vcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        roms_repository     = ROMsRepository(uow)
-        views_repository    = ViewRepository(globals.g_PATHS)
+        roms_repository = ROMsRepository(uow)
+        views_repository = ViewRepository(globals.g_PATHS)
         
         vcollection = VirtualCollectionFactory.create(vcollection_id)
                 
@@ -183,6 +186,7 @@ def cmd_render_vcollection(args):
     
         kodi.notify('{} view rendered'.format(vcollection.get_name()))
     kodi.refresh_container()
+
 
 @AppMediator.register('RENDER_ROM_VIEWS')
 def cmd_render_rom_views(args):
@@ -236,12 +240,13 @@ def cmd_render_virtual_collection(vcategory_id: str, collection_value: str) -> d
         viewdata = _render_romcollection_view(vcollection, roms_repository)
     return viewdata
 
+
 # -------------------------------------------------------------------------------------------------
 # Rendering of views (containers)
-# -------------------------------------------------------------------------------------------------         
-def _render_root_view(categories_repository: CategoryRepository, romcollections_repository: ROMCollectionRepository, 
-                      roms_repository: ROMsRepository, views_repository: ViewRepository, 
-                      render_sub_views = False):
+# -------------------------------------------------------------------------------------------------
+def _render_root_view(categories_repository: CategoryRepository, romcollections_repository: ROMCollectionRepository,
+                      roms_repository: ROMsRepository, views_repository: ViewRepository,
+                      render_sub_views=False):
     
     root_categories = categories_repository.find_root_categories()
     root_romcollections = romcollections_repository.find_root_romcollections()
@@ -264,7 +269,7 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     for root_romcollection in root_romcollections:
         logger.debug(f'Processing romcollection "{root_romcollection.get_name()}"')
         root_items.append(_render_romcollection_listitem(root_romcollection))
-        if render_sub_views:    
+        if render_sub_views:
             collection_view_data = _render_romcollection_view(root_romcollection, roms_repository)
             views_repository.store_view(root_romcollection.get_id(), root_romcollection.get_type(), collection_view_data)
 
@@ -278,8 +283,8 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     logger.debug('Processing root virtual category')
     root_items.append(_render_category_listitem(root_vcategory))
     if render_sub_views:
-        _render_category_view(root_vcategory, categories_repository, romcollections_repository, 
-                                roms_repository, views_repository, render_sub_views)  
+        _render_category_view(root_vcategory, categories_repository, romcollections_repository,
+                              roms_repository, views_repository, render_sub_views)
 
     for vcollection_id in constants.VCOLLECTIONS:
         vcollection = VirtualCollectionFactory.create(vcollection_id)
@@ -291,10 +296,11 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
     logger.debug('Storing {} items in root view.'.format(len(root_items)))
     root_data['items'] = root_items
     views_repository.store_root_view(root_data)
-        
-def _render_category_view(category_obj: Category, categories_repository: CategoryRepository, 
-                         romcollections_repository: ROMCollectionRepository, roms_repository: ROMsRepository,
-                         views_repository: ViewRepository, render_sub_views = False):
+
+
+def _render_category_view(category_obj: Category, categories_repository: CategoryRepository,
+                          romcollections_repository: ROMCollectionRepository, roms_repository: ROMsRepository,
+                          views_repository: ViewRepository, render_sub_views=False):
     
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
     romcollections = romcollections_repository.find_romcollections_by_parent(category_obj.get_id())
@@ -309,10 +315,12 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     }
     view_items = []
     for sub_category in sub_categories:
-        logger.debug('Processing category "{}", part of "{}"'.format(sub_category.get_name(), category_obj.get_name()))
+        if sub_category is None:
+            continue
+        logger.debug(f'Processing category "{sub_category.get_name()}", part of "{category_obj.get_name()}"')
         view_items.append(_render_category_listitem(sub_category))
         if render_sub_views:
-            _render_category_view(sub_category, categories_repository, romcollections_repository, roms_repository, 
+            _render_category_view(sub_category, categories_repository, romcollections_repository, roms_repository,
                                   views_repository, render_sub_views)
     
     for romcollection in romcollections:
@@ -335,11 +343,10 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     logger.debug(f'Storing {len(view_items)} items for category "{category_obj.get_name()}" view.')
     view_data['items'] = view_items
     views_repository.store_view(category_obj.get_id(), category_obj.get_type(), view_data)  
-    
+
+
 def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository) -> dict:
-    
     roms = roms_repository.find_roms_by_romcollection(romcollection_obj)
-    
     view_data = {
         'id': romcollection_obj.get_id(),
         'parent_id': romcollection_obj.get_parent_id(),
@@ -356,12 +363,13 @@ def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository
         try:
             rom.apply_romcollection_asset_mapping(romcollection_obj)
             view_items.append(_render_rom_listitem(rom))
-        except Exception as ex:
-            logger.error('Exception while rendering list item ROM "{}"'.format(rom.get_name()), exc_info=ex)
+        except Exception:
+            logger.exception(f'Exception while rendering list item ROM "{rom.get_name()}"')
         
-    logger.debug('Storing {} items for romcollection "{}" view.'.format(len(view_items), romcollection_obj.get_name()))
+    logger.debug(f'Storing {len(view_items)} items for romcollection "{romcollection_obj.get_name()}" view.')
     view_data['items'] = view_items
     return view_data
+
 
 # -------------------------------------------------------------------------------------------------
 # Rendering of list items per view
@@ -399,7 +407,8 @@ def _render_category_listitem(category_obj: Category) -> dict:
             'num_romcollections': category_obj.num_romcollections() 
         }
     }
- 
+
+
 def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     # --- Do not render row if romcollection finished ---
     if romcollection_obj.is_finished() and \
@@ -413,7 +422,7 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     if romcollection_obj.get_type() == constants.OBJ_COLLECTION_VIRTUAL:
         if romcollection_obj.get_parent_id() is None:
            url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_id()}')
-        else: 
+        else:
             collection_value = romcollection_obj.get_custom_attribute("collection_value")
             url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_parent_id()}/items?value={collection_value}')
     else:
@@ -447,78 +456,97 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     # --- Browse Offline Scraper database ---
     #if not settings.getSettingAsBool('display_hide_AKL_scraper'): render_vcategory_AKL_offline_scraper_row()
     #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
-    
+
+
 def _render_rom_listitem(rom_obj: ROM) -> dict:
     # --- Do not render row if romcollection finished ---
-    if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
+    if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'):
+        return
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
     assets = rom_obj.get_view_assets()
 
     # --- Default values for flags ---
-    AKL_InFav_bool_value     = constants.AKL_INFAV_BOOL_VALUE_FALSE
+    AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_FALSE
     AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_FALSE
-    AKL_Fav_stat_value       = constants.AKL_FAV_STAT_VALUE_NONE
-    AKL_NoIntro_stat_value   = constants.AKL_NOINTRO_STAT_VALUE_NONE
-    AKL_PClone_stat_value    = constants.AKL_PCLONE_STAT_VALUE_NONE
+    AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
+    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
+    AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_NONE
 
-    rom_status      = rom_obj.get_rom_status()
-    if   rom_status == 'OK':                AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_OK
-    elif rom_status == 'Unlinked ROM':      AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_ROM
-    elif rom_status == 'Unlinked Launcher': AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
-    elif rom_status == 'Broken':            AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_BROKEN
-    else:                                   AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
+    rom_status = rom_obj.get_rom_status()
+    if rom_status == 'OK':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_OK
+    elif rom_status == 'Unlinked ROM':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_ROM
+    elif rom_status == 'Unlinked Launcher':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+    elif rom_status == 'Broken':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_BROKEN
+    else:
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
 
     # --- NoIntro status flag ---
     nstat = rom_obj.get_nointro_status()
-    if   nstat == constants.AUDIT_STATUS_HAVE:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_HAVE
-    elif nstat == constants.AUDIT_STATUS_MISS:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_MISS
-    elif nstat == constants.AUDIT_STATUS_UNKNOWN: AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_UNKNOWN
-    elif nstat == constants.AUDIT_STATUS_NONE:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
+    if nstat == constants.AUDIT_STATUS_HAVE:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_HAVE
+    elif nstat == constants.AUDIT_STATUS_MISS:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_MISS
+    elif nstat == constants.AUDIT_STATUS_UNKNOWN:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_UNKNOWN
+    elif nstat == constants.AUDIT_STATUS_NONE:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
 
     # --- Mark clone ROMs ---
     pclone_status = rom_obj.get_pclone_status()
-    if   pclone_status == constants.PCLONE_STATUS_PARENT: AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_PARENT
-    elif pclone_status == constants.PCLONE_STATUS_CLONE:  AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_CLONE
+    if pclone_status == constants.PCLONE_STATUS_PARENT:
+        AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_PARENT
+    elif pclone_status == constants.PCLONE_STATUS_CLONE:
+        AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_CLONE
     
     rom_in_fav = rom_obj.is_favourite()
-    if rom_in_fav: AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_TRUE
+    if rom_in_fav:
+        AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_TRUE
 
-     # --- Set common flags to all launchers---
-    if rom_obj.has_multiple_disks(): AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_TRUE
+    # --- Set common flags to all launchers---
+    if rom_obj.has_multiple_disks():
+        AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_TRUE
 
     list_name = rom_obj.get_name()
     if list_name is None or list_name == '':
         list_name = rom_obj.get_rom_identifier()
 
-    return { 
+    return {
         'id': rom_obj.get_id(),
         'name': list_name,
         'url': globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}'),
         'is_folder': False,
         'type': 'video',
         'info': {
-            'title'   : rom_obj.get_name(),    'year'    : rom_obj.get_releaseyear(),
-            'genre'   : rom_obj.get_genre(),   'studio'  : rom_obj.get_developer(),
-            'rating'  : rom_obj.get_rating(),  'plot'    : rom_obj.get_plot(),
-            'trailer' : rom_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+            'title': rom_obj.get_name(),
+            'year': rom_obj.get_releaseyear(),
+            'genre': rom_obj.get_genre(),
+            'studio': rom_obj.get_developer(),
+            'rating': rom_obj.get_rating(),
+            'plot': rom_obj.get_plot(),
+            'trailer': rom_obj.get_trailer(),
+            'overlay': ICON_OVERLAY
         },
         'art': assets,
-        'properties': { 
-            'platform':         rom_obj.get_platform(),
-            'nplayers':         rom_obj.get_number_of_players(),
-            'nplayers_online':  rom_obj.get_number_of_players_online(),
-            'esrb':             rom_obj.get_esrb_rating(),
-            'boxsize':          rom_obj.get_box_sizing(),
-            'tags':             ','.join(rom_obj.get_tags()),
-            'obj_type':         constants.OBJ_ROM,
+        'properties': {
+            'platform': rom_obj.get_platform(),
+            'nplayers': rom_obj.get_number_of_players(),
+            'nplayers_online': rom_obj.get_number_of_players_online(),
+            'esrb': rom_obj.get_esrb_rating(),
+            'pegi': rom_obj.get_pegi_rating(),
+            'boxsize': rom_obj.get_box_sizing(),
+            'tags': ','.join(rom_obj.get_tags()),
+            'obj_type': constants.OBJ_ROM,
             # --- ROM flags (Skins will use these flags to render icons) ---
-            constants.AKL_CONTENT_LABEL:        constants.AKL_CONTENT_VALUE_ROM,
-            constants.AKL_INFAV_BOOL_LABEL:     AKL_InFav_bool_value,
+            constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_ROM,
+            constants.AKL_INFAV_BOOL_LABEL: AKL_InFav_bool_value,
             constants.AKL_MULTIDISC_BOOL_LABEL: AKL_MultiDisc_bool_value,
-            constants.AKL_FAV_STAT_LABEL:       AKL_Fav_stat_value,
-            constants.AKL_NOINTRO_STAT_LABEL:   AKL_NoIntro_stat_value,
-            constants.AKL_PCLONE_STAT_LABEL:    AKL_PClone_stat_value
+            constants.AKL_FAV_STAT_LABEL: AKL_Fav_stat_value,
+            constants.AKL_NOINTRO_STAT_LABEL: AKL_NoIntro_stat_value,
+            constants.AKL_PCLONE_STAT_LABEL: AKL_PClone_stat_value
         }
     }
-    

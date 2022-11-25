@@ -75,9 +75,13 @@ stages:
           artifactFeeds: AKL/akl_libs
 
       - bash: |
+          python -m venv .venv
+          source .venv/bin/activate
           python -m pip install --upgrade pip
+          pip install setup
           pip install -r requirements.txt
-        displayName: pip install 
+        workingDirectory: $(workingDirectory)
+        displayName: 'Install application dependencies'
 
       - task: RegExMatchReplace@2
         displayName: 'Set addon version'
@@ -86,14 +90,24 @@ stages:
           RegEx: 'version="\d+\.\d+\.\d+.*" provider'
           ValueToReplace: 'version="$(addonVersion)" provider'
 
-      - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.md
+      - bash: |
+          source .venv/bin/activate
+          update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.md
         displayName: 'Add changelog in addon.xml'
         workingDirectory: '$(workingDirectory)'
 
-      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml' 
+      # - script: |
+      #     source .venv/bin/activate
+      #     python -m flake8 .
+      #   workingDirectory: '$(workingDirectory)'
+      #   displayName: 'Run lint tests'
+
+      - bash: |
+          source .venv/bin/activate
+          python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml
         workingDirectory: '$(workingDirectory)'
-        displayName: 'Run tests'
-              
+        displayName: 'Run unit tests'
+ 
       - task: CopyFiles@2
         displayName: 'Copy addon files for package'
         inputs:
@@ -111,6 +125,12 @@ stages:
           CleanTargetFolder: true
           flattenFolders: false
           OverWrite: true
+
+      - bash: |
+          source .venv/bin/activate
+          kodi-addon-checker --branch matrix $(build.artifactstagingdirectory)/$(addonName)/
+        workingDirectory: '$(workingDirectory)'
+        displayName: 'Run Kodi addon checker'
 
       - task: ArchiveFiles@2
         inputs:

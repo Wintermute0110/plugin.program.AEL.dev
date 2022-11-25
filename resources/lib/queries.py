@@ -52,8 +52,9 @@ SELECT_ROMCOLLECTIONS_BY_ROM     = "SELECT rs.* FROM vw_romcollections AS rs INN
 SELECT_VCOLLECTION_TITLES     = "SELECT DISTINCT(SUBSTR(UPPER(m_name), 1,1)) AS option_value FROM vw_roms"   
 SELECT_VCOLLECTION_GENRES     = "SELECT DISTINCT(m_genre) AS option_value FROM vw_roms"   
 SELECT_VCOLLECTION_DEVELOPER  = "SELECT DISTINCT(m_developer) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_ESRB       = "SELECT DISTINCT(m_esrb) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_YEAR       = "SELECT DISTINCT(m_year) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_ESRB       = "SELECT DISTINCT(m_esrb) AS option_value FROM vw_roms"
+SELECT_VCOLLECTION_PEGI       = "SELECT DISTINCT(m_pegi) AS option_value FROM vw_roms"
+SELECT_VCOLLECTION_YEAR       = "SELECT DISTINCT(m_year) AS option_value FROM vw_roms"
 SELECT_VCOLLECTION_NPLAYERS   = "SELECT DISTINCT(m_nplayers) AS option_value FROM vw_roms"   
 SELECT_VCOLLECTION_RATING     = "SELECT DISTINCT(m_rating) AS option_value FROM vw_roms"   
 
@@ -72,7 +73,7 @@ UPDATE_ROMCOLLECTION               = """
                                         WHERE id =?
                                     """
 UPDATE_ROMCOLLECTION_PARENT        = "UPDATE romcollections SET parent_id = ? WHERE id =?"
-DELETE_ROMCOLLECTION               = "DELETE FROM romcollection WHERE id = ?"
+DELETE_ROMCOLLECTION               = "DELETE FROM romcollections WHERE id = ?"
 
 SELECT_ROMCOLLECTION_ASSETS_BY_SET       = "SELECT * FROM vw_romcollection_assets WHERE romcollection_id = ?"
 SELECT_ROOT_ROMCOLLECTION_ASSETS         = "SELECT * FROM vw_romcollection_assets WHERE parent_id IS NULL"
@@ -135,9 +136,9 @@ SELECT_RATING_BY_COLLECTION      = "SELECT DISTINCT(r.m_rating) AS rating FROM v
 
 INSERT_ROM    = """
                     INSERT INTO roms (
-                        id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating,
+                        id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating, pegi_rating,
                         platform, box_size, nointro_status, cloneof, rom_status, scanned_by_id)
-                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                     """ 
 
 SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
@@ -153,13 +154,14 @@ SELECT_MOST_PLAYED_ROM_ASSETS      = """
                                             WHERE r.launch_count > 0 ORDER BY launch_count DESC LIMIT 100
                                            """
 
-SELECT_BY_TITLE        = "SELECT * FROM vw_roms WHERE m_name LIKE ? || '%'"
-SELECT_BY_GENRE        = "SELECT * FROM vw_roms WHERE m_genre = ?"
-SELECT_BY_DEVELOPER    = "SELECT * FROM vw_roms WHERE m_developer = ?"
-SELECT_BY_YEAR         = "SELECT * FROM vw_roms WHERE m_year = ?"
-SELECT_BY_NPLAYERS     = "SELECT * FROM vw_roms WHERE m_nplayers = ?"
-SELECT_BY_ESRB         = "SELECT * FROM vw_roms WHERE m_esrb = ?"
-SELECT_BY_RATING       = "SELECT * FROM vw_roms WHERE m_rating = ?"
+SELECT_BY_TITLE = "SELECT * FROM vw_roms WHERE m_name LIKE ? || '%'"
+SELECT_BY_GENRE = "SELECT * FROM vw_roms WHERE m_genre = ?"
+SELECT_BY_DEVELOPER = "SELECT * FROM vw_roms WHERE m_developer = ?"
+SELECT_BY_YEAR = "SELECT * FROM vw_roms WHERE m_year = ?"
+SELECT_BY_NPLAYERS = "SELECT * FROM vw_roms WHERE m_nplayers = ?"
+SELECT_BY_ESRB = "SELECT * FROM vw_roms WHERE m_esrb = ?"
+SELECT_BY_PEGI = "SELECT * FROM vw_roms WHERE m_pegi = ?"
+SELECT_BY_RATING = "SELECT * FROM vw_roms WHERE m_rating = ?"
                                 
 SELECT_BY_TITLE_ASSETS    = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE UPPER(r.m_name) LIKE ? || '%'"
 SELECT_BY_GENRE_ASSETS    = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_genre = ?"
@@ -167,6 +169,7 @@ SELECT_BY_DEVELOPER_ASSETS= "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_
 SELECT_BY_YEAR_ASSETS     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_year = ?"
 SELECT_BY_NPLAYERS_ASSETS = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_nplayers = ?"
 SELECT_BY_ESRB_ASSETS     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_esrb = ?"
+SELECT_BY_PEGI_ASSETS     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_pegi = ?"
 SELECT_BY_RATING_ASSETS   = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_rating = ?"
                                 
 INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
@@ -175,7 +178,7 @@ INSERT_ROM_SCANNED_DATA   = "INSERT INTO scanned_roms_data (rom_id, data_key, da
 
 UPDATE_ROM                = """
                                   UPDATE roms 
-                                  SET name=?, num_of_players=?, num_of_players_online=?, esrb_rating=?, platform=?, box_size=?,
+                                  SET name=?, num_of_players=?, num_of_players_online=?, esrb_rating=?, pegi_rating=?, platform=?, box_size=?,
                                   nointro_status=?, cloneof=?, rom_status=?, launch_count=?, last_launch_timestamp=?,
                                   is_favourite=?, scanned_by_id=? WHERE id =?
                                   """

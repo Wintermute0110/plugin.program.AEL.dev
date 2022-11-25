@@ -18,18 +18,16 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-import collections
-import typing
 
 from akl import constants
-from akl.utils import kodi, io
+from akl.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
-from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, ROMsJsonFileRepository
-from resources.lib.domain import ROM, AssetInfo, g_assetFactory
+from resources.lib.repositories import UnitOfWork, ROMsRepository
 
 logger = logging.getLogger(__name__)
+
 
 # -------------------------------------------------------------------------------------------------
 # ROM stats
@@ -38,7 +36,7 @@ logger = logging.getLogger(__name__)
 @AppMediator.register('ROM_WAS_LAUNCHED')
 def cmd_process_launching_of_rom(args):
     logger.debug('ROM_WAS_LAUNCHED: cmd_process_launching_of_rom() Processing that a ROM was launched')
-    rom_id:str = args['rom_id'] if 'rom_id' in args else None    
+    rom_id: str = args['rom_id'] if 'rom_id' in args else None
     if rom_id is None:
         logger.warning('cmd_process_launching_of_rom(): No rom id supplied.')
         return
@@ -55,12 +53,13 @@ def cmd_process_launching_of_rom(args):
         logger.debug('ROM_WAS_LAUNCHED: cmd_process_launching_of_rom() Processed stats for ROM {}'.format(rom.get_name()))
         AppMediator.async_cmd('RENDER_VCOLLECTION_VIEW', {'vcollection_id': constants.VCOLLECTION_RECENT_ID})
         AppMediator.async_cmd('RENDER_VCOLLECTION_VIEW', {'vcollection_id': constants.VCOLLECTION_MOST_PLAYED_ID})
-    
+
+
 @AppMediator.register('ADD_ROM_TO_FAVOURITES')
 def cmd_add_rom_to_favourites(args):
-    rom_id:str = args['rom_id'][0] if 'rom_id' in args else None    
+    rom_id: str = args['rom_id'] if 'rom_id' in args else None
     if rom_id is None:
-        logger.warning('cmd_add_rom_to_favourites(): No rom id supplied.')
+        logger.warning('No rom id supplied.')
         kodi.notify_warn("Invalid parameters supplied.")
         return
     
@@ -68,11 +67,9 @@ def cmd_add_rom_to_favourites(args):
     with uow:
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
-        
         rom.add_to_favourites()
         repository.update_rom(rom)
         uow.commit()
         
-    logger.debug('ADD_ROM_TO_FAVOURITES: cmd_add_rom_to_favourites() Added ROM {} to favourites'.format(rom.get_name()))
+    logger.debug(f'Added ROM {rom.get_rom_identifier()} to favourites')
     AppMediator.async_cmd('RENDER_VCOLLECTION_VIEW', {'vcollection_id': constants.VCOLLECTION_FAVOURITES_ID})
-    
