@@ -689,7 +689,8 @@ class MetaDataItemABC(EntityABC):
         
     def clear_asset(self, asset_info: AssetInfo):
         asset = self.get_asset(asset_info.id)
-        if asset is None: self.assets[asset_info.id] = Asset.create(asset_info.id)
+        if asset is None:
+            self.assets[asset_info.id] = Asset.create(asset_info.id)
         asset.clear()
         
     def get_assets_root_path(self) -> io.FileName:
@@ -729,13 +730,16 @@ class MetaDataItemABC(EntityABC):
         self.asset_paths[asset_info.id] = asset_path
     
     @abc.abstractmethod
-    def get_asset_ids_list(self) -> typing.List[str]: pass
+    def get_asset_ids_list(self) -> typing.List[str]:
+        pass
     
     @abc.abstractmethod
-    def get_mappable_asset_ids_list(self) -> typing.List[str]: return []
+    def get_mappable_asset_ids_list(self) -> typing.List[str]:
+        return []
     
     @abc.abstractmethod
-    def get_default_icon(self) -> str: pass 
+    def get_default_icon(self) -> str:
+        pass 
     
     def is_mappable_asset(self, asset_info) -> bool:
         return asset_info.id in self.get_mappable_asset_ids_list()
@@ -1030,8 +1034,10 @@ class ROMCollection(MetaDataItemABC):
     # the given (ROM) assetinfo for this particular MetaDataItem.
     #
     def get_mapped_ROM_asset_info(self, asset_info=None, asset_id=None) -> AssetInfo:
-        if asset_info is None and asset_id is None: return None
-        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        if asset_info is None and asset_id is None:
+            return None
+        if asset_id is not None:
+            asset_info = g_assetFactory.get_asset_info(asset_id)
         
         mapped_key = self.get_mapped_ROM_asset_key(asset_info)
         mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
@@ -1043,10 +1049,11 @@ class ROMCollection(MetaDataItemABC):
     #
     def get_mapped_ROM_asset_key(self, asset_info: AssetInfo) -> str:
         if asset_info.rom_default_key == '':
-            logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
+            logger.error(f'Requested mapping for AssetInfo without default key. Type {asset_info.id}')
             raise constants.AddonError('Not supported asset type used. This might be a bug!')  
         
-        if asset_info.rom_default_key not in self.entity_data: return asset_info.key   
+        if asset_info.rom_default_key not in self.entity_data:
+            return asset_info.key   
         return self.entity_data[asset_info.rom_default_key]
 
     def set_mapped_ROM_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
@@ -1253,15 +1260,20 @@ class VirtualCollection(ROMCollection):
             
         super(VirtualCollection, self).__init__(entity_data, assets_data)
 
-    def get_object_name(self): return 'Virtual Collection'
+    def get_object_name(self):
+        return 'Virtual Collection'
     
-    def get_assets_kind(self): return constants.KIND_ASSET_COLLECTION
+    def get_assets_kind(self):
+        return constants.KIND_ASSET_COLLECTION
     
-    def get_type(self): return constants.OBJ_COLLECTION_VIRTUAL
+    def get_type(self):
+        return constants.OBJ_COLLECTION_VIRTUAL
         
-    def get_asset_ids_list(self): return constants.COLLECTION_ASSET_ID_LIST
+    def get_asset_ids_list(self):
+        return constants.COLLECTION_ASSET_ID_LIST
 
-    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self):
+        return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
     
     def get_collection_value(self) -> str:
         return self.entity_data['collection_value'] if 'collection_value' in self.entity_data else None
@@ -1497,7 +1509,8 @@ class ROM(MetaDataItemABC):
         data = self.copy_of_data_dic()
         return ROM(data)
 	
-    def get_asset_ids_list(self): return constants.ROM_ASSET_ID_LIST
+    def get_asset_ids_list(self):
+        return constants.ROM_ASSET_ID_LIST
     
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
     
@@ -2183,38 +2196,39 @@ class VirtualCollectionFactory(object):
     
     @staticmethod
     def create(vcollection_id: str) -> VirtualCollection:
-                
+        
+        default_entity_data = _get_default_ROMCollection_data_model()        
         if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
-            return VirtualCollection({
+            return VirtualCollection(dict(default_entity_data, **{
                 'id' : vcollection_id,
                 'm_name' : '<Favourites>',
                 'plot': 'Browse AKL Favourite ROMs',
                 'finished': settings.getSettingAsBool('display_hide_favs')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()}),
             ])
             
         if vcollection_id == constants.VCOLLECTION_RECENT_ID:
-            return VirtualCollection({
+            return VirtualCollection(dict(default_entity_data, **{
                 'id' : vcollection_id,
                 'm_name' : '[Recently played ROMs]',
                 'plot': 'Browse the ROMs you played recently',
                 'finished': settings.getSettingAsBool('display_hide_recent')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()}),
             ])
             
         if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
-            return VirtualCollection({
+            return VirtualCollection(dict(default_entity_data, **{
                 'id' : vcollection_id,
                 'm_name' : '[Most played ROMs]',
                 'plot': 'Browse the ROMs you play most',
                 'finished': settings.getSettingAsBool('display_hide_mostplayed')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()}),
@@ -2225,14 +2239,15 @@ class VirtualCollectionFactory(object):
     @staticmethod
     def create_by_category(vcategory_id:str, collection_value:str) -> VirtualCollection:
 
-        return VirtualCollection({
+        default_entity_data = _get_default_ROMCollection_data_model()    
+        return VirtualCollection(dict(default_entity_data, **{
             'id' : f'{vcategory_id}_{collection_value}',
             'parent_id': vcategory_id,
             'm_name' : collection_value,
             'plot': f"Browse ROMs filtered on '{collection_value}'",
             'collection_value': collection_value,
             'finished': settings.getSettingAsBool('display_hide_vcategories')
-        }, [
+        }), [
             Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()})
         ])
 
@@ -2241,97 +2256,98 @@ class VirtualCategoryFactory(object):
     @staticmethod
     def create(vcategory_id: str) -> VirtualCategory:
         
+        default_entity_data = _get_default_category_data_model()   
         if vcategory_id  == constants.VCATEGORY_ROOT_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by...',
                 'plot': 'Browse the ROMs by specifics',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_poster.png').getPath()}),
             ])
             
         if vcategory_id == constants.VCATEGORY_TITLE_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Title',
                 'plot': 'Browse the ROMs by title',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_poster.png').getPath()}),
             ])
              
         if vcategory_id == constants.VCATEGORY_YEARS_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Year',
                 'plot': 'Browse the ROMs by year',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_poster.png').getPath()}),
             ])     
              
         if vcategory_id == constants.VCATEGORY_GENRE_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Genre',
                 'plot': 'Browse the ROMs by genre',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_poster.png').getPath()}),
             ])     
              
         if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Developer',
                 'plot': 'Browse the ROMs by developer',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_poster.png').getPath()}),
             ])     
              
         if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Number of Players',
                 'plot': 'Browse the ROMs by number of players',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_poster.png').getPath()}),
             ])    
                     
         if vcategory_id == constants.VCATEGORY_ESRB_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by ESRB Rating',
                 'plot': 'Browse the ROMs by ESRB rating',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_poster.png').getPath()}),
             ])  
         
         if vcategory_id == constants.VCATEGORY_RATING_ID:
-             return VirtualCategory({
+             return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
                 'm_name' : 'Browse by Rating',
                 'plot': 'Browse the ROMs by rating',
                 'finished': settings.getSettingAsBool('display_hide_vcategories')
-            }, [
+            }), [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_poster.png').getPath()}),

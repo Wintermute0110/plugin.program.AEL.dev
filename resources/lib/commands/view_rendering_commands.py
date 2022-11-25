@@ -456,78 +456,96 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     # --- Browse Offline Scraper database ---
     #if not settings.getSettingAsBool('display_hide_AKL_scraper'): render_vcategory_AKL_offline_scraper_row()
     #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
-    
+
+
 def _render_rom_listitem(rom_obj: ROM) -> dict:
     # --- Do not render row if romcollection finished ---
-    if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
+    if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'):
+        return
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
     assets = rom_obj.get_view_assets()
 
     # --- Default values for flags ---
-    AKL_InFav_bool_value     = constants.AKL_INFAV_BOOL_VALUE_FALSE
+    AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_FALSE
     AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_FALSE
-    AKL_Fav_stat_value       = constants.AKL_FAV_STAT_VALUE_NONE
-    AKL_NoIntro_stat_value   = constants.AKL_NOINTRO_STAT_VALUE_NONE
-    AKL_PClone_stat_value    = constants.AKL_PCLONE_STAT_VALUE_NONE
+    AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
+    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
+    AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_NONE
 
-    rom_status      = rom_obj.get_rom_status()
-    if   rom_status == 'OK':                AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_OK
-    elif rom_status == 'Unlinked ROM':      AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_ROM
-    elif rom_status == 'Unlinked Launcher': AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
-    elif rom_status == 'Broken':            AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_BROKEN
-    else:                                   AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
+    rom_status = rom_obj.get_rom_status()
+    if rom_status == 'OK':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_OK
+    elif rom_status == 'Unlinked ROM':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_ROM
+    elif rom_status == 'Unlinked Launcher':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+    elif rom_status == 'Broken':
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_BROKEN
+    else:
+        AKL_Fav_stat_value = constants.AKL_FAV_STAT_VALUE_NONE
 
     # --- NoIntro status flag ---
     nstat = rom_obj.get_nointro_status()
-    if   nstat == constants.AUDIT_STATUS_HAVE:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_HAVE
-    elif nstat == constants.AUDIT_STATUS_MISS:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_MISS
-    elif nstat == constants.AUDIT_STATUS_UNKNOWN: AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_UNKNOWN
-    elif nstat == constants.AUDIT_STATUS_NONE:    AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
+    if nstat == constants.AUDIT_STATUS_HAVE:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_HAVE
+    elif nstat == constants.AUDIT_STATUS_MISS:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_MISS
+    elif nstat == constants.AUDIT_STATUS_UNKNOWN:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_UNKNOWN
+    elif nstat == constants.AUDIT_STATUS_NONE:
+        AKL_NoIntro_stat_value = constants.AKL_NOINTRO_STAT_VALUE_NONE
 
     # --- Mark clone ROMs ---
     pclone_status = rom_obj.get_pclone_status()
-    if   pclone_status == constants.PCLONE_STATUS_PARENT: AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_PARENT
-    elif pclone_status == constants.PCLONE_STATUS_CLONE:  AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_CLONE
+    if pclone_status == constants.PCLONE_STATUS_PARENT:
+        AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_PARENT
+    elif pclone_status == constants.PCLONE_STATUS_CLONE:
+        AKL_PClone_stat_value = constants.AKL_PCLONE_STAT_VALUE_CLONE
     
     rom_in_fav = rom_obj.is_favourite()
-    if rom_in_fav: AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_TRUE
+    if rom_in_fav:
+        AKL_InFav_bool_value = constants.AKL_INFAV_BOOL_VALUE_TRUE
 
-     # --- Set common flags to all launchers---
-    if rom_obj.has_multiple_disks(): AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_TRUE
+    # --- Set common flags to all launchers---
+    if rom_obj.has_multiple_disks():
+        AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_TRUE
 
     list_name = rom_obj.get_name()
     if list_name is None or list_name == '':
         list_name = rom_obj.get_rom_identifier()
 
-    return { 
+    return {
         'id': rom_obj.get_id(),
         'name': list_name,
         'url': globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}'),
         'is_folder': False,
         'type': 'video',
         'info': {
-            'title'   : rom_obj.get_name(),    'year'    : rom_obj.get_releaseyear(),
-            'genre'   : rom_obj.get_genre(),   'studio'  : rom_obj.get_developer(),
-            'rating'  : rom_obj.get_rating(),  'plot'    : rom_obj.get_plot(),
-            'trailer' : rom_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+            'title': rom_obj.get_name(),
+            'year': rom_obj.get_releaseyear(),
+            'genre': rom_obj.get_genre(),
+            'studio': rom_obj.get_developer(),
+            'rating': rom_obj.get_rating(),
+            'plot': rom_obj.get_plot(),
+            'trailer': rom_obj.get_trailer(),
+            'overlay': ICON_OVERLAY
         },
         'art': assets,
-        'properties': { 
-            'platform':         rom_obj.get_platform(),
-            'nplayers':         rom_obj.get_number_of_players(),
-            'nplayers_online':  rom_obj.get_number_of_players_online(),
-            'esrb':             rom_obj.get_esrb_rating(),
-            'boxsize':          rom_obj.get_box_sizing(),
-            'tags':             ','.join(rom_obj.get_tags()),
-            'obj_type':         constants.OBJ_ROM,
+        'properties': {
+            'platform': rom_obj.get_platform(),
+            'nplayers': rom_obj.get_number_of_players(),
+            'nplayers_online': rom_obj.get_number_of_players_online(),
+            'esrb': rom_obj.get_esrb_rating(),
+            'boxsize': rom_obj.get_box_sizing(),
+            'tags': ','.join(rom_obj.get_tags()),
+            'obj_type': constants.OBJ_ROM,
             # --- ROM flags (Skins will use these flags to render icons) ---
-            constants.AKL_CONTENT_LABEL:        constants.AKL_CONTENT_VALUE_ROM,
-            constants.AKL_INFAV_BOOL_LABEL:     AKL_InFav_bool_value,
+            constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_ROM,
+            constants.AKL_INFAV_BOOL_LABEL: AKL_InFav_bool_value,
             constants.AKL_MULTIDISC_BOOL_LABEL: AKL_MultiDisc_bool_value,
-            constants.AKL_FAV_STAT_LABEL:       AKL_Fav_stat_value,
-            constants.AKL_NOINTRO_STAT_LABEL:   AKL_NoIntro_stat_value,
-            constants.AKL_PCLONE_STAT_LABEL:    AKL_PClone_stat_value
+            constants.AKL_FAV_STAT_LABEL: AKL_Fav_stat_value,
+            constants.AKL_NOINTRO_STAT_LABEL: AKL_NoIntro_stat_value,
+            constants.AKL_PCLONE_STAT_LABEL: AKL_PClone_stat_value
         }
     }
-    
