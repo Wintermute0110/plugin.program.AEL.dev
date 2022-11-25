@@ -72,7 +72,7 @@ UPDATE_ROMCOLLECTION               = """
                                         WHERE id =?
                                     """
 UPDATE_ROMCOLLECTION_PARENT        = "UPDATE romcollections SET parent_id = ? WHERE id =?"
-DELETE_ROMCOLLECTION               = "DELETE FROM romcollection WHERE id = ?"
+DELETE_ROMCOLLECTION               = "DELETE FROM romcollections WHERE id = ?"
 
 SELECT_ROMCOLLECTION_ASSETS_BY_SET       = "SELECT * FROM vw_romcollection_assets WHERE romcollection_id = ?"
 SELECT_ROOT_ROMCOLLECTION_ASSETS         = "SELECT * FROM vw_romcollection_assets WHERE parent_id IS NULL"
