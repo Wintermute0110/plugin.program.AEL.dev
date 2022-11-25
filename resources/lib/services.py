@@ -19,14 +19,15 @@ from akl import settings
 
 logger = logging.getLogger(__name__)
 
+
 class AppService(object):
 
     def __init__(self):
-        
+
         threading.Thread.name = 'akl'
 
         globals.g_bootstrap_instances()
-        
+
         self.queue = []
         self.monitor = AppMonitor(addon_id=globals.addon_id, action=self.queue.append)
 
@@ -35,9 +36,9 @@ class AppService(object):
         args = action_data['data']
         AppMediator.sync_cmd(cmd, args)
 
-    def run(self):        
+    def run(self):
         kodi.set_windowprop('akl_server_state', 'STARTING')
-        
+
         # --- Some debug stuff for development ---
         logger.info('------------ Called Advanced Kodi Launcher : Service ------------')
         logger.debug(f'sys.platform   "{sys.platform}"')

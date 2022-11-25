@@ -537,6 +537,7 @@ def _render_rom_listitem(rom_obj: ROM) -> dict:
             'nplayers': rom_obj.get_number_of_players(),
             'nplayers_online': rom_obj.get_number_of_players_online(),
             'esrb': rom_obj.get_esrb_rating(),
+            'pegi': rom_obj.get_pegi_rating(),
             'boxsize': rom_obj.get_box_sizing(),
             'tags': ','.join(rom_obj.get_tags()),
             'obj_type': constants.OBJ_ROM,

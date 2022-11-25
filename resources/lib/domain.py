@@ -1366,6 +1366,9 @@ class ROM(MetaDataItemABC):
     def get_esrb_rating(self):
         return self.entity_data['m_esrb']
 
+    def get_pegi_rating(self):
+        return self.entity_data['m_pegi']
+    
     def get_rom_status(self):
         return self.entity_data['rom_status'] if 'rom_status' in self.entity_data else None
 
@@ -1408,6 +1411,9 @@ class ROM(MetaDataItemABC):
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
+    def set_pegi_rating(self, pegi):
+        self.entity_data['m_pegi'] = pegi
+        
     def set_platform(self, platform): 
         self.entity_data['platform'] = platform
     
@@ -1567,6 +1573,7 @@ class ROM(MetaDataItemABC):
         item_developer = re.findall('<developer>(.*?)</developer>', nfo_str)
         item_nplayers  = re.findall('<nplayers>(.*?)</nplayers>', nfo_str)
         item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
+        item_pegi      = re.findall('<pegi>(.*?)</pegi>', nfo_str)
         item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
         item_trailer   = re.findall('<trailer>(.*?)</trailer>', nfo_str)
@@ -1580,6 +1587,7 @@ class ROM(MetaDataItemABC):
         if len(item_plot) > 0:      self.set_plot(text.unescape_XML(item_plot[0]))
         if len(item_nplayers) > 0:  self.set_number_of_players(text.unescape_XML(item_nplayers[0]))
         if len(item_esrb) > 0:      self.set_esrb_rating(text.unescape_XML(item_esrb[0]))
+        if len(item_pegi) > 0:      self.set_pegi_rating(text.unescape_XML(item_pegi[0]))
         if len(item_trailer) > 0:   self.set_trailer(text.unescape_XML(item_trailer[0]))
 
         if verbose:
@@ -1602,6 +1610,7 @@ class ROM(MetaDataItemABC):
         nfo_content.append(text.XML_line('developer', self.get_developer()))
         nfo_content.append(text.XML_line('nplayers',  self.get_number_of_players()))
         nfo_content.append(text.XML_line('esrb',      self.get_esrb_rating()))
+        nfo_content.append(text.XML_line('pegi',      self.get_pegi_rating()))
         nfo_content.append(text.XML_line('rating',    self.get_rating()))
         nfo_content.append(text.XML_line('plot',      self.get_plot()))
         nfo_content.append(text.XML_line('trailer',   self.get_trailer()))
@@ -1656,9 +1665,15 @@ class ROM(MetaDataItemABC):
             self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
         
         if constants.META_ESRB_ID in metadata_to_update\
-             and api_rom_obj.get_esrb_rating() \
-            and (overwrite_existing or _is_empty(self.get_esrb_rating())):       
+                and api_rom_obj.get_esrb_rating() \
+                and (overwrite_existing or _is_empty(self.get_esrb_rating()) \
+                    or self.get_esrb_rating() == constants.ESRB_PENDING):
             self.set_esrb_rating(api_rom_obj.get_esrb_rating())
+        
+        if constants.META_PEGI_ID in metadata_to_update\
+             and api_rom_obj.get_pegi_rating() \
+            and (overwrite_existing or _is_empty(self.get_pegi_rating())):       
+            self.set_pegi_rating(api_rom_obj.get_pegi_rating())
         
         if constants.META_RATING_ID in metadata_to_update \
             and api_rom_obj.get_rating() \
@@ -2340,7 +2355,19 @@ class VirtualCategoryFactory(object):
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_poster.png').getPath()}),
             ])  
-        
+             
+        if vcategory_id == constants.VCATEGORY_PEGI_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by PEGI Rating',
+                'plot': 'Browse the ROMs by PEGI rating',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_PEGI_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_PEGI_poster.png').getPath()}),
+            ])  
+                     
         if vcategory_id == constants.VCATEGORY_RATING_ID:
              return VirtualCategory(dict(default_entity_data, **{
                 'id' : vcategory_id,
@@ -2482,6 +2509,7 @@ def _get_default_ROM_data_model():
         'm_nplayers' : '',
         'm_nplayers_online' : '',
         'm_esrb' : constants.ESRB_PENDING,
+        'm_pegi' : constants.DEFAULT_META_PEGI,
         'm_rating' : '',
         'm_plot' : '',
         'platform': '',

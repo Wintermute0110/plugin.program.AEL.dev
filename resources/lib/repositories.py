@@ -919,6 +919,7 @@ class ROMCollectionRepository(object):
         if vcategory_id == constants.VCATEGORY_GENRE_ID:    return qry.SELECT_VCOLLECTION_GENRES
         if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:return qry.SELECT_VCOLLECTION_DEVELOPER
         if vcategory_id == constants.VCATEGORY_ESRB_ID:     return qry.SELECT_VCOLLECTION_ESRB
+        if vcategory_id == constants.VCATEGORY_PEGI_ID:     return qry.SELECT_VCOLLECTION_PEGI
         if vcategory_id == constants.VCATEGORY_YEARS_ID:    return qry.SELECT_VCOLLECTION_YEAR
         if vcategory_id == constants.VCATEGORY_NPLAYERS_ID: return qry.SELECT_VCOLLECTION_NPLAYERS
         if vcategory_id == constants.VCATEGORY_RATING_ID:   return qry.SELECT_VCOLLECTION_RATING
@@ -1120,7 +1121,8 @@ class ROMsRepository(object):
             rom_obj.get_name(),
             rom_obj.get_number_of_players(),
             rom_obj.get_number_of_players_online(),
-            rom_obj.get_esrb_rating(),   
+            rom_obj.get_esrb_rating(),
+            rom_obj.get_pegi_rating(),
             rom_obj.get_platform(),
             rom_obj.get_box_sizing(), 
             rom_obj.get_nointro_status(),
@@ -1161,6 +1163,7 @@ class ROMsRepository(object):
             rom_obj.get_number_of_players(),
             rom_obj.get_number_of_players_online(),
             rom_obj.get_esrb_rating(),
+            rom_obj.get_pegi_rating(),
             rom_obj.get_platform(),
             rom_obj.get_box_sizing(),
             rom_obj.get_nointro_status(),
@@ -1274,7 +1277,9 @@ class ROMsRepository(object):
             if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:
                 return qry.SELECT_BY_DEVELOPER, qry.SELECT_BY_DEVELOPER_ASSETS            
             if vcategory_id == constants.VCATEGORY_ESRB_ID:
-                return qry.SELECT_BY_ESRB, qry.SELECT_BY_ESRB_ASSETS            
+                return qry.SELECT_BY_ESRB, qry.SELECT_BY_ESRB_ASSETS
+            if vcategory_id == constants.VCATEGORY_PEGI_ID:
+                return qry.SELECT_BY_PEGI, qry.SELECT_BY_PEGI_ASSETS       
             if vcategory_id == constants.VCATEGORY_YEARS_ID:
                 return qry.SELECT_BY_YEAR, qry.SELECT_BY_YEAR_ASSETS            
             if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:

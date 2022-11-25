@@ -318,6 +318,7 @@ def vw_create_filter(filter_on_type:str, filter_on_value:str) -> ListFilter:
     if filter_on_type == constants.META_YEAR_ID:        return OnReleaseYearFilter(filter_on_value)
     if filter_on_type == constants.META_RATING_ID:      return OnRatingFilter(filter_on_value)    
     if filter_on_type == constants.META_ESRB_ID:        return OnESRBFilter(filter_on_value)
+    if filter_on_type == constants.META_PEGI_ID:        return OnPEGIFilter(filter_on_value)
     if filter_on_type == constants.META_NPLAYERS_ID:    return OnNumberOfPlayersFilter(filter_on_value)
     if filter_on_type == 'platform':                    return OnPlatformFilter(filter_on_value)
     
@@ -357,6 +358,11 @@ class OnRatingFilter(ListFilter):
 class OnESRBFilter(ListFilter):
     def is_valid(self, subject: dict) -> bool:
         return 'properties' in subject and 'esrb' in subject['properties'] and subject['properties']['esrb'] == self.filter_on_value   
+    
+class OnPEGIFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'properties' in subject and 'pegi' in subject['properties'] and subject['properties']['pegi'] == self.filter_on_value   
+    
 class OnNumberOfPlayersFilter(ListFilter):
     def is_valid(self, subject: dict) -> bool:
         return 'properties' in subject and 'nplayers' in subject['properties'] and subject['properties']['nplayers'] == self.filter_on_value  

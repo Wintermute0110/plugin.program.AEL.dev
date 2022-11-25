@@ -96,6 +96,7 @@ def cmd_rom_metadata(args):
     options['ROM_EDIT_METADATA_NPLAYERS']    = "Edit NPlayers: '{}'".format(rom.get_number_of_players())
     options['ROM_EDIT_METADATA_NPLAYERS_ONL']= "Edit NPlayers online: '{}'".format(rom.get_number_of_players_online())
     options['ROM_EDIT_METADATA_ESRB']        = "Edit ESRB rating: '{}'".format(rom.get_esrb_rating())
+    options['ROM_EDIT_METADATA_PEGI']        = "Edit PEGI rating: '{}'".format(rom.get_pegi_rating())
     options['ROM_EDIT_METADATA_RATING']      = "Edit Rating: '{}'".format(rating)
     options['ROM_EDIT_METADATA_PLOT']        = "Edit Plot: '{}'".format(plot_str)
     options['ROM_EDIT_METADATA_TAGS']        = "Edit Tags"
@@ -215,7 +216,7 @@ def cmd_rom_metadata_title(args):
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_ESRB')
-def cmd_rom_metadata_platform(args):
+def cmd_rom_metadata_esrb(args):
     rom_id = args['rom_id'] if 'rom_id' in args else None  
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -228,6 +229,23 @@ def cmd_rom_metadata_platform(args):
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
             AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_ESRB_ID})
+                
+    AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+    
+@AppMediator.register('ROM_EDIT_METADATA_PEGI')
+def cmd_rom_metadata_pegi(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None  
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+
+        if editors.edit_field_by_list(rom, 'PEGI rating', constants.PEGI_LIST,
+                                    rom.get_pegi_rating, rom.set_pegi_rating):
+            repository.update_rom(rom)
+            uow.commit()
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_PEGI_ID})
                 
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
