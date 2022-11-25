@@ -130,8 +130,6 @@ stages:
           source .venv/bin/activate
           kodi-addon-checker --branch matrix $(build.artifactstagingdirectory)/$(addonName)/
         workingDirectory: '$(workingDirectory)'
-        continueOnError: true 
-        condition: or(eq(${{variables.isReleaseCandidate}}, true), eq(${{variables.isHotfix}}, true))  
         displayName: 'Run Kodi addon checker'
 
       - task: ArchiveFiles@2
