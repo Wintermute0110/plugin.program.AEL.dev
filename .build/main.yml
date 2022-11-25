@@ -90,7 +90,9 @@ stages:
           RegEx: 'version="\d+\.\d+\.\d+.*" provider'
           ValueToReplace: 'version="$(addonVersion)" provider'
 
-      - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.md
+      - bash: |
+          source .venv/bin/activate
+          update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.md
         displayName: 'Add changelog in addon.xml'
         workingDirectory: '$(workingDirectory)'
 
