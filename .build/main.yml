@@ -104,7 +104,7 @@ stages:
 
       - bash: |
           source .venv/bin/activate
-          python -m pytest --cov=. --cov-report=xml
+          python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml
         workingDirectory: '$(workingDirectory)'
         displayName: 'Run unit tests'
  
