@@ -638,7 +638,7 @@ class MetaDataItemABC(EntityABC):
         return self.assets[asset_id] if asset_id in self.assets else None
     
     def get_assets(self) -> typing.List[Asset]:
-        return [*self.assets.values()]
+        return list(self.assets.values())
  
     #
     # Returns a collection with the object assets, ready to be edited.
@@ -710,7 +710,7 @@ class MetaDataItemABC(EntityABC):
                     
     
     def get_asset_paths(self) -> typing.List[AssetPath]:
-        return self.asset_paths.values()
+        return list(self.asset_paths.values())
 
     def get_asset_path(self, asset_info: AssetInfo, fallback_to_root = True) -> io.FileName:
         if not asset_info: return None
@@ -1377,7 +1377,7 @@ class ROM(MetaDataItemABC):
     
     def get_tags(self) -> typing.List[str]:
         if self.tags is not None:
-            return [tag for tag in self.tags.keys() if tag is not None]
+            return [tag for tag in list(self.tags.keys()) if tag is not None]
         return []
 
     def get_tag_data(self) -> dict:
@@ -1524,7 +1524,7 @@ class ROM(MetaDataItemABC):
     
     def create_dto(self) -> api.ROMObj:
         dto_data:dict = api.ROMObj.get_data_template()
-        for key in dto_data.keys():
+        for key in list(dto_data.keys()):
             if key in self.entity_data: dto_data[key] = self.entity_data[key]
 
         dto_data['tags'] = self.get_tags()
@@ -1699,7 +1699,7 @@ class ROM(MetaDataItemABC):
             scanned_data = api_rom_obj.get_scanned_data()
             
             if scanned_name: self.set_name(scanned_name)
-            for scanned_entry in scanned_data.keys():
+            for scanned_entry in list(scanned_data.keys()):
                 self.set_scanned_data_element(scanned_entry, scanned_data[scanned_entry])
                 
             # if 'romcollection' in launcher_settings \
@@ -1756,7 +1756,7 @@ class AssetInfoFactory(object):
     # Returns the corresponding assetinfo object for the
     # given key (eg: 's_icon')
     def get_asset_info_by_key(self, asset_key):
-        asset_info = next((a for a in self.ASSET_INFO_ID_DICT.values() if a.key == asset_key), None)
+        asset_info = next((a for a in list(self.ASSET_INFO_ID_DICT.values()) if a.key == asset_key), None)
 
         if asset_info is None:
             logger.error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
@@ -1767,7 +1767,7 @@ class AssetInfoFactory(object):
     # Returns the corresponding assetinfo object for the
     # given path key (eg: 'path_icon')
     def get_asset_info_by_pathkey(self, path_key):
-        asset_info = next((a for a in self.ASSET_INFO_ID_DICT.values() if a.path_key == path_key), None)
+        asset_info = next((a for a in list(self.ASSET_INFO_ID_DICT.values()) if a.path_key == path_key), None)
 
         if asset_info is None:
             logger.error('get_asset_info_by_pathkey() Wrong path key = {0}'.format(path_key))

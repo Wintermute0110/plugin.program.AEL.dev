@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 #
 # Advanced Kodi Launcher main script file
 #
@@ -18,6 +18,7 @@
 
 # Advanced Emulator Launcher main script file.
 
+# --- Python standard library ---
 import sys
 import logging
 
@@ -28,13 +29,10 @@ from resources.lib import views
 kodilogging.config()
 logger = logging.getLogger(__name__)
 
-# --- Python standard library ---
-import sys
 
 # -------------------------------------------------------------------------------------------------
 # Entrypoint of the Frontend/UI application
 # -------------------------------------------------------------------------------------------------
-
 try:
     views.run_plugin(sys.argv)
 except Exception as ex:
