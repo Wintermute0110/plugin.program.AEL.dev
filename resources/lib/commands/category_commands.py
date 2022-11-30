@@ -2,7 +2,7 @@
 #
 # Advanced Kodi Launcher: Commands (category management)
 #
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ def cmd_add_category(args):
 
 @AppMediator.register('EDIT_CATEGORY')
 def cmd_edit_category(args):    
-    logger.debug('EDIT_CATEGORY: cmd_edit_category() BEGIN')
+    logger.debug('EDIT_CATEGORY: BEGIN')
     category_id:str = args['category_id'] if 'category_id' in args else None
     
     if category_id is None:

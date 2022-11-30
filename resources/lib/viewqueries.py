@@ -185,12 +185,12 @@ def qry_get_utilities_items():
         'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
-        'name': 'Show installed plugin-addons',
+        'name': 'Show plugin-addons',
         'url': globals.router.url_for_path('execute/command/show_addons'),
         'is_folder': False,
         'type': 'video',
         'info': {
-            'title': 'Show installed plugin-addons',
+            'title': 'Show plugin-addons',
             'plot': 'Shows previously scanned addons that can be used by AKL (launchers, scrapers etc.)',
             'overlay': 4
         },

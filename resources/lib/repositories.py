@@ -1317,6 +1317,8 @@ class AelAddonRepository(object):
     def find_by_addon_id(self, addon_id:str, type: constants.AddonType) -> AelAddon:
         self._uow.execute(qry.SELECT_ADDON_BY_ADDON_ID, addon_id, type.name)
         result_set = self._uow.single_result()
+        if result_set is None:
+            return None
         return AelAddon(result_set)
 
     def find_all(self) -> typing.Iterator[AelAddon]:
@@ -1344,7 +1346,7 @@ class AelAddonRepository(object):
             yield AelAddon(addon_data)
             
     def insert_addon(self, addon: AelAddon):
-        self.logger.info("AelAddonRepository.insert_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
+        self.logger.info("Saving addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(qry.INSERT_ADDON,
                     addon.get_id(),
                     addon.get_name(),
@@ -1354,7 +1356,8 @@ class AelAddonRepository(object):
                     addon.get_extra_settings_str())
         
     def update_addon(self, addon: AelAddon):
-        self.logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
+        self.logger.info("Updating addon '{}'".format(addon.get_addon_id()))       
+        self.logger.info(f"EXTRA SETTINGS: {addon.get_extra_settings_str()}") 
         self._uow.execute(qry.UPDATE_ADDON,
                     addon.get_name(),
                     addon.get_addon_id(),

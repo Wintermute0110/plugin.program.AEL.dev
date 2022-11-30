@@ -59,12 +59,12 @@ def cmd_manage_romcollection_launchers(args):
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('EDIT_ROMCOLLECTION_LAUNCHERS: cmd_manage_romcollection_launchers() Selected None. Closing context menu')
+        logger.debug('EDIT_ROMCOLLECTION_LAUNCHERS: Selected None. Closing context menu')
         AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_ROMCOLLECTION_LAUNCHERS: cmd_manage_romcollection_launchers() Selected {}'.format(selected_option))
+    logger.debug(f'EDIT_ROMCOLLECTION_LAUNCHERS: Selected {selected_option}')
     AppMediator.sync_cmd(selected_option, args)
 
 @AppMediator.register('EDIT_ROM_LAUNCHERS')

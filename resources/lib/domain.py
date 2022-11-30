@@ -148,11 +148,17 @@ class AelAddon(EntityABC):
     def get_name(self) -> str:
         return self.entity_data['name']
 
+    def set_name(self, name: str):
+        self.entity_data['name'] = name
+
     def get_addon_id(self) -> str:
         return self.entity_data['addon_id']
     
     def get_version(self) -> str:
         return self.entity_data['version']
+    
+    def set_version(self, version: str):
+        self.entity_data['version'] = version
     
     def get_addon_type(self) -> constants.AddonType:
         return constants.AddonType[self.entity_data['addon_type']] if 'addon_type' in self.entity_data else constants.AddonType.UNKNOWN
