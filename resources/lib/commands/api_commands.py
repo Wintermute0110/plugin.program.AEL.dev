@@ -137,7 +137,7 @@ def cmd_store_scanned_roms(args) -> bool:
             api_rom_obj = ROMObj(rom_data)
             
             rom_obj = ROM()
-            rom_obj.update_with(api_rom_obj, overwrite_existing=True, update_scanned_data=True)
+            rom_obj.update_with(api_rom_obj, overwrite_existing_metadata=True, update_scanned_data=True)
             rom_obj.set_platform(romcollection.get_platform())
             rom_obj.scanned_with(scanner_id)
             rom_obj.apply_romcollection_asset_paths(romcollection)
@@ -208,7 +208,9 @@ def cmd_store_scraped_roms(args) -> bool:
         logger.debug('========================== Applied scraper settings ==========================')
         logger.debug('Metadata IDs:         {}'.format(', '.join(applied_settings.metadata_IDs_to_scrape)))
         logger.debug('Asset IDs:            {}'.format(', '.join(applied_settings.asset_IDs_to_scrape)))
-        logger.debug('Overwrite existing:   {}'.format('Yes' if applied_settings.overwrite_existing else 'No'))
+        logger.debug('Overwrite existing:')
+        logger.debug(' - Metadata           {}'.format('Yes' if applied_settings.overwrite_existing_meta else 'No'))
+        logger.debug(' - Assets             {}'.format('Yes' if applied_settings.overwrite_existing_assets else 'No'))
 
         for rom_data in scraped_roms:
             api_rom_obj = ROMObj(rom_data)
@@ -226,7 +228,8 @@ def cmd_store_scraped_roms(args) -> bool:
                 api_rom_obj, 
                 metadata_to_update, 
                 assets_to_update, 
-                overwrite_existing=applied_settings.overwrite_existing)
+                overwrite_existing_metadata=applied_settings.overwrite_existing_meta,
+                overwrite_existing_assets=applied_settings.overwrite_existing_assets)
             #rom_obj.scraped_with(scraper_id)
             
             rom_repository.update_rom(rom_obj)
@@ -277,7 +280,8 @@ def cmd_store_scraped_single_rom(args) -> bool:
         rom.update_with(scraped_rom,
             metadata_to_update, 
             assets_to_update, 
-            overwrite_existing=applied_settings.overwrite_existing)
+            overwrite_existing_metadata=applied_settings.overwrite_existing_meta,
+            overwrite_existing_assets=applied_settings.overwrite_existing_assets)
         #rom_obj.scraped_with(scraper_id)
         
         rom_repository.update_rom(rom)

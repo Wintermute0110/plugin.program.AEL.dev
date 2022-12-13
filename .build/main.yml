@@ -78,7 +78,6 @@ stages:
           python -m venv .venv
           source .venv/bin/activate
           python -m pip install --upgrade pip
-          pip install setuptools
           pip install packaging==21.3
           pip install -r requirements.txt
         workingDirectory: $(workingDirectory)
@@ -127,12 +126,6 @@ stages:
           flattenFolders: false
           OverWrite: true
 
-      - bash: |
-          source .venv/bin/activate
-          kodi-addon-checker --branch matrix $(build.artifactstagingdirectory)/$(addonName)/
-        workingDirectory: '$(workingDirectory)'
-        displayName: 'Run Kodi addon checker'
-
       - task: ArchiveFiles@2
         inputs:
           rootFolderOrFile: '$(build.artifactstagingdirectory)/$(addonName)'
@@ -141,6 +134,12 @@ stages:
           archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(addonVersion).zip'
           replaceExistingArchive: true
  
+      - bash: |
+          source .venv/bin/activate
+          kodi-addon-checker --branch matrix $(build.artifactstagingdirectory)/$(addonName)/
+        workingDirectory: '$(workingDirectory)'
+        displayName: 'Run Kodi addon checker'
+        
       - task: CopyFiles@2
         displayName: 'Copy addon files for repository'
         inputs:
