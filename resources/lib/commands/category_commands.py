@@ -224,21 +224,21 @@ def cmd_category_delete(args):
         category_name = category.get_name()
         
         if category.has_items():
-            question = 'Category "{}" has {} sub-categories and {} romcollections. '.format(category_name, category.num_categories(), category.num_romcollections()) + \
-                        'Deleting it will also delete related items. ' + \
-                        'Are you sure you want to delete "{}"?'.format(category_name)
+            question = (f'Category "{category_name}" has {category.num_categories()} sub-categories and '
+                        f'{category.num_romcollections()} romcollections. Deleting it will also delete related items. '
+                        f'Are you sure you want to delete "{category_name}"?')
         else:
-            question = 'Category "{}" has no categories or romcollections. '.format(category_name) + \
-                        'Are you sure you want to delete "{}"?'.format(category_name)
+            question = (f'Category "{category_name}" has no categories or romcollections. '
+                        f'Are you sure you want to delete "{category_name}"?')
     
         ret = kodi.dialog_yesno(question)
         if not ret: return
             
-        logger.info('Deleting category "{}" ID {}'.format(category_name, category.get_id()))
+        logger.info(f'Deleting category "{category_name}" ID {category.get_id()}')
         repository.delete_category(category_id)
         uow.commit()
         
-    kodi.notify('Deleted category {0}'.format(category_name))
+    kodi.notify(f'Deleted category {category_name}')
     AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})            
     AppMediator.async_cmd('CLEANUP_VIEWS')
     AppMediator.sync_cmd('EDIT_CATEGORY', args)

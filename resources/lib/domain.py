@@ -870,13 +870,16 @@ class Category(MetaDataItemABC):
         return self.entity_data['num_categories'] if 'num_categories' in self.entity_data else 0
 
     def has_items(self) -> bool:
-        return len(self.num_romcollections()) > 0 or len(self.num_categories()) > 0
+        return self.num_romcollections() > 0 or self.num_categories() > 0
 
-    def get_asset_ids_list(self): return constants.CATEGORY_ASSET_ID_LIST
+    def get_asset_ids_list(self):
+        return constants.CATEGORY_ASSET_ID_LIST
     
-    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_CATEGORY_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self):
+        return constants.MAPPABLE_CATEGORY_ASSET_ID_LIST
     
-    def get_default_icon(self) -> str: return 'DefaultFolder.png' 
+    def get_default_icon(self) -> str:
+        return 'DefaultFolder.png' 
     
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
