@@ -3,7 +3,8 @@
 # Advanced Kodi Launcher: metadata editor actions
 #
 
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
+# Portions (c) Wintermute0110 <wintermute0110@gmail.com> 
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify

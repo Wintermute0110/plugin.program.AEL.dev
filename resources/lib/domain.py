@@ -2,7 +2,8 @@
 #
 # Advanced Kodi Launcher miscellaneous set of objects
 #
-# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Copyright (c) Chrisism <crizizz@gmail.com>
+# Portions (c) Wintermute0110 <wintermute0110@gmail.com> 
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,6 +44,11 @@ def _is_a_number(input: any):
 
 def _is_empty(input: any) -> bool:
     return input is None or (not _is_a_number(input) and len(input) == 0)
+
+def _is_empty_or_default(input: any, default: any):
+    if _is_empty(input):
+        return True
+    return input == default
 
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
@@ -1633,57 +1639,68 @@ class ROM(MetaDataItemABC):
         api_rom_obj: api.ROMObj, 
         metadata_to_update=[], 
         assets_to_update=[], 
-        overwrite_existing=False,
+        overwrite_existing_metadata=False,
+        overwrite_existing_assets=False,
         update_scanned_data=False):
 
         if constants.META_TITLE_ID in metadata_to_update \
-            and api_rom_obj.get_name():
+            and api_rom_obj.get_name() \
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_name(), constants.DEFAULT_META_TITLE)): 
             self.set_name(api_rom_obj.get_name())
 
         if constants.META_PLOT_ID in metadata_to_update \
             and api_rom_obj.get_plot() \
-            and (overwrite_existing or _is_empty(self.get_plot())):              
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_plot(), constants.DEFAULT_META_PLOT)):              
             self.set_plot(api_rom_obj.get_plot())
     
         if constants.META_YEAR_ID in metadata_to_update \
             and api_rom_obj.get_releaseyear() \
-            and (overwrite_existing or _is_empty(self.get_releaseyear())):       
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_releaseyear(), constants.DEFAULT_META_YEAR)):       
             self.set_releaseyear(api_rom_obj.get_releaseyear())
         
         if constants.META_GENRE_ID in metadata_to_update \
             and api_rom_obj.get_genre() \
-            and (overwrite_existing or _is_empty(self.get_genre())):
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_genre(), constants.DEFAULT_META_GENRE)):
             self.set_genre(api_rom_obj.get_genre())
         
         if constants.META_DEVELOPER_ID in metadata_to_update \
             and api_rom_obj.get_developer() \
-            and (overwrite_existing or _is_empty(self.get_developer())):         
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_developer(), constants.DEFAULT_META_DEVELOPER)):         
             self.set_developer(api_rom_obj.get_developer())
         
         if constants.META_NPLAYERS_ID in metadata_to_update \
             and api_rom_obj.get_number_of_players() \
-            and (overwrite_existing or _is_empty(self.get_number_of_players())):
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_number_of_players(), constants.DEFAULT_META_NPLAYERS)):
             self.set_number_of_players(api_rom_obj.get_number_of_players())
         
         if constants.META_NPLAYERS_ONLINE_ID in metadata_to_update \
             and api_rom_obj.get_number_of_players_online() \
-            and (overwrite_existing or _is_empty(self.get_number_of_players_online())):
+            and (overwrite_existing_metadata or \
+                _is_empty_or_default(self.get_number_of_players_online(), constants.DEFAULT_META_NPLAYERS)):
             self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
         
         if constants.META_ESRB_ID in metadata_to_update\
                 and api_rom_obj.get_esrb_rating() \
-                and (overwrite_existing or _is_empty(self.get_esrb_rating()) \
-                    or self.get_esrb_rating() == constants.ESRB_PENDING):
+                and (overwrite_existing_metadata or \
+                    _is_empty(self.get_esrb_rating(), constants.DEFAULT_META_ESRB)):
             self.set_esrb_rating(api_rom_obj.get_esrb_rating())
         
         if constants.META_PEGI_ID in metadata_to_update\
-             and api_rom_obj.get_pegi_rating() \
-            and (overwrite_existing or _is_empty(self.get_pegi_rating())):       
+                and api_rom_obj.get_pegi_rating() \
+                and (overwrite_existing_metadata or \
+                    _is_empty_or_default(self.get_pegi_rating(), constants.DEFAULT_META_PEGI)):       
             self.set_pegi_rating(api_rom_obj.get_pegi_rating())
         
         if constants.META_RATING_ID in metadata_to_update \
-            and api_rom_obj.get_rating() \
-            and (overwrite_existing or _is_empty(self.get_rating())):            
+                and api_rom_obj.get_rating() \
+                and (overwrite_existing_metadata or \
+                    _is_empty_or_default(self.get_rating(), constants.DEFAULT_META_RATING)):            
             self.set_rating(api_rom_obj.get_rating())
         
         if constants.META_TAGS_ID in metadata_to_update and api_rom_obj.get_tags() is not None:
@@ -1692,7 +1709,7 @@ class ROM(MetaDataItemABC):
                     
         if len(assets_to_update) > 0:
             for asset_id in self.get_asset_ids_list():
-                if api_rom_obj.get_asset(asset_id) is not None: 
+                if api_rom_obj.get_asset(asset_id) is not None and overwrite_existing_assets: 
                     if asset_id == constants.ASSET_TRAILER_ID:
                         self.set_trailer(api_rom_obj.get_asset(asset_id))
                     else:
@@ -1704,7 +1721,8 @@ class ROM(MetaDataItemABC):
             scanned_name = api_rom_obj.get_name()
             scanned_data = api_rom_obj.get_scanned_data()
             
-            if scanned_name: self.set_name(scanned_name)
+            if scanned_name:
+                self.set_name(scanned_name)
             for scanned_entry in list(scanned_data.keys()):
                 self.set_scanned_data_element(scanned_entry, scanned_data[scanned_entry])
                 
