@@ -208,6 +208,9 @@ class Asset(EntityABC):
     def set_asset_info(self, info:AssetInfo): 
         self.asset_info = info
     
+    def is_assigned(self) -> bool:
+        return self.get_path() != ''
+
     def clear(self):
         self.entity_data['filepath'] = ''
       
@@ -855,7 +858,8 @@ class Category(MetaDataItemABC):
 
     def get_object_name(self): return 'Category'
 
-    def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
+    def get_assets_kind(self):
+        return constants.KIND_ASSET_CATEGORY
     
     def get_type(self): return constants.OBJ_CATEGORY
     
@@ -1033,13 +1037,16 @@ class ROMCollection(MetaDataItemABC):
     def get_box_sizing(self):
         return self.entity_data['box_size'] if 'box_size' in self.entity_data else constants.BOX_SIZE_POSTER
     
-    def set_box_sizing(self, box_size): self.entity_data['box_size'] = box_size
+    def set_box_sizing(self, box_size):
+        self.entity_data['box_size'] = box_size
 
-    def get_asset_ids_list(self): return constants.LAUNCHER_ASSET_ID_LIST
+    def get_asset_ids_list(self):
+        return constants.LAUNCHER_ASSET_ID_LIST
 
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
 
-    def get_default_icon(self) -> str: return 'DefaultFolder.png'   
+    def get_default_icon(self) -> str:
+        return 'DefaultGameAddons.png'   
     
     def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
         return g_assetFactory.get_asset_list_by_IDs(constants.MAPPABLE_ROM_ASSET_ID_LIST)
@@ -1321,7 +1328,8 @@ class ROM(MetaDataItemABC):
         
     def get_object_name(self): return 'ROM'
 
-    def get_assets_kind(self): return constants.KIND_ASSET_ROM
+    def get_assets_kind(self):
+        return constants.KIND_ASSET_ROM
     
     def get_type(self): return constants.OBJ_ROM
       
@@ -1691,7 +1699,7 @@ class ROM(MetaDataItemABC):
         if constants.META_ESRB_ID in metadata_to_update\
                 and api_rom_obj.get_esrb_rating() \
                 and (overwrite_existing_metadata or \
-                    _is_empty(self.get_esrb_rating(), constants.DEFAULT_META_ESRB)):
+                    _is_empty_or_default(self.get_esrb_rating(), constants.DEFAULT_META_ESRB)):
             self.set_esrb_rating(api_rom_obj.get_esrb_rating())
         
         if constants.META_PEGI_ID in metadata_to_update\

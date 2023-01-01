@@ -209,6 +209,78 @@ msgid "Google scraper plugin"
 msgstr "settings.xml"
 
 ############################
+# Metadata labels
+############################
+
+msgctxt "#40801"
+msgid "Genre"
+msgstr ""
+
+msgctxt "#40802"
+msgid "Developer"
+msgstr ""
+
+msgctxt "#40803"
+msgid "Year released"
+msgstr ""
+
+msgctxt "#40804"
+msgid "ESRB Rating"
+msgstr ""
+
+msgctxt "#40805"
+msgid "PEGI Rating"
+msgstr ""
+
+msgctxt "#40806"
+msgid "Rating"
+msgstr ""
+
+msgctxt "#40807"
+msgid "Platform"
+msgstr ""
+
+msgctxt "#40808"
+msgid "Number of players"
+msgstr ""
+
+msgctxt "#40809"
+msgid "Number of players online"
+msgstr ""
+
+msgctxt "#40810"
+msgid "Tags"
+msgstr ""
+
+msgctxt "#40811"
+msgid "Plot"
+msgstr ""
+
+############################
+# Actions
+############################
+
+msgctxt "#40851"
+msgid "Launch"
+msgstr ""
+
+msgctxt "#40852"
+msgid "Play trailer"
+msgstr ""
+
+msgctxt "#40853"
+msgid "Edit Metadata"
+msgstr ""
+
+msgctxt "#40854"
+msgid "Edit Assets/Artwork"
+msgstr ""
+
+msgctxt "#40855"
+msgid "Scrape ROM"
+msgstr ""
+
+############################
 # Scraping settings
 ############################
 msgctxt "#20000"
