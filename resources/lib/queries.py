@@ -31,7 +31,7 @@ UPDATE_CATEGORY             = """
                                     WHERE id =?
                                     """
 INSERT_CATEGORY_ASSET = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
-DELETE_CATEGORY = "DELETE FROM category WHERE id = ?"
+DELETE_CATEGORY = "DELETE FROM categories WHERE id = ?"
 	
 INSERT_ROM_IN_CATEGORY = "INSERT INTO roms_in_category (rom_id, category_id) VALUES (?,?)"
 INSERT_ROM_IN_ROOT_CATEGORY = "INSERT INTO roms_in_category (rom_id, category_id) VALUES (?,NULL)"
