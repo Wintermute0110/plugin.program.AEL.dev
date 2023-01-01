@@ -1,4 +1,5 @@
 ## Current
+- Custom skin view for View ROM
 - More details about addon plugins
 
 ## Previous
