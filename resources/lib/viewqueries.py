@@ -578,7 +578,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     
     commands = []
     if is_rom: 
-        commands.append(('View ROM', _context_menu_url_for(f'/rom/{item_id}/view')))
+        commands.append(('View ROM', _context_menu_url_for(f'/rom/view/{item_id}')))
         commands.append(('Edit ROM', _context_menu_url_for(f'/rom/edit/{item_id}')))
         commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
         commands.append(('Add ROM to AKL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))

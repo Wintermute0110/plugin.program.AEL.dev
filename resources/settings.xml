@@ -126,6 +126,11 @@
         </category>
         <category id="display" label="40014">
             <group id="grp_general" label="40021">
+                <setting id="display_execute_rom_by_default" type="boolean" label="40416" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
                 <setting id="display_hide_finished" type="boolean" label="40403" help="">
                     <level>0</level>
                     <default>false</default>

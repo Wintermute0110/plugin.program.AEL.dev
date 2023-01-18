@@ -522,11 +522,16 @@ def render_rom_listitem(rom_obj: ROM) -> dict:
     if list_name == sub_label:
         sub_label = None
 
+    if settings.getSettingAsBool("display_execute_rom_by_default"):
+        item_url = globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}')
+    else:
+        item_url = globals.router.url_for_path(f'rom/view/{rom_obj.get_id()}')
+
     return {
         'id': rom_obj.get_id(),
         'name': list_name,
         'name2': sub_label,
-        'url': globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}'),
+        'url': item_url,
         'is_folder': False,
         'type': 'video',
         'info': {

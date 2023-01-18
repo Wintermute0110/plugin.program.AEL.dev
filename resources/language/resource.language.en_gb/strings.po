@@ -161,6 +161,10 @@ msgctxt "#40415"
 msgid "Hide Global Reports"
 msgstr "settings.xml"
 
+msgctxt "#40416"
+msgid "Launch ROM directly by default on item action"
+msgstr "settings.xml"
+
 ############################
 # Setting options - Paths
 ############################

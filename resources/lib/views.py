@@ -235,8 +235,9 @@ def vw_route_execute_rom(rom_id):
     AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id} )
 
 
-@router.route('/rom/<rom_id>/view')
+@router.route('/rom/view/<rom_id>')
 def vw_view_rom(rom_id):
+    xbmc.executebuiltin('Dialog.Close(busydialog)')
     container = viewqueries.qry_get_view_item(rom_id)
     ui = ViewRomGUI('script-akl-romdetails.xml', globals.addon_path, 'default', '1080i', True,
                     container_id=19801,container_data=container)
