@@ -250,7 +250,6 @@ def vw_view_rom_metadata(rom_id):
     container = viewqueries.qry_get_view_metadata(rom_id)
     _render_list_items(container)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
-    return []
 
 
 @router.route('/rom/<rom_id>/assets')
@@ -258,6 +257,23 @@ def vw_view_rom_assets(rom_id):
     container = viewqueries.qry_get_view_assets(rom_id)
     _render_list_items(container)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+
+
+@router.route('/rom/<rom_id>/scanneddata')
+def vw_view_rom_metadata(rom_id):
+    container = viewqueries.qry_get_view_scanned_data(rom_id)
+    _render_list_items(container)
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+
+@router.route('/rom/<rom_id>/view/scanneddata')
+def vw_view_rom_metadata(rom_id):
+    field = router.args['field'][0] if 'field' in router.args else None
+    if not field:
+        kodi.notify_warn("No field specified")
+        return
+    container = viewqueries.qry_get_view_scanned_data(rom_id)
+    requested_item = next((i for i in container['items'] if i['name'] == field), None)
+    xbmcgui.Dialog().textviewer(str(field), str(requested_item['name2']))
 
 # -------------------------------------------------------------------------------------------------
 # UI render methods
@@ -327,7 +343,6 @@ class ViewRomGUI(xbmcgui.WindowXML):
         if str_control_id == self.global_button_id:
             uri = self.getProperty("call")
             args = self.getProperty("callargs")
-            logger.info(f'u {uri} a {args}')
             uri_args = None
             if args:
                 args_lst = args.split("=")

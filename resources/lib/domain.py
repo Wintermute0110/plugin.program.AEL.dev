@@ -1467,6 +1467,9 @@ class ROM(MetaDataItemABC):
     def scanned_with(self, scanner_id: str): 
         self.entity_data['scanned_by_id'] = scanner_id
         
+    def get_scanned_data(self):
+        return self.scanned_data
+
     def get_scanned_data_element(self, key:str):
         return self.scanned_data[key] if key in self.scanned_data else None
     

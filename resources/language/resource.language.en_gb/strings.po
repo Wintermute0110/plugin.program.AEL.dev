@@ -260,6 +260,14 @@ msgctxt "#40811"
 msgid "Plot"
 msgstr ""
 
+msgctxt "#40812"
+msgid "Title"
+msgstr ""
+
+msgctxt "#40813"
+msgid "Identifier"
+msgstr ""
+
 ############################
 # Actions
 ############################

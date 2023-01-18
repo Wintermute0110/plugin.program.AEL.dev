@@ -3,6 +3,7 @@
 	<defaultcontrol>5000</defaultcontrol>
 	<onload>SetProperty(TextViewerButtonId,138)</onload>
 	<onload>SetProperty(GlobalButtonId,19810)</onload>
+	<onload>SetProperty(DataListView,metadata)</onload>
 	<controls>
 		<control type="list" id="19801">
 			<description>Storage container for the item details</description>
@@ -120,8 +121,10 @@
 						<aligny>bottom</aligny>
 						<label></label>
 						<onup>19802</onup>
-						<onleft>4000</onleft>
-						<onright>4000</onright>
+						<onleft condition="Control.IsVisible(4000)">4000</onleft>
+						<onright condition="Control.IsVisible(4000)">4000</onright>
+						<onleft condition="Control.IsVisible(4010)">4010</onleft>
+						<onright condition="Control.IsVisible(4010)">4010</onright>
 						<ondown>5000</ondown>
 						<texturefocus border="21" colordiffuse="FF12A0C7">buttons/button-fo.png</texturefocus>
 						<texturenofocus border="21">dialogs/dialog-bg.png</texturenofocus>
@@ -146,6 +149,7 @@
 				<control type="list" id="4000">
 					<description>Metadata list</description>
 					<orientation>vertical</orientation>
+					<visible>String.IsEmpty(Window.Property(DataListView)) | String.IsEqual(Window.Property(DataListView),metadata)</visible>
 					<left>755</left>
 					<top>488</top>
 					<height>377</height>
@@ -160,6 +164,27 @@
 					<onclick>SendClick(,19810)</onclick>
 					<!-- <content>$INFO[Container(19801).ListItem.Property(entityid),plugin://plugin.program.akl/rom/,/metadata]</content> -->
 					<content>
+						<item id="40812">
+							<label>$ADDON[plugin.program.akl 40812]</label>
+							<label2>$INFO[Container(19801).ListItem.Label]</label2>
+							<property name="action">plugin://plugin.program.akl/collection/virtual/vcategory_title/items/</property>
+							<property name="args">$INFO[Container(19801).ListItem.Label,value=,]</property>
+							<visible>!String.IsEmpty(Container(19801).ListItem.Label)</visible>
+						</item>
+						<item id="40807">
+							<label>$ADDON[plugin.program.akl 40807]</label>
+							<label2>$INFO[Container(19801).ListItem.Property(platform)]</label2>
+							<property name="action">plugin://plugin.program.akl/collection/virtual/vcategory_title/items/</property>
+							<property name="args">$INFO[Container(19801).ListItem.Property(platform),value=,]</property>
+							<visible>!String.IsEmpty(Container(19801).ListItem.Property(platform))</visible>
+						</item>
+						<item id="40813">
+							<label>$ADDON[plugin.program.akl 40813]</label>
+							<label2>$INFO[Container(19801).ListItem.Property(identifier)]</label2>
+							<property name="action">plugin://plugin.program.akl/collection/virtual/vcategory_title/items/</property>
+							<property name="args">$INFO[Container(19801).ListItem.Property(identifier),value=,]</property>
+							<visible>!String.IsEmpty(Container(19801).ListItem.Property(identifier))</visible>
+						</item>
 						<item id="40801">
 							<label>$ADDON[plugin.program.akl 40801]</label>
 							<label2>$INFO[Container(19801).ListItem.Genre]</label2>
@@ -222,6 +247,62 @@
 							<visible>!String.IsEmpty(Container(19801).ListItem.Property(tags))</visible>
 						</item>
 					</content>
+					<itemlayout height="49" width="472">
+						<control type="togglebutton">
+							<width>472</width>
+							<height>49</height>
+							<aligny>center</aligny>
+							<align>left</align>
+							<label></label>
+						</control>
+						<control type="label">
+							<left>0</left>
+							<width>472</width>
+							<height>49</height>
+							<textoffsetx>16</textoffsetx>
+							<aligny>center</aligny>
+							<align>left</align>
+							<font>font12</font>
+							<label>[COLOR FF2866A4]$INFO[ListItem.Label]: [/COLOR]$INFO[ListItem.Label2]</label>
+						</control>
+					</itemlayout>
+					<focusedlayout height="49" width="472">
+						<control type="togglebutton">
+							<width>472</width>
+							<height>49</height>
+							<aligny>center</aligny>
+							<align>left</align>
+							<texturefocus colordiffuse="FF12A0C7">lists/focus.png</texturefocus>
+							<texturenofocus colordiffuse="40FFFFFF">lists/focus.png</texturenofocus>
+							<label></label>
+						</control>
+						<control type="label">
+							<left>0</left>
+							<width>472</width>
+							<height>49</height>
+							<textoffsetx>16</textoffsetx>
+							<aligny>center</aligny>
+							<align>left</align>
+							<font>font12</font>
+							<label>$INFO[ListItem.Label]: $INFO[ListItem.Label2]</label>
+						</control>
+					</focusedlayout>
+				</control>
+
+				<control type="list" id="4010">
+					<description>Scanned data list</description>
+					<orientation>vertical</orientation>
+					<visible>String.IsEqual(Window.Property(DataListView),scanneddata)</visible>
+					<left>755</left>
+					<top>488</top>
+					<height>377</height>
+					<itemgap>-8</itemgap>
+					<ondown condition="!Integer.IsGreater(Container(5000).NumItems,3)">5000</ondown>
+					<ondown condition="Integer.IsGreater(Container(5000).NumItems,3)">SetFocus(5000,4)</ondown>
+					<onup>19802</onup>
+					<onright>140</onright>
+					<onleft>140</onleft>
+					<content>$INFO[Container(19801).ListItem.Property(entityid),plugin://plugin.program.akl/rom/,/scanneddata]</content>
 					<itemlayout height="49" width="472">
 						<control type="togglebutton">
 							<width>472</width>
@@ -450,7 +531,24 @@
 						<onclick>PlayMedia($INFO[Container(19801).ListItem.Trailer])</onclick>
 						<animation effect="fade" start="100" end="0" time="300" delay="300">Hidden</animation>
 					</control>
-					<control type="radiobutton" id="19982">
+					<control type="togglebutton" id="19982">
+						<width>262</width>
+						<height>142</height>
+						<align>center</align>
+						<aligny>top</aligny>
+						<texturefocus border="21" colordiffuse="FF12A0C7">buttons/button-fo.png</texturefocus>
+						<texturenofocus border="21">buttons/button-nofo.png</texturenofocus>
+						<alttexturefocus border="21" colordiffuse="FF12A0C7">buttons/button-fo.png</alttexturefocus>
+						<alttexturenofocus border="21">buttons/button-nofo.png</alttexturenofocus>
+						<textoffsetx>35</textoffsetx>
+						<textoffsety>78</textoffsety>
+						<font>font12</font>
+						<label>Show scanned data</label>
+						<altlabel>Show metadata</altlabel>
+						<onclick>SetProperty(DataListView,scanneddata)</onclick>
+						<altclick>SetProperty(DataListView,metadata)</altclick>
+					</control>
+					<control type="radiobutton" id="19983">
 						<width>262</width>
 						<height>142</height>
 						<align>center</align>
@@ -473,7 +571,7 @@
 						<onclick>RunPlugin(plugin://plugin.program.akl/execute/command/rom_edit_metadata/?rom_id=$INFO[Container(19801).ListItem.Property(entityid)])</onclick>
 						<animation effect="fade" start="100" end="0" time="300" delay="300">Hidden</animation>
 					</control>
-					<control type="radiobutton" id="19983">
+					<control type="radiobutton" id="19984">
 						<width>262</width>
 						<height>142</height>
 						<align>center</align>
@@ -496,7 +594,7 @@
 						<onclick>RunPlugin(plugin://plugin.program.akl/execute/command/rom_edit_assets/?rom_id=$INFO[Container(19801).ListItem.Property(entityid)])</onclick>
 						<animation effect="fade" start="100" end="0" time="300" delay="300">Hidden</animation>
 					</control>
-					<control type="radiobutton" id="19984">
+					<control type="radiobutton" id="19985">
 						<width>262</width>
 						<height>142</height>
 						<align>center</align>

@@ -201,6 +201,7 @@ def qry_get_view_metadata(rom_id: str):
 
     return container
 
+
 def qry_get_view_assets(rom_id: str):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     container = None
@@ -239,6 +240,31 @@ def qry_get_view_assets(rom_id: str):
             'name': rom.get_name(),
             'id': rom_id,
             'obj_type': constants.OBJ_NONE,
+            'items': items
+        }
+
+    return container
+
+
+def qry_get_view_scanned_data(rom_id: str):
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    container = None
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom = roms_repository.find_rom(rom_id)
+        scanned_data = rom.get_scanned_data()
+        items = []
+        for key, value in scanned_data.items():
+            items.append({ 
+                'is_folder': False, 'type': 'game',
+                'name': key, 'name2': value, 
+                'url': globals.router.url_for_path(
+                    f'/rom/{rom.get_id()}/view/scanneddata?field={key}'),
+                'info': {}, 'art': {}, 'properties': {}})
+        container = {
+            'id': rom_id,
+            'name': rom.get_name(),
+            'obj_type': constants.OBJ_ROM,
             'items': items
         }
 

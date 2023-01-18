@@ -547,6 +547,7 @@ def render_rom_listitem(rom_obj: ROM) -> dict:
         'art': assets,
         'properties': {
             'entityid': rom_obj.get_id(),
+            'identifier': rom_obj.get_rom_identifier(),
             'platform': rom_obj.get_platform(),
             'nplayers': rom_obj.get_number_of_players(),
             'nplayers_online': rom_obj.get_number_of_players_online(),
