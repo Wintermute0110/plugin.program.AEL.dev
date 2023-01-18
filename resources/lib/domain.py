@@ -1654,6 +1654,9 @@ class ROM(MetaDataItemABC):
         overwrite_existing_assets=False,
         update_scanned_data=False):
 
+        logger.debug(f"Overwriting existing metadata in domain: {overwrite_existing_metadata}")
+        logger.debug(f"Overwriting existing assets in domain: {overwrite_existing_assets}")
+
         if constants.META_TITLE_ID in metadata_to_update \
             and api_rom_obj.get_name() \
             and (overwrite_existing_metadata or \
@@ -1718,14 +1721,19 @@ class ROM(MetaDataItemABC):
             for tag in api_rom_obj.get_tags():
                 self.add_tag(tag)
                     
+        logger.info(f"Assets to update {','.join(assets_to_update)}")
         if len(assets_to_update) > 0:
-            for asset_id in self.get_asset_ids_list():
-                if api_rom_obj.get_asset(asset_id) is not None and overwrite_existing_assets: 
+            for asset_id in assets_to_update:
+                existing_asset = self.get_asset(asset_id)
+                new_asset = api_rom_obj.get_asset(asset_id)
+                logger.info(f'API ASSET {new_asset}')
+                if new_asset is not None and \
+                    (overwrite_existing_assets or existing_asset is None or not existing_asset.is_assigned()):
                     if asset_id == constants.ASSET_TRAILER_ID:
-                        self.set_trailer(api_rom_obj.get_asset(asset_id))
+                        self.set_trailer(new_asset)
                     else:
                         asset_info = g_assetFactory.get_asset_info(asset_id)
-                        asset_path = io.FileName(api_rom_obj.get_asset(asset_id))
+                        asset_path = io.FileName(new_asset)
                         self.set_asset(asset_info, asset_path)
         
         if update_scanned_data:
