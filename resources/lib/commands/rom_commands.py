@@ -52,14 +52,14 @@ def cmd_edit_rom(args):
         rom = repository.find_rom(rom_id)
 
     options = collections.OrderedDict()
-    options['ROM_EDIT_METADATA']       = 'Edit Metadata ...'
-    options['ROM_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
+    options['ROM_EDIT_METADATA']       = f'{kodi.translate(40853)} ...'
+    options['ROM_EDIT_ASSETS']         = f'{kodi.translate(40854)} ...'
     options['EDIT_ROM_STATUS']         = f'ROM status: {rom.get_finished_str()}'
     if rom.has_launchers():
         options['EDIT_ROM_LAUNCHERS']  = 'Manage associated launchers'
     else: options['ADD_ROM_LAUNCHER']  = 'Add new launcher to ROM'    
     options['DELETE_ROM']              = 'Delete ROM'
-    options['SCRAPE_ROM']              = 'Scrape ROM'
+    options['SCRAPE_ROM']              = kodi.translate(40855)
 
     s = f'Edit ROM "{rom.get_name()}"'
     selected_option = kodi.OrdDictionaryDialog().select(s, options)

@@ -41,7 +41,7 @@ def cmd_scrape_romcollection(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         collection_repository = ROMCollectionRepository(uow)
-        collection            = collection_repository.find_romcollection(romcollection_id)   
+        collection = collection_repository.find_romcollection(romcollection_id)   
     
         scraper_settings:ScraperSettings = ScraperSettings.from_addon_settings()
         
@@ -53,14 +53,14 @@ def cmd_scrape_romcollection(args):
             AppMediator.sync_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
             return 
 
-        scraper_settings.asset_IDs_to_scrape    = selected_addon.get_supported_assets()
+        scraper_settings.asset_IDs_to_scrape = selected_addon.get_supported_assets()
         scraper_settings.metadata_IDs_to_scrape = selected_addon.get_supported_metadata()
 
         logger.debug(f'cmd_scrape_romcollection() Selected scraper#{selected_addon.get_name()}')
-        args['scraper_settings']            = scraper_settings
-        args['scraper_id']                  = selected_addon.addon.get_id()
-        args['scraper_supported_metadata']  = selected_addon.get_supported_metadata()
-        args['scraper_supported_assets']    = selected_addon.get_supported_assets()
+        args['scraper_settings'] = scraper_settings
+        args['scraper_id'] = selected_addon.addon.get_id()
+        args['scraper_supported_metadata'] = selected_addon.get_supported_metadata()
+        args['scraper_supported_assets'] = selected_addon.get_supported_assets()
         
     AppMediator.sync_cmd('SCRAPE_ROMS_WITH_SETTINGS', args)
 
@@ -76,22 +76,22 @@ def cmd_scrape_rom(args):
          
         scraper_settings:ScraperSettings = ScraperSettings.from_addon_settings()
         
-        dialog_title    = f'Scrape ROM "{rom.get_name()}"'
-        selected_addon  = _select_scraper(uow, dialog_title, scraper_settings)
+        dialog_title = f'Scrape ROM "{rom.get_name()}"'
+        selected_addon = _select_scraper(uow, dialog_title, scraper_settings)
         if selected_addon is None:
             # >> Exits context menu
-            logger.debug('SCRAPE_ROM: cmd_scrape_rom() Selected None. Closing context menu')
+            logger.debug('SCRAPE_ROM: Selected None. Closing context menu')
             AppMediator.sync_cmd('EDIT_ROM', args)
             return 
 
-        scraper_settings.asset_IDs_to_scrape    = selected_addon.get_supported_assets()
+        scraper_settings.asset_IDs_to_scrape = selected_addon.get_supported_assets()
         scraper_settings.metadata_IDs_to_scrape = selected_addon.get_supported_metadata()
 
-        logger.debug('cmd_scrape_rom() Selected scraper#{}'.format(selected_addon.get_name()))
-        args['scraper_settings']            = scraper_settings
-        args['scraper_id']                  = selected_addon.addon.get_id()
-        args['scraper_supported_metadata']  = selected_addon.get_supported_metadata()
-        args['scraper_supported_assets']    = selected_addon.get_supported_assets()
+        logger.debug(f'Selected scraper#{selected_addon.get_name()}')
+        args['scraper_settings'] = scraper_settings
+        args['scraper_id'] = selected_addon.addon.get_id()
+        args['scraper_supported_metadata'] = selected_addon.get_supported_metadata()
+        args['scraper_supported_assets'] = selected_addon.get_supported_assets()
         
     AppMediator.sync_cmd('SCRAPE_ROM_WITH_SETTINGS', args)
 
@@ -114,15 +114,16 @@ def cmd_scrape_roms_in_romcollection(args):
         metadata_to_scrape  = [constants.METADATA_DESCRIPTIONS[meta_id] for meta_id in scraper_settings.metadata_IDs_to_scrape]
 
         options = collections.OrderedDict()        
-        options['SCRAPER_METADATA_POLICY']      = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
-        options['SCRAPER_ASSET_POLICY']         = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
-        options['SCRAPER_GAME_SELECTION_MODE']  = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
+        options['SCRAPER_METADATA_POLICY'] = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
+        options['SCRAPER_ASSET_POLICY'] = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
+        options['SCRAPER_GAME_SELECTION_MODE'] = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
         options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
-        options['SCRAPER_META_TO_SCRAPE']       = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
-        options['SCRAPER_ASSETS_TO_SCRAPE']     = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
-        options['SCRAPER_OVERWRITE_MODE']       = 'Overwrite existing files: "{}"'.format('Yes' if scraper_settings.overwrite_existing else 'No')
-        options['SCRAPER_IGNORE_TITLES_MODE']   = 'Ignore scraped titles: "{}"'.format('Yes' if scraper_settings.ignore_scrap_title else 'No')
-        options['SCRAPE']                       = 'Scrape'
+        options['SCRAPER_META_TO_SCRAPE'] = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
+        options['SCRAPER_ASSETS_TO_SCRAPE'] = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
+        options['SCRAPER_OVERWRITE_META_MODE'] = 'Overwrite existing metadata: "{}"'.format('Yes' if scraper_settings.overwrite_existing_meta else 'No')
+        options['SCRAPER_OVERWRITE_ASSETS_MODE'] = 'Overwrite existing assets/files: "{}"'.format('Yes' if scraper_settings.overwrite_existing_assets else 'No')
+        options['SCRAPER_IGNORE_TITLES_MODE'] = 'Ignore scraped titles: "{}"'.format('Yes' if scraper_settings.ignore_scrap_title else 'No')
+        options['SCRAPE'] = 'Scrape'
         
         dialog_title    = f'Scrape collection "{collection.get_name()}" ROMs with "{selected_addon.get_name()}"'
         selected_option = kodi.OrdDictionaryDialog().select(dialog_title, options, preselect='SCRAPE')
@@ -155,26 +156,27 @@ def cmd_scrape_rom_with_settings(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository = AelAddonRepository(uow)
-        roms_repository  = ROMsRepository(uow)
+        roms_repository = ROMsRepository(uow)
         
-        rom              = roms_repository.find_rom(rom_id)   
-        addon            = addon_repository.find(scraper_id)
-        selected_addon   = ScraperAddon(addon, scraper_settings)
+        rom = roms_repository.find_rom(rom_id)   
+        addon = addon_repository.find(scraper_id)
+        selected_addon = ScraperAddon(addon, scraper_settings)
         
         assets_to_scrape    = g_assetFactory.get_asset_list_by_IDs(scraper_settings.asset_IDs_to_scrape)
         metadata_to_scrape  = [constants.METADATA_DESCRIPTIONS[meta_id] for meta_id in scraper_settings.metadata_IDs_to_scrape]
 
         options = collections.OrderedDict()        
-        options['SCRAPER_METADATA_POLICY']      = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
-        options['SCRAPER_ASSET_POLICY']         = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
-        options['SCRAPER_SEARCH_TERM_MODE']     = f'Search term mode: "{kodi.translate(scraper_settings.search_term_mode)}"'
-        options['SCRAPER_GAME_SELECTION_MODE']  = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
+        options['SCRAPER_METADATA_POLICY'] = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
+        options['SCRAPER_ASSET_POLICY'] = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
+        options['SCRAPER_SEARCH_TERM_MODE'] = f'Search term mode: "{kodi.translate(scraper_settings.search_term_mode)}"'
+        options['SCRAPER_GAME_SELECTION_MODE'] = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
         options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
-        options['SCRAPER_META_TO_SCRAPE']       = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
-        options['SCRAPER_ASSETS_TO_SCRAPE']     = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
-        options['SCRAPER_OVERWRITE_MODE']       = 'Overwrite existing files: "{}"'.format('Yes' if scraper_settings.overwrite_existing else 'No')
-        options['SCRAPER_IGNORE_TITLES_MODE']   = 'Ignore scraped titles: "{}"'.format('Yes' if scraper_settings.ignore_scrap_title else 'No')
-        options['SCRAPE']                       = 'Scrape'
+        options['SCRAPER_META_TO_SCRAPE'] = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
+        options['SCRAPER_ASSETS_TO_SCRAPE'] = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
+        options['SCRAPER_OVERWRITE_META_MODE'] = 'Overwrite existing metadata: "{}"'.format('Yes' if scraper_settings.overwrite_existing_meta else 'No')
+        options['SCRAPER_OVERWRITE_ASSETS_MODE'] = 'Overwrite existing assets/files: "{}"'.format('Yes' if scraper_settings.overwrite_existing_assets else 'No')
+        options['SCRAPER_IGNORE_TITLES_MODE'] = 'Ignore scraped titles: "{}"'.format('Yes' if scraper_settings.ignore_scrap_title else 'No')
+        options['SCRAPE'] = 'Scrape'
         
         s = f'Scrape ROM "{rom.get_name()}" with "{selected_addon.get_name()}'
         selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect='SCRAPE')
@@ -203,22 +205,23 @@ def cmd_scrape_rom_metadata(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         roms_repository = ROMsRepository(uow)
-        rom             = roms_repository.find_rom(rom_id)   
+        rom = roms_repository.find_rom(rom_id)   
         
         scraper_settings = ScraperSettings().from_addon_settings()
-        scraper_settings.scrape_metadata_policy  = constants.SCRAPE_POLICY_SCRAPE_ONLY
-        scraper_settings.scrape_assets_policy    = constants.SCRAPE_ACTION_NONE
-        scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
-        scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
+        scraper_settings.scrape_metadata_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
+        scraper_settings.scrape_assets_policy = constants.SCRAPE_ACTION_NONE
+        scraper_settings.search_term_mode = constants.SCRAPE_MANUAL
+        scraper_settings.game_selection_mode = constants.SCRAPE_MANUAL
+        scraper_settings.overwrite_existing_meta = True
         
         selected_addon = _select_scraper(uow, 'Scrape ROM metadata', scraper_settings)
         if selected_addon is None:
             # >> Exits context menu
-            logger.debug('SCRAPE_ROM_METADATA: cmd_scrape_rom_metadata() Selected None. Closing context menu')
+            logger.debug('SCRAPE_ROM_METADATA: Selected None. Closing context menu')
             AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
             return
 
-        logger.debug(f'SCRAPE_ROM_METADATA: cmd_scrape_rom_metadata() Selected scraper#{selected_addon.get_name()}')
+        logger.debug(f'SCRAPE_ROM_METADATA: Selected scraper#{selected_addon.get_name()}')
         scraper_settings.metadata_IDs_to_scrape = selected_addon.get_supported_metadata()
     
         options = collections.OrderedDict()
@@ -251,13 +254,13 @@ def cmd_scrape_rom_asset(args):
         rom             = roms_repository.find_rom(rom_id)   
         
         scraper_settings = ScraperSettings()
-        scraper_settings.scrape_assets_policy    = constants.SCRAPE_POLICY_SCRAPE_ONLY
-        scraper_settings.scrape_metadata_policy  = constants.SCRAPE_ACTION_NONE
-        scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
-        scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
-        scraper_settings.asset_selection_mode    = constants.SCRAPE_MANUAL
-        scraper_settings.asset_IDs_to_scrape     = [asset_id]
-        scraper_settings.overwrite_existing      = True
+        scraper_settings.scrape_assets_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
+        scraper_settings.scrape_metadata_policy = constants.SCRAPE_ACTION_NONE
+        scraper_settings.search_term_mode = constants.SCRAPE_MANUAL
+        scraper_settings.game_selection_mode = constants.SCRAPE_MANUAL
+        scraper_settings.asset_selection_mode = constants.SCRAPE_MANUAL
+        scraper_settings.asset_IDs_to_scrape = [asset_id]
+        scraper_settings.overwrite_existing_assets = True
         
         selected_addon = _select_scraper(uow, 'Scrape ROM {} asset'.format(asset_to_scrape.name), scraper_settings)
         if selected_addon is None:
@@ -267,7 +270,7 @@ def cmd_scrape_rom_asset(args):
             return
 
     # >> Execute scraper
-    logger.debug('SCRAPE_ROM_ASSET: cmd_scrape_rom_asset() Selected scraper#{}'.format(selected_addon.get_name()))
+    logger.debug('SCRAPE_ROM_ASSET: Selected scraper#{}'.format(selected_addon.get_name()))
     
     kodi.notify('Preparing scraper')
     kodi.run_script(
@@ -284,19 +287,19 @@ def cmd_scrape_rom_assets(args):
         rom             = roms_repository.find_rom(rom_id)   
     
         scraper_settings = ScraperSettings.from_addon_settings()
-        scraper_settings.scrape_assets_policy    = constants.SCRAPE_POLICY_SCRAPE_ONLY
-        scraper_settings.scrape_metadata_policy  = constants.SCRAPE_ACTION_NONE
-        scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
-        scraper_settings.asset_selection_mode    = constants.SCRAPE_MANUAL
+        scraper_settings.scrape_assets_policy = constants.SCRAPE_POLICY_SCRAPE_ONLY
+        scraper_settings.scrape_metadata_policy = constants.SCRAPE_ACTION_NONE
+        scraper_settings.search_term_mode = constants.SCRAPE_MANUAL
+        scraper_settings.asset_selection_mode = constants.SCRAPE_MANUAL
     
         selected_addon = _select_scraper(uow, 'Scrape ROM assets', scraper_settings)
         if selected_addon is None:
             # >> Exits context menu
-            logger.debug('cmd_scrape_rom_assets() Selected None. Closing context menu')
+            logger.debug('SCRAPE_ROM_ASSETS: Selected None. Closing context menu')
             AppMediator.sync_cmd('ROM_EDIT_ASSETS', args)
             return
 
-        logger.debug('cmd_scrape_rom_assets() Selected scraper#{}'.format(selected_addon.get_name()))
+        logger.debug('SCRAPE_ROM_ASSETS: Selected scraper#{}'.format(selected_addon.get_name()))
         scraper_settings.asset_IDs_to_scrape = selected_addon.get_supported_assets()
     
         asset_options = g_assetFactory.get_all()
@@ -344,7 +347,8 @@ def cmd_configure_scraper_metadata_policy(args):
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
-    
+
+
 @AppMediator.register('SCRAPER_ASSET_POLICY')
 def cmd_configure_scraper_asset_policy(args):  
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
@@ -365,7 +369,8 @@ def cmd_configure_scraper_asset_policy(args):
     scraper_settings.scrape_assets_policy = selected_option
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
-    
+
+
 @AppMediator.register('SCRAPER_SEARCH_TERM_MODE')
 def cmd_configure_scraper_search_term_mode(args):
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
@@ -384,6 +389,7 @@ def cmd_configure_scraper_search_term_mode(args):
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
+
 
 @AppMediator.register('SCRAPER_GAME_SELECTION_MODE')
 def cmd_configure_scraper_game_selection_mode(args):
@@ -404,6 +410,7 @@ def cmd_configure_scraper_game_selection_mode(args):
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
 
+
 @AppMediator.register('SCRAPER_ASSET_SELECTION_MODE')
 def cmd_configure_scraper_asset_selection_mode(args):  
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
@@ -422,6 +429,7 @@ def cmd_configure_scraper_asset_selection_mode(args):
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
+
 
 @AppMediator.register('SCRAPER_META_TO_SCRAPE')
 def cmd_configure_scraper_metadata_to_scrape(args):  
@@ -443,6 +451,7 @@ def cmd_configure_scraper_metadata_to_scrape(args):
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
+
 
 @AppMediator.register('SCRAPER_ASSETS_TO_SCRAPE')
 def cmd_configure_scraper_assets_to_scrape(args):  
@@ -466,13 +475,23 @@ def cmd_configure_scraper_assets_to_scrape(args):
     AppMediator.sync_cmd(args['ret_cmd'], args)
     return
 
-@AppMediator.register('SCRAPER_OVERWRITE_MODE')
-def cmd_configure_scraper_overwrite_mode(args):  
+
+@AppMediator.register('SCRAPER_OVERWRITE_META_MODE')
+def cmd_configure_scraper_overwrite_meta_mode(args):  
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
-    scraper_settings.overwrite_existing = not scraper_settings.overwrite_existing
+    scraper_settings.overwrite_existing_meta = not scraper_settings.overwrite_existing_meta
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
+
     
+@AppMediator.register('SCRAPER_OVERWRITE_ASSETS_MODE')
+def cmd_configure_scraper_overwrite_assets_mode(args):  
+    scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
+    scraper_settings.overwrite_existing_assets = not scraper_settings.overwrite_existing_assets
+    args['scraper_settings'] = scraper_settings
+    AppMediator.sync_cmd(args['ret_cmd'], args)
+
+
 @AppMediator.register('SCRAPER_IGNORE_TITLES_MODE')
 def cmd_configure_scraper_ignore_mode(args):  
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()

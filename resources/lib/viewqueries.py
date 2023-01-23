@@ -34,9 +34,12 @@ from akl.utils import kodi
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator
 from resources.lib.commands import view_rendering_commands
-from resources.lib.repositories import ViewRepository
+from resources.lib.repositories import ViewRepository, UnitOfWork, ROMsRepository, g_assetFactory
+
 
 logger = logging.getLogger(__name__)
+
+
 #
 # Root view items
 #
@@ -98,6 +101,7 @@ def qry_get_root_items():
     
     return container
 
+
 #
 # View pre-rendered items.
 #
@@ -107,10 +111,165 @@ def qry_get_view_items(view_id: str, is_virtual_view=False):
     return container
 
 #
-# View database unrendered items.
+# DB based items
 #
-def qry_get_database_view_items(category_id: str, collection_value: str):
-    return view_rendering_commands.cmd_render_virtual_collection(category_id, collection_value)
+def qry_get_view_item(rom_id: str):
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    container = None
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom = roms_repository.find_rom(rom_id)
+
+        item = view_rendering_commands.render_rom_listitem(rom)
+        container = {
+            'id': rom_id,
+            'name': rom.get_name(),
+            'obj_type': constants.OBJ_ROM,
+            'items': [item]
+        }
+
+    return container
+
+def qry_get_view_metadata(rom_id: str):
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    container = None
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom = roms_repository.find_rom(rom_id)
+
+        items = []
+        items.append({ 
+                'id': 40801, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_GENRE_ID}/items?value={rom.get_genre()}'),
+                'name': kodi.translate(40801), 'name2': rom.get_genre(),
+                'info': {}, 'art': {}, 'properties': {'field': 'genre'}})
+        items.append({ 
+                'id': 40803, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_YEARS_ID}/items?value={rom.get_releaseyear()}'),
+                'name': kodi.translate(40803), 'name2': rom.get_releaseyear(),
+                'info': {}, 'art': {}, 'properties': {'field': 'releaseyear'}})
+        items.append({ 
+                'id': 40802, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_DEVELOPER_ID}/items?value={rom.get_developer()}'),
+                'name': kodi.translate(40802), 'name2': rom.get_developer(),
+                'info': {}, 'art': {}, 'properties': {'field': 'developer'}})
+        items.append({ 
+                'id': 40806, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_RATING_ID}/items?value={rom.get_rating()}'),
+                'name': kodi.translate(40806), 'name2': str(rom.get_rating()),
+                'info': {}, 'art': {}, 'properties': {'field': 'rating'}})
+        items.append({ 
+                'id': 40804, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_ESRB_ID}/items?value={rom.get_esrb_rating()}'),
+                'name': kodi.translate(40804), 'name2': rom.get_esrb_rating(),
+                'info': {}, 'art': {}, 'properties': {'field': 'esrb'}})
+        items.append({ 
+                'id': 40805, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_PEGI_ID}/items?value={rom.get_pegi_rating()}'),
+                'name': kodi.translate(40805), 'name2': rom.get_pegi_rating(),
+                'info': {}, 'art': {}, 'properties': {'field': 'pegi'}})
+        items.append({ 
+                'id': 40808, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/{constants.VCATEGORY_NPLAYERS_ID}/items?value={rom.get_number_of_players()}'),
+                'name': kodi.translate(40808), 'name2': str(rom.get_number_of_players()),
+                'info': {}, 'art': {}, 'properties': {'field': 'nplayers'}})
+        items.append({ 
+                'id': 40809, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path('execute/command/reset_database'),
+                'name': kodi.translate(40809), 'name2': str(rom.get_number_of_players_online()),
+                'info': {}, 'art': {}, 'properties': {'field': 'nplayers_online'}})
+        items.append({ 
+                'id': 40810, 'is_folder': False, 'type': 'game',
+                'url': globals.router.url_for_path(
+                    f'/collection/virtual/items?value={rom.get_genre()}'),
+                'name': kodi.translate(40810), 'name2': ','.join(rom.get_tags()),
+                'info': {}, 'art': {}, 'properties': {'field': 'tags'}})
+
+        container = {
+            'id': rom_id,
+            'name': rom.get_name(),
+            'obj_type': constants.OBJ_ROM,
+            'items': items
+        }
+
+    return container
+
+
+def qry_get_view_assets(rom_id: str):
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    container = None
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom = roms_repository.find_rom(rom_id)
+
+        assigned_assets = rom.get_assets()
+        asset_ids = rom.get_asset_ids_list()
+        items = []
+        for asset_id in asset_ids:
+            asset = next((a for a in assigned_assets if a.get_asset_info_id() == asset_id), None)
+            asset_info = asset.asset_info if asset else g_assetFactory.get_asset_info(asset_id)
+            items.append({ 
+                'id': asset_id,
+                'is_folder': False,
+                'type': 'pictures',
+                'name': asset_info.name,
+                'name2': asset.get_path() if asset else None,
+                'url': asset.get_path() if asset else globals.router.url_for_path(
+                    f'/execute/command/rom_edit_assets/?rom_id={rom_id}&selected_asset={asset_id}'),
+                'info': {
+                    'title': asset_info.name,
+                    'picturepath': asset.get_path() if asset else None,
+                },
+                'art': { 
+                    'thumb': asset.get_path() if asset else 'DefaultAddonImages.png'
+                },
+                'properties': { 
+                    'is_set': str(asset and asset.is_assigned()),
+                    'assetid': asset_id
+                }
+            })
+
+        container = {
+            'name': rom.get_name(),
+            'id': rom_id,
+            'obj_type': constants.OBJ_NONE,
+            'items': items
+        }
+
+    return container
+
+
+def qry_get_view_scanned_data(rom_id: str):
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    container = None
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom = roms_repository.find_rom(rom_id)
+        scanned_data = rom.get_scanned_data()
+        items = []
+        for key, value in scanned_data.items():
+            items.append({ 
+                'is_folder': False, 'type': 'game',
+                'name': key, 'name2': value, 
+                'url': globals.router.url_for_path(
+                    f'/rom/{rom.get_id()}/view/scanneddata?field={key}'),
+                'info': {}, 'art': {}, 'properties': {}})
+        container = {
+            'id': rom_id,
+            'name': rom.get_name(),
+            'obj_type': constants.OBJ_ROM,
+            'items': items
+        }
+
+    return container
+
 
 #
 # Utilities items
@@ -299,6 +458,7 @@ def qry_get_utilities_items():
     
     return container
 
+
 #
 # Global Reports items
 #
@@ -377,6 +537,7 @@ def qry_get_globalreport_items():
     })
     return container
 
+
 #
 # Default context menu items for the whole container.
 #
@@ -417,6 +578,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
 
     return commands
 
+
 #
 # ListItem specific context menu items.
 #
@@ -442,7 +604,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     
     commands = []
     if is_rom: 
-        commands.append(('View ROM', _context_menu_url_for(f'/rom/{item_id}/view')))
+        commands.append(('View ROM', _context_menu_url_for(f'/rom/view/{item_id}')))
         commands.append(('Edit ROM', _context_menu_url_for(f'/rom/edit/{item_id}')))
         commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
         commands.append(('Add ROM to AKL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
@@ -468,8 +630,9 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
                 
     return commands
 
+
 def _context_menu_url_for(url: str, params: dict = None) -> str:
     if params is not None:
         url = '{}?{}'.format(url, urlencode(params))
     url = globals.router.url_for_path(url)
-    return 'RunPlugin({})'.format(url)
+    return f'RunPlugin({url})'

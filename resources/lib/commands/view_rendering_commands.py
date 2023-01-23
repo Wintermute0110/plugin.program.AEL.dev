@@ -275,7 +275,7 @@ def _render_root_view(categories_repository: CategoryRepository, romcollections_
 
     for rom in root_roms:
         try:
-            root_items.append(_render_rom_listitem(rom))
+            root_items.append(render_rom_listitem(rom))
         except Exception:
             logger.exception(f"Exception while rendering list item ROM '{rom.get_name()}'")                  
 
@@ -336,7 +336,7 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
 
     for rom in roms:
         try:
-            view_items.append(_render_rom_listitem(rom))
+            view_items.append(render_rom_listitem(rom))
         except Exception:
             logger.exception(f"Exception while rendering list item ROM '{rom.get_name()}'")
                   
@@ -362,11 +362,11 @@ def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository
     for rom in roms:
         try:
             rom.apply_romcollection_asset_mapping(romcollection_obj)
-            view_items.append(_render_rom_listitem(rom))
+            view_items.append(render_rom_listitem(rom))
         except Exception:
             logger.exception(f'Exception while rendering list item ROM "{rom.get_name()}"')
         
-    logger.debug(f'Storing {len(view_items)} items for romcollection "{romcollection_obj.get_name()}" view.')
+    logger.debug(f'Found {len(view_items)} items for romcollection "{romcollection_obj.get_name()}" view.')
     view_data['items'] = view_items
     return view_data
 
@@ -435,10 +435,14 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
         'is_folder': True,
         'type': 'video',
         'info': {
-            'title'   : romcollection_name,              'year'    : romcollection_obj.get_releaseyear(),
-            'genre'   : romcollection_obj.get_genre(),   'studio'  : romcollection_obj.get_developer(),
-            'rating'  : romcollection_obj.get_rating(),  'plot'    : romcollection_obj.get_plot(),
-            'trailer' : romcollection_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+            'title': romcollection_name,
+            'year': romcollection_obj.get_releaseyear(),
+            'genre': romcollection_obj.get_genre(),
+            'studio': romcollection_obj.get_developer(),
+            'rating': romcollection_obj.get_rating(),
+            'plot': romcollection_obj.get_plot(),
+            'trailer': romcollection_obj.get_trailer(),
+            'overlay': ICON_OVERLAY
         },
         'art': assets,
         'properties': { 
@@ -458,7 +462,7 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
 
 
-def _render_rom_listitem(rom_obj: ROM) -> dict:
+def render_rom_listitem(rom_obj: ROM) -> dict:
     # --- Do not render row if romcollection finished ---
     if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'):
         return
@@ -512,13 +516,22 @@ def _render_rom_listitem(rom_obj: ROM) -> dict:
         AKL_MultiDisc_bool_value = constants.AKL_MULTIDISC_BOOL_VALUE_TRUE
 
     list_name = rom_obj.get_name()
+    sub_label = rom_obj.get_rom_identifier()
     if list_name is None or list_name == '':
-        list_name = rom_obj.get_rom_identifier()
+        list_name = sub_label
+    if list_name == sub_label:
+        sub_label = None
+
+    if settings.getSettingAsBool("display_execute_rom_by_default"):
+        item_url = globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}')
+    else:
+        item_url = globals.router.url_for_path(f'rom/view/{rom_obj.get_id()}')
 
     return {
         'id': rom_obj.get_id(),
         'name': list_name,
-        'url': globals.router.url_for_path(f'execute/rom/{rom_obj.get_id()}'),
+        'name2': sub_label,
+        'url': item_url,
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -533,6 +546,8 @@ def _render_rom_listitem(rom_obj: ROM) -> dict:
         },
         'art': assets,
         'properties': {
+            'entityid': rom_obj.get_id(),
+            'identifier': rom_obj.get_rom_identifier(),
             'platform': rom_obj.get_platform(),
             'nplayers': rom_obj.get_number_of_players(),
             'nplayers_online': rom_obj.get_number_of_players_online(),

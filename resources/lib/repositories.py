@@ -1061,7 +1061,7 @@ class ROMsRepository(object):
         rom_data = self._uow.single_result()
 
         self._uow.execute(qry.SELECT_ROM_ASSETS, rom_id)
-        assets_result_set = self._uow.result_set()            
+        assets_result_set = self._uow.result_set()
         assets = []
         for asset_data in assets_result_set:
             assets.append(Asset(asset_data))

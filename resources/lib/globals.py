@@ -31,6 +31,7 @@ addon_version   = addon.getAddonInfo('version')
 addon_author    = addon.getAddonInfo('author')
 addon_profile   = addon.getAddonInfo('profile')
 addon_type      = addon.getAddonInfo('type')
+addon_path      = addon.getAddonInfo('path')
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory.
