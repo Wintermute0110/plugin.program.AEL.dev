@@ -1,11 +1,11 @@
 
 # Shared Queries
-INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
-INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
-INSERT_ASSET_PATH     = "INSERT INTO assetpaths (id, path, asset_type) VALUES (?,?,?)"
-UPDATE_METADATA       = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
-UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
-UPDATE_ASSET_PATH     = "UPDATE assetpaths SET path = ?, asset_type = ? WHERE id = ?"
+INSERT_METADATA = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
+INSERT_ASSET = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
+INSERT_ASSET_PATH = "INSERT INTO assetpaths (id, path, asset_type) VALUES (?,?,?)"
+UPDATE_METADATA = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
+UPDATE_ASSET = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
+UPDATE_ASSET_PATH = "UPDATE assetpaths SET path = ?, asset_type = ? WHERE id = ?"
 
 # CATEGORIES
 SELECT_CATEGORY = "SELECT * FROM vw_categories WHERE id = ?"
@@ -42,21 +42,21 @@ REMOVE_ROMS_FROM_CATEGORY = "DELETE FROM roms_in_category WHERE category_id = ?"
 #
 # ROMCollectionRepository -> ROM Sets from SQLite DB
 #
-COUNT_ROMCOLLECTIONS             = "SELECT COUNT(*) as count FROM vw_romcollections"
-SELECT_ROMCOLLECTION             = "SELECT * FROM vw_romcollections WHERE id = ?"
-SELECT_ROMCOLLECTIONS            = "SELECT * FROM vw_romcollections ORDER BY m_name"
-SELECT_ROOT_ROMCOLLECTIONS       = "SELECT * FROM vw_romcollections WHERE parent_id IS NULL ORDER BY m_name"
-SELECT_ROMCOLLECTIONS_BY_PARENT  = "SELECT * FROM vw_romcollections WHERE parent_id = ? ORDER BY m_name"
-SELECT_ROMCOLLECTIONS_BY_ROM     = "SELECT rs.* FROM vw_romcollections AS rs INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rs.id WHERE rr.rom_id = ?"
+COUNT_ROMCOLLECTIONS = "SELECT COUNT(*) as count FROM vw_romcollections"
+SELECT_ROMCOLLECTION = "SELECT * FROM vw_romcollections WHERE id = ?"
+SELECT_ROMCOLLECTIONS = "SELECT * FROM vw_romcollections ORDER BY m_name"
+SELECT_ROOT_ROMCOLLECTIONS = "SELECT * FROM vw_romcollections WHERE parent_id IS NULL ORDER BY m_name"
+SELECT_ROMCOLLECTIONS_BY_PARENT = "SELECT * FROM vw_romcollections WHERE parent_id = ? ORDER BY m_name"
+SELECT_ROMCOLLECTIONS_BY_ROM = "SELECT rs.* FROM vw_romcollections AS rs INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rs.id WHERE rr.rom_id = ?"
 
-SELECT_VCOLLECTION_TITLES     = "SELECT DISTINCT(SUBSTR(UPPER(m_name), 1,1)) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_GENRES     = "SELECT DISTINCT(m_genre) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_DEVELOPER  = "SELECT DISTINCT(m_developer) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_ESRB       = "SELECT DISTINCT(m_esrb) AS option_value FROM vw_roms"
-SELECT_VCOLLECTION_PEGI       = "SELECT DISTINCT(m_pegi) AS option_value FROM vw_roms"
-SELECT_VCOLLECTION_YEAR       = "SELECT DISTINCT(m_year) AS option_value FROM vw_roms"
-SELECT_VCOLLECTION_NPLAYERS   = "SELECT DISTINCT(m_nplayers) AS option_value FROM vw_roms"   
-SELECT_VCOLLECTION_RATING     = "SELECT DISTINCT(m_rating) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_TITLES = "SELECT DISTINCT(SUBSTR(UPPER(m_name), 1,1)) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_GENRES = "SELECT DISTINCT(m_genre) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_DEVELOPER = "SELECT DISTINCT(m_developer) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_ESRB = "SELECT DISTINCT(m_esrb) AS option_value FROM vw_roms"
+SELECT_VCOLLECTION_PEGI = "SELECT DISTINCT(m_pegi) AS option_value FROM vw_roms"
+SELECT_VCOLLECTION_YEAR = "SELECT DISTINCT(m_year) AS option_value FROM vw_roms"
+SELECT_VCOLLECTION_NPLAYERS = "SELECT DISTINCT(m_nplayers) AS option_value FROM vw_roms"   
+SELECT_VCOLLECTION_RATING = "SELECT DISTINCT(m_rating) AS option_value FROM vw_roms"   
 
 INSERT_ROMCOLLECTION               = """
                                     INSERT INTO romcollections (
