@@ -572,7 +572,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_parentid})))    
     
-    commands.append(('Rebuild all views', _context_menu_url_for('execute/command/render_views')))
+    commands.append((kodi.translate(40856), _context_menu_url_for('execute/command/render_views')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AKL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
 

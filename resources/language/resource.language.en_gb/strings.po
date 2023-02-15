@@ -292,6 +292,10 @@ msgctxt "#40855"
 msgid "Scrape ROM"
 msgstr ""
 
+msgctxt "#40856"
+msgid "Rebuild all views"
+msgstr ""
+
 ############################
 # Scraping settings
 ############################
