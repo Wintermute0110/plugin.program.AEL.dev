@@ -243,7 +243,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
                             'This is a bug, please report it.')
                 return None
         
-    asset_path_noext = asset_directory.pjoin(asset_info.path_key, isdir=True).pjoin(obj_instance.get_object_name)
+    asset_path_noext = asset_directory.pjoin(asset_info.path_key, isdir=True).pjoin(obj_instance.get_object_name())
     
     logger.info(f'edit_asset() Editing {obj_instance.get_object_name()} {asset_info.name}')
     logger.info(f'edit_asset() Object ID {obj_instance.get_id()}')
