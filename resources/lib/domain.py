@@ -559,7 +559,8 @@ class MetaDataItemABC(EntityABC):
     # Core functions
     # --------------------------------------------------------------------------------------------
     @abc.abstractmethod
-    def get_object_name(self) -> str: pass
+    def get_object_name(self) -> str:
+        pass
 
     @abc.abstractmethod
     def get_assets_kind(self) -> int:
@@ -569,7 +570,7 @@ class MetaDataItemABC(EntityABC):
     def get_type(self) -> str:
         pass
 
-    # --- Metadata --------------------------------------------------------------------------------
+    # --- Metadata --------------------------------------------------------------------------------        
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
 
