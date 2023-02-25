@@ -728,7 +728,8 @@ class MetaDataItemABC(EntityABC):
         return list(self.asset_paths.values())
 
     def get_asset_path(self, asset_info: AssetInfo, fallback_to_root = True) -> io.FileName:
-        if not asset_info: return None
+        if not asset_info:
+            return None
         if asset_info.id in self.asset_paths:
             return self.asset_paths[asset_info.id].get_path_FN()
         
