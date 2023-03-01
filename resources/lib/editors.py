@@ -430,7 +430,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
     logger.debug('edit_object_default_assets() preselected_asset_id {0}'.format(preselected_asset_id))
     
     pre_select_idx = 0
-    dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj_instance.get_object_name())
+    dialog_title_str = f'Edit {obj_instance.get_object_name()} default Assets/Artwork'
 
     # --- Build Dialog.select() list ---
     default_assets_list = obj_instance.get_mappable_asset_list()
@@ -445,7 +445,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
         mapped_asset_key = obj_instance.get_mapped_asset_key(default_asset_info)
         mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
         mapped_asset_str = obj_instance.get_asset_str(mapped_asset_info)
-        label1_str = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
+        label1_str = f'Choose asset for {default_asset_info.name} (currently {mapped_asset_info.name})'
         label2_str = mapped_asset_str
         list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
         if mapped_asset_str:
@@ -466,7 +466,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
 
     selected_option = xbmcgui.Dialog().select(
             dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx)
-    logger.debug('edit_object_default_assets() Main select() returned {0}'.format(selected_option))
+    logger.debug(f'edit_object_default_assets() Main select() returned {selected_option}')
     if selected_option < 0:
         # >> Return to parent menu.
         logger.debug('edit_object_default_assets() Main selected NONE. Returning to parent menu.')
@@ -476,11 +476,12 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
     # >> The menu dialog is instantiated again so it reflects the changes just edited.
     logger.debug('edit_object_default_assets() Executing mappable asset select() dialog.')
     selected_asset_info:AssetInfo = asset_info_list[selected_option]
-    logger.debug('edit_object_default_assets() Main selected {0}.'.format(selected_asset_info.name))
+    logger.debug(f'edit_object_default_assets() Main selected {selected_asset_info.name}.')
     return selected_asset_info            
 
 def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
-    mappable_asset_list = obj_instance.get_mappable_asset_list()
+    selectable_asset_ids = obj_instance.get_asset_ids_list()
+    mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(selectable_asset_ids, 'image')
     list_items = []
     asset_info_list = []
     secondary_pre_select_idx = 0
@@ -519,7 +520,7 @@ def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> 
         return False
         
     new_selected_asset_info = asset_info_list[secondary_selected_option]
-    logger.debug('edit_default_asset() Mapable selected {0}.'.format(new_selected_asset_info.name))
+    logger.debug(f'edit_default_asset() Mapable selected {new_selected_asset_info.name}.')
     obj_instance.set_mapped_asset_key(asset_info, new_selected_asset_info)
     kodi.notify('{0} {1} mapped to {2}'.format(
         obj_instance.get_object_name(), asset_info.name, new_selected_asset_info.name
