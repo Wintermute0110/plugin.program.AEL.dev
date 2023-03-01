@@ -89,13 +89,6 @@ def cmd_manage_roms(args):
 def cmd_set_roms_default_artwork(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
-    # if not launcher.supports_launching_roms():
-    #     kodi.dialog_OK(
-    #         'm_subcommand_set_roms_default_artwork() ' +
-    #         'Launcher "{0}" is not a ROM launcher.'.format(launcher.__class__.__name__) +
-    #         'This is a bug, please report it.')
-    #     return
-    
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository = ROMCollectionRepository(uow)

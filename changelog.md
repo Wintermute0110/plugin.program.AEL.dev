@@ -1,6 +1,9 @@
 ## Current
 - Custom skin view for View ROM
 - More details about addon plugins
+- Fixed linking assets to wrong directory
+- Fixed category rendering
+- Added rebuild views option in settings dialog
 
 ## Previous
 - Added support for PEGI rating

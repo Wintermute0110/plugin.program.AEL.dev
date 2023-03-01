@@ -559,7 +559,8 @@ class MetaDataItemABC(EntityABC):
     # Core functions
     # --------------------------------------------------------------------------------------------
     @abc.abstractmethod
-    def get_object_name(self) -> str: pass
+    def get_object_name(self) -> str:
+        pass
 
     @abc.abstractmethod
     def get_assets_kind(self) -> int:
@@ -569,7 +570,7 @@ class MetaDataItemABC(EntityABC):
     def get_type(self) -> str:
         pass
 
-    # --- Metadata --------------------------------------------------------------------------------
+    # --- Metadata --------------------------------------------------------------------------------        
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
 
@@ -728,7 +729,8 @@ class MetaDataItemABC(EntityABC):
         return list(self.asset_paths.values())
 
     def get_asset_path(self, asset_info: AssetInfo, fallback_to_root = True) -> io.FileName:
-        if not asset_info: return None
+        if not asset_info:
+            return None
         if asset_info.id in self.asset_paths:
             return self.asset_paths[asset_info.id].get_path_FN()
         
@@ -776,7 +778,8 @@ class MetaDataItemABC(EntityABC):
                 value = asset.get_path()
             
             if self.is_mappable_asset(asset_info):
-                if asset_info.id == constants.ASSET_ICON_ID: fallback_str = self.get_default_icon()
+                if asset_info.id == constants.ASSET_ICON_ID:
+                    fallback_str = self.get_default_icon()
                 value = self.get_mapped_asset_str(asset_info, fallback=fallback_str)
                 
             view_assets[asset_info.fname_infix] = value
@@ -1544,9 +1547,11 @@ class ROM(MetaDataItemABC):
     def get_asset_ids_list(self):
         return constants.ROM_ASSET_ID_LIST
     
-    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self):
+        return constants.MAPPABLE_ROM_ASSET_ID_LIST
     
-    def get_default_icon(self) -> str: return 'DefaultProgram.png'    
+    def get_default_icon(self) -> str:
+        return 'DefaultProgram.png'    
     
     def create_dto(self) -> api.ROMObj:
         dto_data:dict = api.ROMObj.get_data_template()

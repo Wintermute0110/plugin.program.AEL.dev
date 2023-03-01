@@ -305,6 +305,16 @@
                         <heading>40612</heading>
                     </control>
                 </setting>
+                <setting id="rebuild_views" type="string" label="40856" help="">
+                    <level>1</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="action">
+                        <data>RunPlugin(plugin://plugin.program.akl/execute/command/render_views)</data>
+                    </control>
+                </setting>
             </group>
         </category>
     </section>

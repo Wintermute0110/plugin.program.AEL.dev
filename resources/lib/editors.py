@@ -25,7 +25,7 @@ import collections
 
 import xbmcgui
 
-from akl.utils import kodi, io
+from akl.utils import kodi, io, text
 from akl import constants, settings
 
 from resources.lib.domain import MetaDataItemABC, AssetInfo, g_assetFactory
@@ -219,86 +219,89 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 #
 def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # --- Get asset object information ---
-    # Select/Import require: object_name, A, asset_path_noext
-    # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
-
-    asset_directory = obj_instance.get_assets_root_path()        
-    if not asset_directory:
+    assets_directory = obj_instance.get_assets_root_path()        
+    if not assets_directory:
         if kodi.dialog_yesno("No local assets path configured. Configure now?\n Else we will use addon default directories."):
             path_str = kodi.dialog_get_directory(f"Assets root path for entry '{obj_instance.get_name()}'")
-            asset_directory = io.FileName(path_str, True)
-            obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+            assets_directory = io.FileName(path_str, True)
+            obj_instance.set_assets_root_path(assets_directory, None, create_default_subdirectories=True)
         else:
             if obj_instance.get_assets_kind() == constants.KIND_ASSET_CATEGORY:
-                asset_directory = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
-                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+                assets_directory = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(assets_directory, None, create_default_subdirectories=True)
             elif obj_instance.get_assets_kind() == constants.KIND_ASSET_COLLECTION:
-                asset_directory = io.FileName(settings.getSetting('collections_asset_dir'), isdir = True)
-                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+                assets_directory = io.FileName(settings.getSetting('collections_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(assets_directory, None, create_default_subdirectories=True)
             elif obj_instance.get_assets_kind() == constants.KIND_ASSET_LAUNCHER:
-                asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
-                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+                assets_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(assets_directory, None, create_default_subdirectories=True)
             elif obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
-                asset_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
-                obj_instance.set_assets_root_path(asset_directory, None, create_default_subdirectories=True)
+                assets_directory = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+                obj_instance.set_assets_root_path(assets_directory, None, create_default_subdirectories=True)
             else:
                 kodi.dialog_OK('Unknown obj_instance.get_assets_kind() {}. '.format(obj_instance.get_assets_kind()) +
                             'This is a bug, please report it.')
                 return None
-        
-    asset_path_noext = g_assetFactory.assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
-                                                   obj_instance.get_name(), obj_instance.get_id())
-    logger.info('edit_asset() Editing {} {}'.format(obj_instance.get_object_name(), asset_info.name))
-    logger.info('edit_asset() Object ID {}'.format(obj_instance.get_id()))
-    logger.debug('edit_asset() asset_directory  "{}"'.format(asset_directory.getPath()))
-    logger.debug('edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getPath()))
-    if not asset_directory.exists():
-        logger.error('Directory not found "{0}"'.format(asset_directory.getPath()))
+
+    asset_type_directory = obj_instance.get_asset_path(asset_info, False)    
+
+    logger.info(f'edit_asset() Editing {obj_instance.get_object_name()} {asset_info.name}')
+    logger.info(f'edit_asset() Object ID {obj_instance.get_id()}')
+    logger.debug(f'edit_asset() assets_directory  "{assets_directory.getPath()}"')
+    logger.debug(f'edit_asset() asset_type_directory  "{asset_type_directory.getPath()}"')
+    if not assets_directory.exists():
+        logger.error(f'Directory not found "{assets_directory.getPath()}"')
         kodi.dialog_OK('Directory to store artwork not found. '
                        'Configure it before you can edit artwork.')
         return None
 
-    dialog_title = 'Change {0} {1}'.format(obj_instance.get_name(), asset_info.name)
+    dialog_title = f'Change {obj_instance.get_name()} {asset_info.name}'
     
     # --- Show image editing options ---
     options = collections.OrderedDict()
-    options['LINK_LOCAL']   = 'Link to local {0} image'.format(asset_info.name)
-    options['IMPORT_LOCAL'] = 'Import local {0} (copy and rename)'.format(asset_info.name)
+    options['LINK_LOCAL']   = f'Link to local {asset_info.name} image'
+    options['IMPORT_LOCAL'] = f'Import local {asset_info.name} (copy and rename)'
     options['UNSET']        = 'Unset artwork/asset'
     if obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
-        options['SCRAPE_ASSET'] = 'Scrape {}'.format(asset_info.name)
+        options['SCRAPE_ASSET'] = f'Scrape {asset_info.name}'
         
     selected_option = kodi.OrdDictionaryDialog().select(dialog_title, options)
     
     # >> User canceled select box
-    if selected_option is None: return None
-    
-    # --- Manual scrape asset ---
-    elif selected_option == 'SCRAPE': return selected_option
+    if selected_option is None:
+        return None
 
+    # --- Manual scrape asset ---
+    if selected_option == 'SCRAPE':
+        return selected_option
+    
     # --- Link to a local image ---
     if selected_option == 'LINK_LOCAL':
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
             current_image_dir = obj_instance.get_asset_path(asset_info)
-            if current_image_dir is None or not asset_directory.exists():
+            if current_image_dir is None or not assets_directory.exists():
                 current_image_dir = obj_instance.get_assets_root_path()
         else: 
             current_image_dir = io.FileName(current_image_file.getDir(), isdir = True)
         
-        if current_image_dir is None: current_image_dir = io.FileName('/')
+        if current_image_dir is None:
+            current_image_dir = io.FileName('/')
         
-        logger.debug('edit_asset() Asset initial dir "{0}"'.format(current_image_dir.getPath()))
+        logger.debug(f'edit_asset() Asset initial dir "{current_image_dir.getPath()}"')
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
             new_asset_file = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         else:
             new_asset_file = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
-        if not new_asset_file or new_asset_file == current_image_dir.getPath(): return None
+        
+        if not new_asset_file or new_asset_file == current_image_dir.getPath():
+            return None
         # --- Check if image exists ---
         new_asset_FN = io.FileName(new_asset_file)
-        if not new_asset_FN.exists(): return None
+        if not new_asset_FN.exists():
+            return None
 
         # --- Update object ---
         obj_instance.set_asset(asset_info, new_asset_FN)
@@ -318,8 +321,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # --- Import an image ---
     # >> Copy and rename a local image into asset directory
     elif selected_option == 'IMPORT_LOCAL':
-        current_image_dir = obj_instance.get_asset_path(asset_info, fallback_to_root=False)
+        current_image_dir = asset_type_directory
         if not current_image_dir:
+            logger.info("No local asset type path configured. Reverting to root.")
             current_image_dir = obj_instance.get_assets_root_path()
         
         title_str = f'Select {obj_instance.get_object_name()} {asset_info.name}'
@@ -329,16 +333,20 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
         else:
             new_asset_file_str = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
             
-        if not new_asset_file_str: return None
+        if not new_asset_file_str:
+            return None
 
         # >> Determine image extension and dest filename. Check for errors.
         new_asset_file = io.FileName(new_asset_file_str)
+        obj_identifier = text.str_to_filename_str(obj_instance.get_name())
+        
+        asset_path_noext = asset_type_directory.pjoin(obj_identifier)
         dest_asset_file = asset_path_noext.append(new_asset_file.getExt())
-        logger.debug(f'm_gui_edit_asset() new_asset_file     "{new_asset_file.getPath()}"')
-        logger.debug(f'm_gui_edit_asset() new_asset_file ext "{new_asset_file.getExt()}"')
-        logger.debug(f'm_gui_edit_asset() dest_asset_file    "{dest_asset_file.getPath()}"')
+        logger.debug(f'edit_asset() new_asset_file     "{new_asset_file.getPath()}"')
+        logger.debug(f'edit_asset() new_asset_file ext "{new_asset_file.getExt()}"')
+        logger.debug(f'edit_asset() dest_asset_file    "{dest_asset_file.getPath()}"')
         if new_asset_file.getPath() == dest_asset_file.getPath():
-            logger.info('m_gui_edit_asset() new_asset_file and dest_asset_file are the same. Returning.')
+            logger.info('edit_asset() new_asset_file and dest_asset_file are the same. Returning.')
             kodi.notify_warn('new_asset_file and dest_asset_file are the same. Returning')
             return None
 
@@ -352,7 +360,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
         # NOTE deleting the destination image before copying does not work to force a cache
         #      update.
         # if dest_asset_file.exists():
-        #     logger.debug('m_gui_edit_asset() Deleting image "{0}"'.format(dest_asset_file.getPath()))
+        #     logger.debug('edit_asset() Deleting image "{0}"'.format(dest_asset_file.getPath()))
         #     dest_asset_file.unlink()
 
         # --- Copy image file ---
@@ -422,7 +430,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
     logger.debug('edit_object_default_assets() preselected_asset_id {0}'.format(preselected_asset_id))
     
     pre_select_idx = 0
-    dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj_instance.get_object_name())
+    dialog_title_str = f'Edit {obj_instance.get_object_name()} default Assets/Artwork'
 
     # --- Build Dialog.select() list ---
     default_assets_list = obj_instance.get_mappable_asset_list()
@@ -437,7 +445,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
         mapped_asset_key = obj_instance.get_mapped_asset_key(default_asset_info)
         mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
         mapped_asset_str = obj_instance.get_asset_str(mapped_asset_info)
-        label1_str = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
+        label1_str = f'Choose asset for {default_asset_info.name} (currently {mapped_asset_info.name})'
         label2_str = mapped_asset_str
         list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
         if mapped_asset_str:
@@ -458,7 +466,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
 
     selected_option = xbmcgui.Dialog().select(
             dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx)
-    logger.debug('edit_object_default_assets() Main select() returned {0}'.format(selected_option))
+    logger.debug(f'edit_object_default_assets() Main select() returned {selected_option}')
     if selected_option < 0:
         # >> Return to parent menu.
         logger.debug('edit_object_default_assets() Main selected NONE. Returning to parent menu.')
@@ -468,11 +476,12 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
     # >> The menu dialog is instantiated again so it reflects the changes just edited.
     logger.debug('edit_object_default_assets() Executing mappable asset select() dialog.')
     selected_asset_info:AssetInfo = asset_info_list[selected_option]
-    logger.debug('edit_object_default_assets() Main selected {0}.'.format(selected_asset_info.name))
+    logger.debug(f'edit_object_default_assets() Main selected {selected_asset_info.name}.')
     return selected_asset_info            
 
 def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
-    mappable_asset_list = obj_instance.get_mappable_asset_list()
+    selectable_asset_ids = obj_instance.get_asset_ids_list()
+    mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(selectable_asset_ids, 'image')
     list_items = []
     asset_info_list = []
     secondary_pre_select_idx = 0
@@ -511,7 +520,7 @@ def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> 
         return False
         
     new_selected_asset_info = asset_info_list[secondary_selected_option]
-    logger.debug('edit_default_asset() Mapable selected {0}.'.format(new_selected_asset_info.name))
+    logger.debug(f'edit_default_asset() Mapable selected {new_selected_asset_info.name}.')
     obj_instance.set_mapped_asset_key(asset_info, new_selected_asset_info)
     kodi.notify('{0} {1} mapped to {2}'.format(
         obj_instance.get_object_name(), asset_info.name, new_selected_asset_info.name

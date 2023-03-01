@@ -292,6 +292,8 @@ def _render_list_items(container_data:dict, container_context_items = [], filter
             xbmcplugin.setProperty(router.handle, property, value)
 
     for list_item_data in container_data['items']:
+        if list_item_data is None:
+            continue
         if filter_method and not filter_method.is_valid(list_item_data):
             continue
         
@@ -306,6 +308,8 @@ def _render_list_items(container_data:dict, container_context_items = [], filter
         xbmcplugin.addDirectoryItem(handle = router.handle, url = url_str, listitem = list_item, isFolder = folder_flag)
 
 def _render_list_item(list_item_data: dict) -> xbmcgui.ListItem:
+    if list_item_data is None:
+        return None
     name = list_item_data['name']
     name2 = list_item_data['name2'] if 'name2' in list_item_data else ""
     item_type = list_item_data['type']
@@ -363,6 +367,8 @@ class ViewRomGUI(xbmcgui.WindowXML):
                     self.setContainerProperty(property, value)
 
             for list_item_data in self.container_data['items']:
+                if list_item_data is None:
+                    continue
                 list_item = _render_list_item(list_item_data)
                 cntrl.addItem(list_item)
         except RuntimeError as error:

@@ -54,6 +54,7 @@ def cmd_edit_rom(args):
     options = collections.OrderedDict()
     options['ROM_EDIT_METADATA']       = f'{kodi.translate(40853)} ...'
     options['ROM_EDIT_ASSETS']         = f'{kodi.translate(40854)} ...'
+    # options['ROM_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
     options['EDIT_ROM_STATUS']         = f'ROM status: {rom.get_finished_str()}'
     if rom.has_launchers():
         options['EDIT_ROM_LAUNCHERS']  = 'Manage associated launchers'
@@ -161,6 +162,28 @@ def cmd_rom_assets(args):
 
     AppMediator.sync_cmd('ROM_EDIT_ASSETS', {'rom_id': rom_id, 'selected_asset': asset.id})    
     
+@AppMediator.register('ROM_EDIT_DEFAULT_ASSETS')
+def cmd_rom_edit_default_assets(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    preselected_option = args['selected_asset'] if 'selected_asset' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+
+        selected_asset_to_edit = editors.edit_object_default_assets(rom, preselected_option)
+        if selected_asset_to_edit is None:
+            args["selected_asset"] = None
+            AppMediator.sync_cmd('EDIT_ROM', args)
+            return
+
+        if editors.edit_default_asset(rom, selected_asset_to_edit):
+            repository.update_rom(rom)
+            uow.commit()
+        
+    AppMediator.sync_cmd('ROM_EDIT_DEFAULT_ASSETS', {'rom_id': rom.get_id(), 'selected_asset': selected_asset_to_edit.id})         
+
 #
 # Remove ROMCollection
 #

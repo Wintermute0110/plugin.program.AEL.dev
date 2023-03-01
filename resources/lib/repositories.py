@@ -573,7 +573,7 @@ class CategoryRepository(object):
 
     def add_rom_to_category(self, category_id: str, rom_id: str):
         if category_id is None:
-            self._uow.execute(qry.INSERT_ROM_IN_ROOTCATEGORY, rom_id)
+            self._uow.execute(qry.INSERT_ROM_IN_ROOT_CATEGORY, rom_id)
             return
         self._uow.execute(qry.INSERT_ROM_IN_CATEGORY, rom_id, category_id)
             
