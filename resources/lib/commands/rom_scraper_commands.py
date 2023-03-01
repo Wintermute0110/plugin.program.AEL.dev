@@ -116,6 +116,7 @@ def cmd_scrape_roms_in_romcollection(args):
         options = collections.OrderedDict()        
         options['SCRAPER_METADATA_POLICY'] = 'Metadata scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
         options['SCRAPER_ASSET_POLICY'] = 'Asset scan policy: "{}"'.format(kodi.translate(scraper_settings.scrape_assets_policy))
+        options['SCRAPER_SEARCH_TERM_MODE'] = f'Search term mode: "{kodi.translate(scraper_settings.search_term_mode)}"'
         options['SCRAPER_GAME_SELECTION_MODE'] = 'Game selection mode: "{}"'.format(kodi.translate(scraper_settings.game_selection_mode))
         options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
         options['SCRAPER_META_TO_SCRAPE'] = 'Metadata to scrape: "{}"'.format(', '.join(metadata_to_scrape))
