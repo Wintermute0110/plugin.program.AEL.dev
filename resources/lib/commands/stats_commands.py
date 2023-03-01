@@ -35,10 +35,10 @@ logger = logging.getLogger(__name__)
 
 @AppMediator.register('ROM_WAS_LAUNCHED')
 def cmd_process_launching_of_rom(args):
-    logger.debug('ROM_WAS_LAUNCHED: cmd_process_launching_of_rom() Processing that a ROM was launched')
+    logger.debug('ROM_WAS_LAUNCHED: Processing that a ROM was launched')
     rom_id: str = args['rom_id'] if 'rom_id' in args else None
     if rom_id is None:
-        logger.warning('cmd_process_launching_of_rom(): No rom id supplied.')
+        logger.warning('No rom id supplied.')
         return
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -50,7 +50,7 @@ def cmd_process_launching_of_rom(args):
         repository.update_rom(rom)
 
         uow.commit()
-        logger.debug('ROM_WAS_LAUNCHED: cmd_process_launching_of_rom() Processed stats for ROM {}'.format(rom.get_name()))
+        logger.debug(f'ROM_WAS_LAUNCHED: Processed stats for ROM {rom.get_name()}')
         AppMediator.async_cmd('RENDER_VCOLLECTION_VIEW', {'vcollection_id': constants.VCOLLECTION_RECENT_ID})
         AppMediator.async_cmd('RENDER_VCOLLECTION_VIEW', {'vcollection_id': constants.VCOLLECTION_MOST_PLAYED_ID})
 

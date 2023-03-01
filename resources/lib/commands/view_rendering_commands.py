@@ -67,13 +67,16 @@ def cmd_render_view_data(args):
         else:
             category = categories_repository.find_category(category_id)
             _render_category_view(category, categories_repository, romcollections_repository, roms_repository, views_repository)
-        
-    kodi.notify('Selected views rendered')
+    
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
+    if do_notification:
+        kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
 @AppMediator.register('RENDER_VIRTUAL_VIEWS')
 def cmd_render_virtual_views(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     with uow:
         categories_repository     = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
@@ -97,15 +100,18 @@ def cmd_render_virtual_views(args):
         for vcategory_id in constants.VCATEGORIES:
             vcategory = VirtualCategoryFactory.create(vcategory_id)
                         
-            kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
+            if do_notification:
+                kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
             _render_category_view(vcategory, categories_repository, romcollections_repository, roms_repository, views_repository)
    
-    kodi.notify('Virtual views rendered')
+    if do_notification:
+        kodi.notify('Virtual views rendered')
     kodi.refresh_container()
 
 @AppMediator.register('RENDER_VCATEGORY_VIEWS')
 def cmd_render_vcategory(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     with uow:
         categories_repository     = CategoryRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
@@ -117,16 +123,19 @@ def cmd_render_vcategory(args):
         
         for vcategory_id in constants.VCATEGORIES:
             vcategory = VirtualCategoryFactory.create(vcategory_id)
-                        
-            kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
+
+            if do_notification:      
+                kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
             _render_category_view(vcategory, categories_repository, romcollections_repository, roms_repository, views_repository)
         
-            kodi.notify(f'{vcategory.get_name()} view rendered')
+            if do_notification:      
+                kodi.notify(f'{vcategory.get_name()} view rendered')
     kodi.refresh_container()
     
 @AppMediator.register('RENDER_VCATEGORY_VIEW')
 def cmd_render_vcategory(args):
     vcategory_id = args['vcategory_id'] if 'vcategory_id' in args else None
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -144,16 +153,19 @@ def cmd_render_vcategory(args):
         # cleanup first
         views_repository.cleanup_virtual_category_views(vcategory.get_id())
         
-        kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
+        if do_notification:      
+            kodi.notify(f'Rendering virtual category "{vcategory.get_name()}"')
         _render_category_view(vcategory, categories_repository, romcollections_repository, roms_repository, views_repository)
     
-        kodi.notify('{} view rendered'.format(vcategory.get_name()))
+        if do_notification:      
+            kodi.notify(f'{vcategory.get_name()} view rendered')
     kodi.refresh_container()
 
 @AppMediator.register('RENDER_ROMCOLLECTION_VIEW')
 def cmd_render_romcollection_view_data(args):
     kodi.notify('Rendering romcollection views')
     romcollection_id = args['romcollection_id'] if 'romcollection_id' in args else None
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -165,13 +177,15 @@ def cmd_render_romcollection_view_data(args):
         collection_view_data = _render_romcollection_view(romcollection, roms_repository)
         views_repository.store_view(romcollection.get_id(), romcollection.get_type(), collection_view_data)  
     
-    kodi.notify('Selected views rendered')
+    if do_notification:      
+        kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
 
 @AppMediator.register('RENDER_VCOLLECTION_VIEW')
 def cmd_render_vcollection(args):
     vcollection_id = args['vcollection_id'] if 'vcollection_id' in args else None
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -179,18 +193,21 @@ def cmd_render_vcollection(args):
         views_repository = ViewRepository(globals.g_PATHS)
         
         vcollection = VirtualCollectionFactory.create(vcollection_id)
-                
-        kodi.notify(f'Rendering virtual collection "{vcollection.get_name()}"')
+            
+        if do_notification:      
+            kodi.notify(f'Rendering virtual collection "{vcollection.get_name()}"')
         collection_view_data = _render_romcollection_view(vcollection, roms_repository)
         views_repository.store_view(vcollection.get_id(), vcollection.get_type(), collection_view_data)  
     
-        kodi.notify('{} view rendered'.format(vcollection.get_name()))
+        if do_notification:      
+            kodi.notify(f'{vcollection.get_name()} view rendered')
     kodi.refresh_container()
 
 
 @AppMediator.register('RENDER_ROM_VIEWS')
 def cmd_render_rom_views(args):
     rom_id = args['rom_id'] if 'rom_id' in args else None
+    do_notification = not settings.getSettingAsBool("display_hide_rendering_notifications")
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -199,7 +216,8 @@ def cmd_render_rom_views(args):
         views_repository          = ViewRepository(globals.g_PATHS)
 
         rom_obj = roms_repository.find_rom(rom_id)     
-        kodi.notify(f'Rendering all views containing ROM#{rom_obj.get_rom_identifier()}')
+        if do_notification:      
+            kodi.notify(f'Rendering all views containing ROM#{rom_obj.get_rom_identifier()}')
 
         romcollections = romcollections_repository.find_romcollections_by_rom(rom_id)
         for romcollection in romcollections:
@@ -211,7 +229,8 @@ def cmd_render_rom_views(args):
             collection_view_data = _render_romcollection_view(vcollection, roms_repository)
             views_repository.store_view(vcollection.get_id(), vcollection.get_type(), collection_view_data)   
     
-    kodi.notify('Views rendered')
+    if do_notification:      
+        kodi.notify('Views rendered')
     kodi.refresh_container()
     
 @AppMediator.register('CLEANUP_VIEWS')

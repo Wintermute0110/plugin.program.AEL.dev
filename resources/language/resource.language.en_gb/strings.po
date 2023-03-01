@@ -165,6 +165,10 @@ msgctxt "#40416"
 msgid "Launch ROM directly by default on item action"
 msgstr "settings.xml"
 
+msgctxt "#40417"
+msgid "Hide rendering notifications"
+msgstr "settings.xml"
+
 ############################
 # Setting options - Paths
 ############################

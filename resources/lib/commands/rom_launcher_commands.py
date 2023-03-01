@@ -410,7 +410,7 @@ def cmd_execute_rom_with_launcher(args):
                 return
             
             logger.info('Automatic fallback to Retroplayer as launcher applied.')
-            retroplayer_addon    = addon_repository.find_by_addon_id(constants.RETROPLAYER_LAUNCHER_APP_NAME, constants.AddonType.LAUNCHER)
+            retroplayer_addon = addon_repository.find_by_addon_id(constants.RETROPLAYER_LAUNCHER_APP_NAME, constants.AddonType.LAUNCHER)
             retroplayer_launcher = ROMLauncherAddonFactory.create(retroplayer_addon, {})
             launchers.append(retroplayer_launcher)
             
@@ -425,7 +425,8 @@ def cmd_execute_rom_with_launcher(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
-    if selected_launcher is None: return
+    if selected_launcher is None:
+        return
     
     selected_launcher.launch(rom)
     AppMediator.async_cmd('ROM_WAS_LAUNCHED', args)
