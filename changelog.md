@@ -1,5 +1,6 @@
 ## Current
 - Search term mode applicable for multi ROM scraping
+- Added setting to disable view rendering notifications
 
 ## Previous
 - Custom skin view for View ROM
