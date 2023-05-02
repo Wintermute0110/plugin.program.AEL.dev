@@ -1,5 +1,6 @@
 ## Current
 - Search term mode applicable for multi ROM scraping
+- Refactoring of default asset mapping
 
 ## Previous
 - Custom skin view for View ROM

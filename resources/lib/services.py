@@ -57,9 +57,8 @@ class AppService(object):
             self._initial_setup(uow)
             
         db_version = uow.get_database_version()
-        current_version = kodi.get_addon_version()
-        logger.debug(f'db.id            "{db_version}"')
-        if db_version is None or LooseVersion(db_version) < LooseVersion(current_version):
+        logger.debug(f'db.version       "{db_version}"')
+        if db_version is None or LooseVersion(db_version) < LooseVersion(globals.addon_version):
             self._do_version_upgrade(uow, LooseVersion(db_version))
         
         if self._last_time_scanned_is_too_long_ago():
@@ -112,8 +111,18 @@ class AppService(object):
             if LooseVersion(migration_file.getBaseNoExt()) > db_version:
                 migrations_files_to_execute.append(migration_file)
         
+        if len(migrations_files_to_execute) == 0:
+            return
+
+        logger.info(f"Found {len(migrations_files_to_execute)} migration files to process.")
         migrations_files_to_execute.sort(key = lambda f: (LooseVersion(f.getBaseNoExt())))
-        uow.migrate_database(migrations_files_to_execute)
+        
+        version_to_store = LooseVersion(globals.addon_version)
+        file_version = LooseVersion(migrations_files_to_execute[-1].getBaseNoExt())
+        if file_version > version_to_store:
+            version_to_store = file_version
+
+        uow.migrate_database(migrations_files_to_execute, version_to_store)
     
     def _perform_scans(self):
         # SCAN FOR ADDONS

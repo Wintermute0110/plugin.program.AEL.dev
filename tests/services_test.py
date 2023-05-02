@@ -54,6 +54,7 @@ class Test_services(unittest.TestCase):
         
         service = AppService()
         start_version = LooseVersion('1.1.1')
+        globals.addon_version = '1.0.0'
         
         # act
         service._do_version_upgrade(uow_mock, start_version)

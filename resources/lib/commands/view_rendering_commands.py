@@ -432,7 +432,7 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection) -> dict:
     romcollection_name = romcollection_obj.get_name()
     ICON_OVERLAY = 5 if romcollection_obj.is_finished() else 4
     assets = romcollection_obj.get_view_assets()
-
+    
     if romcollection_obj.get_type() == constants.OBJ_COLLECTION_VIRTUAL:
         if romcollection_obj.get_parent_id() is None:
            url = globals.router.url_for_path(f'collection/virtual/{romcollection_obj.get_id()}')

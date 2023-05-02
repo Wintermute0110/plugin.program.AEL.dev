@@ -70,7 +70,7 @@ def cmd_edit_category(args):
     
     if category_id is None:
         logger.warning('cmd_add_category(): No category id supplied.')
-        kodi.notify_warn("Invalid parameters supplied.")
+        kodi.notify_warn(kodi.translate(40951))
         return
     
     selected_option = None
@@ -80,23 +80,23 @@ def cmd_edit_category(args):
         category = repository.find_category(category_id)
         
         options = collections.OrderedDict()
-        options['CATEGORY_EDIT_METADATA']       = 'Edit Metadata ...'
-        options['CATEGORY_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-        options['CATEGORY_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CATEGORY_STATUS']              = 'Category status: {0}'.format(category.get_finished_str())
-        options['EXPORT_CATEGORY_XML']          = 'Export Category XML configuration ...'
-        options['DELETE_CATEGORY']              = 'Delete Category'
+        options['CATEGORY_EDIT_METADATA']       = kodi.translate(40853)
+        options['CATEGORY_EDIT_ASSETS']         = kodi.translate(40854)
+        options['CATEGORY_EDIT_DEFAULT_ASSETS'] = kodi.translate(40859)
+        options['CATEGORY_STATUS']              = f'{kodi.translate(40859)} {category.get_finished_str()}'
+        options['EXPORT_CATEGORY_XML']          = kodi.translate(40861)
+        options['DELETE_CATEGORY']              = kodi.translate(40862)
         
-        s = 'Select action for Category "{0}"'.format(category.get_name())
+        s = f'{kodi.translate(40950)} "{category.get_name}"'
         selected_option = kodi.OrdDictionaryDialog().select(s, options)    
     
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('EDIT_CATEGORY: cmd_edit_category() Selected None. Closing context menu')
+        logger.debug('EDIT_CATEGORY: Selected None. Closing context menu')
         return
 
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_CATEGORY: cmd_edit_category() Selected {}'.format(selected_option))
+    logger.debug(f'EDIT_CATEGORY: Selected {selected_option}')
     AppMediator.sync_cmd(selected_option, args)
     
 # --- Submenu command ---    

@@ -52,9 +52,9 @@ def cmd_edit_rom(args):
         rom = repository.find_rom(rom_id)
 
     options = collections.OrderedDict()
-    options['ROM_EDIT_METADATA']       = f'{kodi.translate(40853)} ...'
-    options['ROM_EDIT_ASSETS']         = f'{kodi.translate(40854)} ...'
-    # options['ROM_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+    options['ROM_EDIT_METADATA']       = kodi.translate(40853)
+    options['ROM_EDIT_ASSETS']         = kodi.translate(40854)
+    options['ROM_EDIT_DEFAULT_ASSETS'] = kodi.translate(40859)
     options['EDIT_ROM_STATUS']         = f'ROM status: {rom.get_finished_str()}'
     if rom.has_launchers():
         options['EDIT_ROM_LAUNCHERS']  = 'Manage associated launchers'

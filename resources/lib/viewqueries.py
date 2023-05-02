@@ -545,16 +545,16 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     if container_data is None:
         return []
     # --- Create context menu items to be applied to each item in this container ---
-    container_type     = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
-    container_name     = container_data['name'] if 'name' in container_data else 'Unknown'
-    container_id       = container_data['id'] if 'id' in container_data else ''
+    container_type = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
+    container_name = container_data['name'] if 'name' in container_data else 'Unknown'
+    container_id = container_data['id'] if 'id' in container_data else ''
     container_parentid = container_data['parent_id'] if 'parent_id' in container_data else ''
     
-    is_category: bool           = container_type == constants.OBJ_CATEGORY
-    is_romcollection: bool      = container_type == constants.OBJ_ROMCOLLECTION
-    is_virtual_category: bool   = container_type == constants.OBJ_CATEGORY_VIRTUAL
+    is_category: bool = container_type == constants.OBJ_CATEGORY
+    is_romcollection: bool = container_type == constants.OBJ_ROMCOLLECTION
+    is_virtual_category: bool = container_type == constants.OBJ_CATEGORY_VIRTUAL
     is_virtual_collection: bool = container_type == constants.OBJ_COLLECTION_VIRTUAL
-    is_root: bool               = container_data['id'] == ''
+    is_root: bool = container_data['id'] == ''
     
     commands = []
     if is_category: 
@@ -586,21 +586,22 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     if container_data is None or list_item_data is None:
         return []
     # --- Create context menu items only applicable on this item ---
-    properties   = list_item_data['properties'] if 'properties' in list_item_data else {}
-    item_type    = properties['obj_type'] if 'obj_type' in properties else constants.OBJ_NONE
-    item_name    = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
-    item_id      = list_item_data['id'] if 'id' in list_item_data else ''
+    properties = list_item_data['properties'] if 'properties' in list_item_data else {}
+    item_type = properties['obj_type'] if 'obj_type' in properties else constants.OBJ_NONE
+    item_name = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
+    item_id = list_item_data['id'] if 'id' in list_item_data else ''
     
-    container_id    = container_data['id'] if 'id' in container_data else constants.VCATEGORY_ADDONROOT_ID
-    container_type  = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
-    if container_id == '': container_id = constants.VCATEGORY_ADDONROOT_ID
+    container_id = container_data['id'] if 'id' in container_data else constants.VCATEGORY_ADDONROOT_ID
+    container_type = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
+    if container_id == '':
+        container_id = constants.VCATEGORY_ADDONROOT_ID
     
     container_is_category: bool = container_type == constants.OBJ_CATEGORY
     
-    is_category: bool           = item_type == constants.OBJ_CATEGORY
-    is_romcollection: bool      = item_type == constants.OBJ_ROMCOLLECTION
-    is_virtual_category: bool   = item_type == constants.OBJ_CATEGORY_VIRTUAL
-    is_rom: bool                = item_type == constants.OBJ_ROM
+    is_category: bool = item_type == constants.OBJ_CATEGORY
+    is_romcollection: bool = item_type == constants.OBJ_ROMCOLLECTION
+    is_virtual_category: bool = item_type == constants.OBJ_CATEGORY_VIRTUAL
+    is_rom: bool = item_type == constants.OBJ_ROM
     
     commands = []
     if is_rom: 
@@ -614,7 +615,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('Edit Category', _context_menu_url_for(f'/categories/edit/{item_id}')))
         commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{item_id}/in/{container_id}')))
         commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{item_id}/in/{container_id}')))
-        commands.append(('Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{item_id}/in/{container_id}')))
+        commands.append((   'Add new ROM (Standalone)', _context_menu_url_for(f'/categories/addrom/{item_id}/in/{container_id}')))
         
     if is_romcollection: 
         commands.append(('View ROM Collection', _context_menu_url_for(f'/romcollection/view/{item_id}')))

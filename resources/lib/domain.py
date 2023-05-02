@@ -57,8 +57,7 @@ def _is_empty_or_default(input: any, default: any):
 class AssetInfo(object):
     id              = ''
     key             = ''
-    default_key     = ''
-    rom_default_key = ''
+    
     name            = ''
     description     = name
     plural          = ''
@@ -226,8 +225,12 @@ class AssetPath(EntityABC):
     def __init__(self, entity_data: typing.Dict[str, typing.Any] = None):
         self.asset_info:AssetInfo = None
         if entity_data is None:
-            entity_data = _get_default_asset_path_data_model()
-        
+            entity_data =  {
+                'id' : '',
+                'path' : '',
+                'asset_type' : ''
+            }
+
         if 'asset_type' in entity_data and entity_data['asset_type']:
             self.asset_info = g_assetFactory.get_asset_info(entity_data['asset_type'])
         
@@ -254,6 +257,71 @@ class AssetPath(EntityABC):
     def clear(self):
         self.entity_data['path'] = None
          
+
+class AssetMapping(EntityABC):
+        
+    def __init__(self, entity_data: typing.Dict[str, typing.Any] = None):
+        self.asset_info:AssetInfo = None
+        self.to_asset_info:AssetInfo = None
+
+        if entity_data is None:
+            entity_data = {
+                'id' : '',
+                'mapped_asset_type' : '',
+                'to_asset_type' : ''
+            }
+        
+        if 'mapped_asset_type' in entity_data and entity_data['mapped_asset_type']:
+            self.asset_info = g_assetFactory.get_asset_info(entity_data['mapped_asset_type'])
+        if 'to_asset_type' in entity_data and entity_data['to_asset_type']:
+            self.to_asset_info = g_assetFactory.get_asset_info(entity_data['to_asset_type'])
+        
+        super(AssetMapping, self).__init__(entity_data)
+    
+    def get_asset_info_id(self) -> str:
+        return self.asset_info.id 
+    
+    def get_asset_info(self) -> AssetInfo:
+        return self.asset_info
+    
+    def get_mapped_to_asset_info(self) -> str:
+        return self.to_asset_info
+    
+    def set_mapping(self, info:AssetInfo, to:AssetInfo): 
+        self.asset_info = info
+        self.to_asset_info = to
+    
+    def clear(self):
+        self.to_asset_info = None
+         
+    def is_mapped(self):
+        if self.to_asset_info is None:
+            return False
+        if self.to_asset_info.id == self.asset_info.id:
+            return False
+        return True
+
+
+class RomAssetMapping(AssetMapping):
+      
+    def is_mapped(self):
+        if self.to_asset_info is None:
+            return False
+        
+        if self.asset_info.id == constants.ASSET_ICON_ID or \
+            self.asset_info.id == constants.ASSET_POSTER_ID:
+            if self.asset_info.id == constants.ASSET_ICON_ID and \
+                self.to_asset_info.id == constants.ASSET_BOXFRONT_ID:
+                return False
+            if self.asset_info.id == constants.ASSET_POSTER_ID and \
+                self.to_asset_info.id == constants.ASSET_FLYER_ID:
+                return False
+            return True
+        
+        if self.to_asset_info.id == self.asset_info.id:
+            return False
+        return True
+
 
 # legacy
 # |----- LauncherABC (abstract class)
@@ -541,7 +609,8 @@ class MetaDataItemABC(EntityABC):
     def __init__(self, 
                  entity_data: typing.Dict[str, typing.Any], 
                  assets: typing.List[Asset],
-                 asset_paths_data: typing.List[AssetPath] = None):
+                 asset_paths_data: typing.List[AssetPath] = None,
+                 asset_mappings: typing.List[AssetMapping] = []):
         
         self.assets: typing.Dict[str, Asset] = {}
         if assets is not None:
@@ -552,7 +621,8 @@ class MetaDataItemABC(EntityABC):
         if asset_paths_data is not None:
             for path in asset_paths_data:
                 self.asset_paths[path.get_asset_info_id()] = path
-                
+        
+        self.asset_mappings = asset_mappings
         super(MetaDataItemABC, self).__init__(entity_data)
 
     # --------------------------------------------------------------------------------------------
@@ -570,7 +640,10 @@ class MetaDataItemABC(EntityABC):
     def get_type(self) -> str:
         pass
 
-    # --- Metadata --------------------------------------------------------------------------------        
+    # --- Metadata --------------------------------------------------------------------------------
+    def get_metadata_id(self):
+        return self.entity_data['metadata_id']
+
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
 
@@ -770,31 +843,24 @@ class MetaDataItemABC(EntityABC):
         view_assets = {}
         for asset_id in view_asset_ids:
             asset_info = g_assetFactory.get_asset_info(asset_id)
+            applied_asset_info = asset_info
             value = ''
             fallback_str = ''
-            
-            if asset_id in self.assets:
-                asset = self.assets[asset_id]
+            if asset_info.id == constants.ASSET_ICON_ID:
+                fallback_str = self.get_default_icon()
+                
+            if self.is_mappable_asset(asset_info):
+                applied_asset_info = self.get_asset_mapping(asset_info)
+
+            if applied_asset_info.id in self.assets:
+                asset = self.assets[applied_asset_info.id]
                 value = asset.get_path()
             
-            if self.is_mappable_asset(asset_info):
-                if asset_info.id == constants.ASSET_ICON_ID:
-                    fallback_str = self.get_default_icon()
-                value = self.get_mapped_asset_str(asset_info, fallback=fallback_str)
-                
+            if value == '':
+                value = fallback_str
+
             view_assets[asset_info.fname_infix] = value
         return view_assets
-    # 
-    # Gets the asset path (str) of the mapped asset type following
-    # the given input of either an assetinfo object or asset id.
-    #
-    def get_mapped_asset_str(self, asset_info=None, asset_id=None, fallback = '') -> str:
-        asset_info = self.get_mapped_asset_info(asset_info, asset_id)
-        asset = self.get_asset(asset_info.id)
-        if asset is not None and asset.get_path() != '':
-            return asset.get_path()
-        
-        return fallback
     
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
@@ -803,68 +869,55 @@ class MetaDataItemABC(EntityABC):
     def get_mappable_asset_list(self) -> typing.List[AssetInfo]: 
         return g_assetFactory.get_asset_list_by_IDs(self.get_mappable_asset_ids_list(), 'image')
 
-    def get_mapped_assets(self) -> typing.Dict[str,str]:
-        mappable_assets = self.get_mappable_asset_list()
-        mapped_assets = {}
-        for mappable_asset in mappable_assets:
-            if mappable_asset.id == constants.ASSET_ICON_ID: 
-                mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset, fallback=self.get_default_icon())
-            else: mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset)
-        return mapped_assets
-
     #
     # Gets the actual assetinfo object that is mapped for
     # the given assetinfo for this particular MetaDataItem.
     #
-    def get_mapped_asset_info(self, asset_info=None, asset_id=None):
-        if asset_info is None and asset_id is None: return None
-        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
-        
-        mapped_key = self.get_mapped_asset_key(asset_info)
-        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
-        return mapped_asset_info
-       
-    #
-    # Gets the database filename mapped for asset_info.
-    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
-    #
-    def get_mapped_asset_key(self, asset_info: AssetInfo):
-        if asset_info.default_key == '':
-            logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
-            raise constants.AddonError('Not supported asset type used. This might be a bug!')  
-        
-        if asset_info.default_key not in self.entity_data:
-            return asset_info.key
-        
-        return self.entity_data[asset_info.default_key]
+    def get_asset_mapping(self, asset_info: AssetInfo):
+        if not self.asset_mappings:
+            return asset_info
+        mapped_asset = next((m for m in self.asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset or not mapped_asset.to_asset_info:
+            return asset_info
+        return mapped_asset.to_asset_info
 	
-    def set_mapped_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
-        self.entity_data[asset_info.default_key] = mapped_to_info.key
+    def set_mapped_asset(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
+        mapped_asset = next((m for m in self.asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset:
+            mapped_asset = AssetMapping()
+            self.asset_mappings.append(mapped_asset)
+
+        mapped_asset.set_mapping(asset_info, mapped_to_info)
         
     def __str__(self):
         return '{}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
 
 # -------------------------------------------------------------------------------------------------
-# Class representing an AKL Cateogry.
+# Class representing an AKL Category.
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
     __metaclass__ = abc.ABCMeta
     
-    def __init__(self, category_dic: typing.Dict[str, typing.Any] = None, assets: typing.List[Asset] = None):
+    def __init__(self, 
+                 category_dic: typing.Dict[str, typing.Any] = None, 
+                 assets: typing.List[Asset] = None,
+                 asset_mappings: typing.List[AssetMapping] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
             category_dic = _get_default_category_data_model()
             category_dic['id'] = text.misc_generate_random_SID()
-        super(Category, self).__init__(category_dic, assets)
+        super(Category, self).__init__(category_dic, assets, None, asset_mappings)
 
-    def get_object_name(self): return 'Category'
+    def get_object_name(self):
+        return 'Category'
 
     def get_assets_kind(self):
         return constants.KIND_ASSET_CATEGORY
     
-    def get_type(self): return constants.OBJ_CATEGORY
+    def get_type(self):
+        return constants.OBJ_CATEGORY
     
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
@@ -995,11 +1048,14 @@ class Category(MetaDataItemABC):
     
 class VirtualCategory(Category):
     
-    def get_object_name(self): return 'Virtual Category'
+    def get_object_name(self):
+        return 'Virtual Category'
     
-    def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
+    def get_assets_kind(self):
+        return constants.KIND_ASSET_CATEGORY
     
-    def get_type(self): return constants.OBJ_CATEGORY_VIRTUAL
+    def get_type(self):
+        return constants.OBJ_CATEGORY_VIRTUAL
  
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
@@ -1011,6 +1067,8 @@ class ROMCollection(MetaDataItemABC):
                  entity_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  asset_paths: typing.List[AssetPath] = None,
+                 asset_mappings: typing.List[AssetMapping] = [],
+                 rom_asset_mappings: typing.List[RomAssetMapping] = [],
                  launchers_data: typing.List[ROMLauncherAddon] = [], 
                  scanners_data: typing.List[ROMCollectionScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
@@ -1021,7 +1079,17 @@ class ROMCollection(MetaDataItemABC):
             
         self.launchers_data = launchers_data
         self.scanners_data = scanners_data
-        super(ROMCollection, self).__init__(entity_data, assets_data, asset_paths)
+
+        self.rom_asset_mappings = rom_asset_mappings
+        mappable_assets = self.get_ROM_mappable_asset_list()
+        if len(rom_asset_mappings) != len(mappable_assets):
+           already_mapped_assets_ids = [m.asset_info.id for m in rom_asset_mappings]
+           for asset_info in [a for a in mappable_assets if a.id not in already_mapped_assets_ids]:
+               mapping = RomAssetMapping()
+               mapping.asset_info = asset_info
+               self.rom_asset_mappings.append(mapping)
+           
+        super(ROMCollection, self).__init__(entity_data, assets_data, asset_paths, asset_mappings)
 
     def get_object_name(self): return 'ROM Collection'
 
@@ -1046,7 +1114,8 @@ class ROMCollection(MetaDataItemABC):
     def get_asset_ids_list(self):
         return constants.LAUNCHER_ASSET_ID_LIST
 
-    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self):
+        return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
 
     def get_default_icon(self) -> str:
         return 'DefaultGameAddons.png'   
@@ -1056,33 +1125,26 @@ class ROMCollection(MetaDataItemABC):
 
     #
     # Gets the actual assetinfo object that is mapped for
-    # the given (ROM) assetinfo for this particular MetaDataItem.
+    # the given assetinfo for ROMs within this collection.
     #
-    def get_mapped_ROM_asset_info(self, asset_info=None, asset_id=None) -> AssetInfo:
-        if asset_info is None and asset_id is None:
-            return None
-        if asset_id is not None:
-            asset_info = g_assetFactory.get_asset_info(asset_id)
-        
-        mapped_key = self.get_mapped_ROM_asset_key(asset_info)
-        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
-        return mapped_asset_info
+    def get_ROM_asset_mapping(self, asset_info: AssetInfo):
+        mapped_asset = next((m for m in self.rom_asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset:
+            # exception cases
+            if asset_info.id == constants.ASSET_ICON_ID:
+                return g_assetFactory.get_asset_info(constants.ASSET_BOXFRONT_ID)
+            if asset_info.id == constants.ASSET_POSTER_ID:
+                return g_assetFactory.get_asset_info(constants.ASSET_FLYER_ID)
+            return asset_info
+        return mapped_asset.to_asset_info
+	
+    def set_mapped_ROM_asset(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
+        mapped_asset = next((m for m in self.rom_asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset:
+            mapped_asset = RomAssetMapping()
+            self.rom_asset_mappings.append(mapped_asset)
 
-    #
-    # Gets the database filename mapped for asset_info.
-    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
-    #
-    def get_mapped_ROM_asset_key(self, asset_info: AssetInfo) -> str:
-        if asset_info.rom_default_key == '':
-            logger.error(f'Requested mapping for AssetInfo without default key. Type {asset_info.id}')
-            raise constants.AddonError('Not supported asset type used. This might be a bug!')  
-        
-        if asset_info.rom_default_key not in self.entity_data:
-            return asset_info.key   
-        return self.entity_data[asset_info.rom_default_key]
-
-    def set_mapped_ROM_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
-        self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+        mapped_asset.set_mapping(asset_info, mapped_to_info)
 
     #
     # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
@@ -1313,6 +1375,7 @@ class ROM(MetaDataItemABC):
                  tag_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  asset_paths_data: typing.List[AssetPath] = None,
+                 asset_mappings: typing.List[RomAssetMapping] = [],
                  scanned_data: dict = {},
                  launchers_data: typing.List[ROMLauncherAddon] = []):
         if rom_data is None:
@@ -1327,7 +1390,15 @@ class ROM(MetaDataItemABC):
             tag_data_str = str(rom_data['rom_tags'])
             self.tags = {t: '' for t in tag_data_str.split(',')}
         
-        super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
+        mappable_assets = self.get_mappable_asset_list()
+        if len(asset_mappings) != len(mappable_assets):
+           already_mapped_assets_ids = [m.asset_info.id for m in asset_mappings]
+           for asset_info in [a for a in mappable_assets if a.id not in already_mapped_assets_ids]:
+               mapping = RomAssetMapping()
+               mapping.asset_info = asset_info
+               asset_mappings.append(mapping)
+           
+        super(ROM, self).__init__(rom_data, assets_data, asset_paths_data, asset_mappings)
         
     def get_object_name(self): return 'ROM'
 
@@ -1549,7 +1620,26 @@ class ROM(MetaDataItemABC):
     
     def get_mappable_asset_ids_list(self):
         return constants.MAPPABLE_ROM_ASSET_ID_LIST
-    
+
+    def get_asset_mapping(self, asset_info: AssetInfo):
+        mapped_asset = next((m for m in self.asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset:
+            # exception cases
+            if asset_info.id == constants.ASSET_ICON_ID:
+                return g_assetFactory.get_asset_info(constants.ASSET_BOXFRONT_ID)
+            if asset_info.id == constants.ASSET_POSTER_ID:
+                return g_assetFactory.get_asset_info(constants.ASSET_FLYER_ID)
+            return asset_info
+        return mapped_asset.to_asset_info
+
+    def set_mapped_asset(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
+        mapped_asset = next((m for m in self.asset_mappings if m.asset_info.id == asset_info.id), None)
+        if not mapped_asset:
+            mapped_asset = RomAssetMapping()
+            self.asset_mappings.append(mapped_asset)
+
+        mapped_asset.set_mapping(asset_info, mapped_to_info)
+
     def get_default_icon(self) -> str:
         return 'DefaultProgram.png'    
     
@@ -1766,8 +1856,8 @@ class ROM(MetaDataItemABC):
     def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
         mappable_assets = romcollection.get_ROM_mappable_asset_list()
         for mappable_asset in mappable_assets:
-            mapped_asset = romcollection.get_mapped_ROM_asset_info(mappable_asset)
-            self.set_mapped_asset_key(mappable_asset, mapped_asset)
+            mapped_asset = romcollection.get_ROM_asset_mapping(mappable_asset)
+            self.set_mapped_asset(mappable_asset, mapped_asset)
         
     def __str__(self):
         """Overrides the default implementation"""
@@ -1802,17 +1892,6 @@ class AssetInfoFactory(object):
 
         return asset_info
     
-    # Returns the corresponding assetinfo object for the
-    # given key (eg: 's_icon')
-    def get_asset_info_by_key(self, asset_key):
-        asset_info = next((a for a in list(self.ASSET_INFO_ID_DICT.values()) if a.key == asset_key), None)
-
-        if asset_info is None:
-            logger.error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
-            return AssetInfo()
-
-        return asset_info 
-             
     # Returns the corresponding assetinfo object for the
     # given path key (eg: 'path_icon')
     def get_asset_info_by_pathkey(self, path_key):
@@ -1856,12 +1935,6 @@ class AssetInfoFactory(object):
 
         return asset_info_list
   
-    # todo: use 1 type of identifier not number constants and name strings ('s_icon')
-    def get_asset_info_by_namekey(self, name_key):
-        if name_key == '': return None
-        kind = constants.ASSET_KEYS_TO_CONSTANTS[name_key]
-
-        return self.get_asset_info(kind)
     #
     # Get extensions to search for files
     # Input : ['png', 'jpg']
@@ -1983,58 +2056,6 @@ class AssetInfoFactory(object):
 
         return '(' + ext_string + ')'
     
-    #
-    # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-    # TODO: deprecated?
-    @staticmethod
-    def assets_choose_Category_mapped_artwork(dict_object, key, index):
-        if   index == 0: dict_object[key] = 's_icon'
-        elif index == 1: dict_object[key] = 's_fanart'
-        elif index == 2: dict_object[key] = 's_banner'
-        elif index == 3: dict_object[key] = 's_poster'
-        elif index == 4: dict_object[key] = 's_clearlogo'
-
-    #
-    # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-    # TODO: deprecated?
-    @staticmethod
-    def assets_get_Category_mapped_asset_idx(dict_object, key):
-        if   dict_object[key] == 's_icon':       index = 0
-        elif dict_object[key] == 's_fanart':     index = 1
-        elif dict_object[key] == 's_banner':     index = 2
-        elif dict_object[key] == 's_poster':     index = 3
-        elif dict_object[key] == 's_clearlogo':  index = 4
-        else:                                    index = 0
-
-        return index
-
-    #
-    # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-    # TODO: deprecated?
-    @staticmethod
-    def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
-        if   index == 0: dict_object[key] = 's_icon'
-        elif index == 1: dict_object[key] = 's_fanart'
-        elif index == 2: dict_object[key] = 's_banner'
-        elif index == 3: dict_object[key] = 's_poster'
-        elif index == 4: dict_object[key] = 's_clearlogo'
-        elif index == 5: dict_object[key] = 's_controller'
-
-    #
-    # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-    # TODO: deprecated?
-    @staticmethod
-    def assets_get_Launcher_mapped_asset_idx(dict_object, key):
-        if   dict_object[key] == 's_icon':       index = 0
-        elif dict_object[key] == 's_fanart':     index = 1
-        elif dict_object[key] == 's_banner':     index = 2
-        elif dict_object[key] == 's_poster':     index = 3
-        elif dict_object[key] == 's_clearlogo':  index = 4
-        elif dict_object[key] == 's_controller': index = 5
-        else:                                    index = 0
-
-        return index
-
     # since we are using a single instance for the assetinfo factory we can automatically load
     # all the asset objects into the memory
     def _load_asset_data(self): 
@@ -2042,9 +2063,6 @@ class AssetInfoFactory(object):
         # >> These are used very frequently so I think it is better to have a cached list.
         a = AssetInfo()
         a.id                            = constants.ASSET_ICON_ID
-        a.key                           = 's_icon'
-        a.default_key                   = 'default_icon'
-        a.rom_default_key               = 'roms_default_icon'
         a.name                          = 'Icon'
         a.plural                        = 'Icons'
         a.fname_infix                   = 'icon'
@@ -2056,9 +2074,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_FANART_ID
-        a.key                           = 's_fanart'
-        a.default_key                   = 'default_fanart'
-        a.rom_default_key               = 'roms_default_fanart'
         a.name                          = 'Fanart'
         a.plural                        = 'Fanarts'
         a.fname_infix                   = 'fanart'
@@ -2070,9 +2085,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BANNER_ID
-        a.key                           = 's_banner'
-        a.default_key                   = 'default_banner'
-        a.rom_default_key               = 'roms_default_banner'
         a.name                          = 'Banner'
         a.description                   = 'Banner / Marquee'
         a.plural                        = 'Banners'
@@ -2085,9 +2097,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()        
         a.id                            = constants.ASSET_POSTER_ID
-        a.key                           = 's_poster'
-        a.default_key                   = 'default_poster'
-        a.rom_default_key               = 'roms_default_poster'
         a.name                          = 'Poster'
         a.plural                        = 'Posters'
         a.fname_infix                   = 'poster'
@@ -2099,9 +2108,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CLEARLOGO_ID
-        a.key                           = 's_clearlogo'
-        a.default_key                   = 'default_clearlogo'
-        a.rom_default_key               = 'roms_default_clearlogo'
         a.name                          = 'Clearlogo'
         a.plural                        = 'Clearlogos'
         a.fname_infix                   = 'clearlogo'
@@ -2113,8 +2119,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CONTROLLER_ID
-        a.key                           = 's_controller'
-        a.default_key                   = 'default_controller'
         a.name                          = 'Controller'
         a.plural                        = 'Controllers'
         a.fname_infix                   = 'controller'
@@ -2126,7 +2130,6 @@ class AssetInfoFactory(object):
         
         a = AssetInfo()
         a.id                            = constants.ASSET_TRAILER_ID
-        a.key                           = 's_trailer'
         a.name                          = 'Trailer'
         a.plural                        = 'Trailers'
         a.fname_infix                   = 'trailer'
@@ -2138,9 +2141,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_TITLE_ID
-        a.key                           = 's_title'
-        a.default_key                   = 'default_title'
-        a.rom_default_key               = 'roms_default_title'
         a.name                          = 'Title'
         a.plural                        = 'Titles'
         a.fname_infix                   = 'title'
@@ -2152,7 +2152,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_SNAP_ID
-        a.key                           = 's_snap'
         a.name                          = 'Snap'
         a.plural                        = 'Snaps'
         a.fname_infix                   = 'snap'
@@ -2164,7 +2163,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BOXFRONT_ID
-        a.key                           = 's_boxfront'
         a.name                          = 'Boxfront'
         a.description                   = 'Boxfront / Cabinet'
         a.plural                        = 'Boxfronts'
@@ -2177,7 +2175,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BOXBACK_ID
-        a.key                           = 's_boxback'
         a.name                          = 'Boxback'
         a.description                   = 'Boxback / CPanel'
         a.plural                        = 'Boxbacks'
@@ -2190,7 +2187,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CARTRIDGE_ID
-        a.key                           = 's_cartridge'
         a.name                          = 'Cartridge'
         a.description                   = 'Cartridge / PCB'
         a.plural                        = 'Cartridges'
@@ -2203,7 +2199,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_FLYER_ID
-        a.key                           = 's_flyer'
         a.name                          = 'Flyer'
         a.plural                        = 'Flyers'
         a.fname_infix                   = 'flyer'
@@ -2216,7 +2211,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_MAP_ID
-        a.key                           = 's_map'
         a.name                          = 'Map'
         a.plural                        = 'Maps'
         a.fname_infix                   = 'map'
@@ -2228,7 +2222,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_MANUAL_ID
-        a.key                           = 's_manual'
         a.name                          = 'Manual'
         a.plural                        = 'Manuals'
         a.fname_infix                   = 'manual'
@@ -2240,7 +2233,6 @@ class AssetInfoFactory(object):
 
         a = AssetInfo()
         a.id                            = constants.ASSET_3DBOX_ID
-        a.key                           = 's_3dbox'
         a.name                          = '3D Box'
         a.plural                        = '3D Boxes'
         a.fname_infix                   = '3dbox'
@@ -2459,18 +2451,7 @@ def _get_default_category_data_model():
         'm_rating' : '',
         'm_plot' : '',
         'finished' : False,
-        'default_icon' : 's_icon',
-        'default_fanart' : 's_fanart',
-        'default_banner' : 's_banner',
-        'default_poster' : 's_poster',
-        'default_clearlogo' : 's_clearlogo',
         #'Asset_Prefix' : '',
-        's_icon' : '',
-        's_fanart' : '',
-        's_banner' : '',
-        's_poster' : '',
-        's_clearlogo' : '',
-        's_trailer' : ''
     }
 
 def _get_default_ROMCollection_data_model():
@@ -2512,25 +2493,7 @@ def _get_default_ROMCollection_data_model():
         'num_extra' : 0,
         'timestamp_launcher' : 0.0,
         'timestamp_report' : 0.0,
-        'default_icon' : 's_icon',
-        'default_fanart' : 's_fanart',
-        'default_banner' : 's_banner',
-        'default_poster' : 's_poster',
-        'default_clearlogo' : 's_clearlogo',
-        'default_controller' : 's_controller',
         'Asset_Prefix' : '',
-        's_icon' : '',
-        's_fanart' : '',
-        's_banner' : '',
-        's_poster' : '',
-        's_clearlogo' : '',
-        's_controller' : '',
-        's_trailer' : '',
-        'roms_default_icon' : 's_boxfront',
-        'roms_default_fanart' : 's_fanart',
-        'roms_default_banner' : 's_banner',
-        'roms_default_poster' : 's_flyer',
-        'roms_default_clearlogo' : 's_clearlogo',
         'ROM_asset_path' : '',
         'path_3dbox' : '',
         'path_title' : '',
@@ -2567,20 +2530,7 @@ def _get_default_ROM_data_model():
         'finished' : False,
         'nointro_status' : constants.AUDIT_STATUS_NONE,
         'pclone_status' : constants.PCLONE_STATUS_NONE,
-        'cloneof' : '',
-        's_3dbox' : '',
-        's_title' : '',
-        's_snap' : '',
-        's_boxfront' : '',
-        's_boxback' : '',
-        's_cartridge' : '',
-        's_fanart' : '',
-        's_banner' : '',
-        's_clearlogo' : '',
-        's_flyer' : '',
-        's_map' : '',
-        's_manual' : '',
-        's_trailer' : ''
+        'cloneof' : ''
     }
     
 def _get_default_asset_data_model():
@@ -2588,12 +2538,4 @@ def _get_default_asset_data_model():
         'id' : '',
         'filepath' : '',
         'asset_type' : ''
-    }
-    
-def _get_default_asset_path_data_model():
-    return {
-        'id' : '',
-        'path' : '',
-        'asset_type' : ''
-    }
-    
+    }    
