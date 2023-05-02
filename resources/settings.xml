@@ -320,6 +320,26 @@
                         <data>RunPlugin(plugin://plugin.program.akl/execute/command/render_views)</data>
                     </control>
                 </setting>
+                <setting id="run_database_migrations" type="string" label="40857" help="">
+                    <level>3</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="action">
+                        <data>RunPlugin(plugin://plugin.program.akl/execute/command/run_db_migrations)</data>
+                    </control>
+                </setting>
+                <setting id="reset_db" type="string" label="40858" help="">
+                    <level>3</level>
+                    <default/>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="action">
+                        <data>RunPlugin(plugin://plugin.program.akl/execute/command/reset_database)</data>
+                    </control>
+                </setting>
             </group>
         </category>
     </section>

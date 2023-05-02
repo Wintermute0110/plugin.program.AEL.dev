@@ -1,5 +1,6 @@
 ## Current
 - Search term mode applicable for multi ROM scraping
+- Refactoring of default asset mapping
 - Added setting to disable view rendering notifications
 
 ## Previous

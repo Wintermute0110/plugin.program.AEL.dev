@@ -300,6 +300,41 @@ msgctxt "#40856"
 msgid "Rebuild all views"
 msgstr ""
 
+msgctxt "#40857"
+msgid "Run database migrations"
+msgstr ""
+
+msgctxt "#40858"
+msgid "Reset database (warning!)"
+msgstr ""
+
+msgctxt "#40859"
+msgid "Choose default Assets/Artwork"
+msgstr ""
+
+msgctxt "#40860"
+msgid "Category status:"
+msgstr ""
+
+msgctxt "#40861"
+msgid "Export Category XML configuration"
+msgstr ""
+
+msgctxt "#40862"
+msgid "Delete Category"
+msgstr ""
+
+############################
+# Headers and texts / notifications
+############################
+msgctxt "#40950"
+msgid "Select action for Category"
+msgstr ""
+
+msgctxt "#40951"
+msgid "Invalid parameters supplied."
+msgstr ""
+
 ############################
 # Scraping settings
 ############################

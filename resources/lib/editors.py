@@ -305,7 +305,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
 
         # --- Update object ---
         obj_instance.set_asset(asset_info, new_asset_FN)
-        logger.debug('edit_asset() Asset key "{0}"'.format(asset_info.key))
+        logger.debug(f'edit_asset() Asset id "{asset_info.id}"')
         logger.debug('edit_asset() Linked {0} {1} to "{2}"'.format(
             obj_instance.get_object_name(), asset_info.name, new_asset_FN.getPath())
         )
@@ -376,9 +376,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
         # --- Update object ---
         # >> Always store original/raw paths in database.
         obj_instance.set_asset(asset_info, dest_asset_file)
-        logger.debug('edit_asset() Asset key "{0}"'.format(asset_info.key))
-        logger.debug('edit_asset() Copied file  "{0}"'.format(new_asset_file.getPath()))
-        logger.debug('edit_asset() Into         "{0}"'.format(dest_asset_file.getPath()))
+        logger.debug(f'edit_asset() Asset ID "{asset_info.id}"')
+        logger.debug(f'edit_asset() Copied file  "{new_asset_file.getPath()}"')
+        logger.debug(f'edit_asset() Into         "{dest_asset_file.getPath()}"')
         logger.debug('edit_asset() Linked {0} {1} to "{2}"'.format(
             obj_instance.get_object_name(), asset_info.name, dest_asset_file.getPath())
         )
@@ -442,8 +442,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_
         # >> Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
         # >> Label 2 is the fname string of the current mapped asset or 'Not set'
         # >> icon is the fname string of the current mapped asset.
-        mapped_asset_key = obj_instance.get_mapped_asset_key(default_asset_info)
-        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
+        mapped_asset_info = obj_instance.get_asset_mapping(default_asset_info)
         mapped_asset_str = obj_instance.get_asset_str(mapped_asset_info)
         label1_str = f'Choose asset for {default_asset_info.name} (currently {mapped_asset_info.name})'
         label2_str = mapped_asset_str
@@ -521,7 +520,7 @@ def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> 
         
     new_selected_asset_info = asset_info_list[secondary_selected_option]
     logger.debug(f'edit_default_asset() Mapable selected {new_selected_asset_info.name}.')
-    obj_instance.set_mapped_asset_key(asset_info, new_selected_asset_info)
+    obj_instance.set_mapped_asset(asset_info, new_selected_asset_info)
     kodi.notify('{0} {1} mapped to {2}'.format(
         obj_instance.get_object_name(), asset_info.name, new_selected_asset_info.name
     ))

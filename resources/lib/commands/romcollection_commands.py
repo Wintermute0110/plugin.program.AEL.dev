@@ -109,17 +109,18 @@ def cmd_edit_romcollection(args):
         category_name = 'None' if category is None else category.get_name()
 
     options = collections.OrderedDict()
-    options['ROMCOLLECTION_EDIT_METADATA']       = 'Edit Metadata ...'
-    options['ROMCOLLECTION_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-    options['ROMCOLLECTION_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+    options['ROMCOLLECTION_EDIT_METADATA'] = kodi.translate(40853)
+    options['ROMCOLLECTION_EDIT_ASSETS'] = kodi.translate(40854)
+    options['ROMCOLLECTION_EDIT_DEFAULT_ASSETS'] = kodi.translate(40859)
     if romcollection.has_launchers():
-        options['EDIT_ROMCOLLECTION_LAUNCHERS']  = 'Manage associated launchers'
-    else: options['ADD_LAUNCHER']                = 'Add new launcher'    
-    options['ROMCOLLECTION_MANAGE_ROMS']         = 'Manage ROMs ...'
-    options['EDIT_ROMCOLLECTION_CATEGORY']       = f"Change Category: '{category_name}'"
-    options['EDIT_ROMCOLLECTION_STATUS']         = f'ROM Collection status: {romcollection.get_finished_str()}'
-    options['EXPORT_ROMCOLLECTION']              = 'Export ROM Collection XML configuration ...'
-    options['DELETE_ROMCOLLECTION']              = 'Delete ROM Collection'
+        options['EDIT_ROMCOLLECTION_LAUNCHERS'] = 'Manage associated launchers'
+    else: 
+        options['ADD_LAUNCHER'] = 'Add new launcher'    
+    options['ROMCOLLECTION_MANAGE_ROMS'] = 'Manage ROMs ...'
+    options['EDIT_ROMCOLLECTION_CATEGORY'] = f"Change Category: '{category_name}'"
+    options['EDIT_ROMCOLLECTION_STATUS'] = f'ROM Collection status: {romcollection.get_finished_str()}'
+    options['EXPORT_ROMCOLLECTION'] = 'Export ROM Collection XML configuration ...'
+    options['DELETE_ROMCOLLECTION'] = 'Delete ROM Collection'
 
     s = 'Select action for ROM Collection "{}"'.format(romcollection.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
