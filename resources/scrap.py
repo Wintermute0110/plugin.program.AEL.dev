@@ -739,9 +739,9 @@ class ScrapeStrategy(object):
         scraper_obj, scraper_name, st_dic):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Searching games with scaper {}...'.format(scraper_name)
+            scraper_text = 'Searching games with scraper {}...'.format(scraper_name)
             self.pdialog.updateMessage(scraper_text)
-        log.debug('Searching games with scaper {}'.format(scraper_name))
+        log.debug('Searching games with scraper {}'.format(scraper_name))
 
         # * The scanner uses the cached ROM candidate always.
         # * If the candidate is empty it means it was previously searched and the scraper
@@ -1309,7 +1309,7 @@ class ScrapeStrategy(object):
 
         # --- Do a search and get a list of games ---
         pdialog = kodi.ProgressDialog()
-        pdialog.startProgress('Searching games with scaper {}...'.format(scraper_name))
+        pdialog.startProgress('Searching games with scraper {}...'.format(scraper_name))
         candidate_list = self.scraper_obj.get_candidates(
             search_term, ROM_FN, ROM_hash_FN, platform, st_dic)
         # If the there was an error/exception in the scraper return immediately.
